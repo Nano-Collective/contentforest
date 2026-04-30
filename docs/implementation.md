@@ -18,7 +18,7 @@ The companion to [`planning.md`](./planning.md). Planning doc is the **what and 
 
 ## Current focus
 
-**Phase 2 in flight — foundation landed.** Configs, validator, and ref-fetcher built and verified end-to-end (97 docs pulled live; validator skips sample, would block real packs). Next: write the agent definition + prompt, then the generate-content orchestration script.
+**Phase 2 in flight.** Configs, validator, ref-fetcher, and prompt templates landed. Next: the orchestrator (`scripts/generate-content.ts`) that substitutes prompt variables, invokes `nanocoder run --mode auto-accept`, runs the validator, retries up to 3 times on failure, then opens a PR.
 
 ---
 
@@ -103,10 +103,9 @@ Goal: daily cron + manual dispatch produce real release packs as PRs, with the t
 - [ ] Populate `config/team.json` voice_notes (Will, from existing repo)
 - [ ] Provision `MINIMAX_API_KEY` as repo secret
 
-### Agent + prompts
-- [ ] `.nanocoder/agents/release-content-generator.md` — agent definition
-- [ ] `prompts/release-pack.md` — templated initial prompt
-- [ ] `prompts/auto-fix.md` — templated retry prompt (re-uses original + error report)
+### Prompts (no subagent — see decision log)
+- [x] `prompts/release-pack.md` — templated initial prompt; brand voice + channel specs + validation contract baked in; `{{VAR}}` placeholders for the orchestrator to fill (2026-04-30)
+- [x] `prompts/auto-fix.md` — templated retry prompt with embedded `validation-report.json` errors + original prompt for context (2026-04-30)
 
 ### Scripts
 - [x] `scripts/fetch-refs.ts` — fetches `llms.txt` + every referenced doc into `_refs/`, fails loudly on 404, `--allow-partial` for local. Verified: 97 docs pulled live (2026-04-30)
@@ -182,6 +181,7 @@ Deviations from `planning.md` made during build. If something here is load-beari
 | 2026-04-30 | Personal-account file layout supports **both** `personal/<member>/<channel>.md` (preferred) and flat `personal/<member>-<channel>.md` (fallback). Validator accepts either. | Locks the directory layout decision in code; the agent can pick the cleaner nested form, but if a future tool emits flat files the validator still passes. |
 | 2026-04-30 | `agents.config.json` declares MiniMax via the Anthropic-compatible endpoint at `https://api.minimax.io/anthropic/v1`, with `sdkProvider: "anthropic"` and `apiKey: "${MINIMAX_API_KEY}"` (inline env substitution). Wrapped under `nanocoder.providers` (array) per the official Nanocoder schema. | First draft used the wrong format (OpenAI-compatible, no wrapper, fake `apiKeyEnv` field); rewrote against `_refs/nanocoder/docs/v1.25.2/configuration/providers/minimax.md`. Model string `minimax-m2.7` is a placeholder — Will confirms when provider is wired up. |
 | 2026-04-30 | Dropped `release.md` from the schema — `channels/github-discussion.md` is now the canonical long-form artifact. The website's blog reads from GitHub Discussions on `Nano-Collective/website`, so the GH-Discussion file IS the public release blog post. | `release.md` and `github-discussion.md` were duplicates by design; one source of truth is simpler. Validator, lib/content, FileTree, version page, planning §7 + §10 all updated. `github-discussion` word range bumped to 300–1500 to fit a real release blog. |
+| 2026-04-30 | **Dropped the `.nanocoder/agents/release-content-generator.md` subagent file** in favour of templated prompt files at `prompts/release-pack.md` and `prompts/auto-fix.md` fed directly to `nanocoder run`. | Misread of the Nanocoder subagent feature in the original plan: subagents are explicitly *for delegation from a main agent*, are unavailable in scheduler mode, and require user approval that's awkward in non-interactive runs (per `_refs/nanocoder/docs/v1.25.2/features/subagents.md`). For our automated single-task generation, a plain prompt file with `{{VAR}}` placeholders that the orchestrator fills is simpler and works cleanly with `--mode auto-accept`. Planning §6.4 rewritten. |
 
 ---
 

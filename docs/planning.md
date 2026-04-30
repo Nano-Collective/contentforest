@@ -130,15 +130,22 @@ Notes:
 - `--mode auto-accept` is appropriate; `yolo` is reserved for cases where bash steps are also auto-approved. We will start with `auto-accept` and escalate only if needed.
 - **Cost** is managed at the provider level (you're on the coding plan), so there is no in-action job cap.
 
-### 6.4 Sub-agent
+### 6.4 Prompt files (no subagent)
 
-We define a custom Nanocoder agent in `.nanocoder/agents/release-content-generator.md` (Nanocoder reads this from the working directory). The agent:
+We do **not** use a Nanocoder sub-agent. Subagents in Nanocoder are explicitly designed for *delegation from a main agent*, are unavailable in scheduler mode, and require user approval that's awkward in non-interactive runs (per `_refs/nanocoder/docs/v1.25.2/features/subagents.md`).
 
-- Has read access to the cloned product repo and to brand/product reference material fetched at the start of the run (see §6.4.1).
-- Has `Write` access scoped to `content/`.
-- Carries the brand voice rules and forbidden-terms list inline (mirrored from the live docs as a belt-and-braces in case the fetch step fails).
-- Carries per-channel rules (length, tone, hashtags, CTAs).
-- Reads `config/team.json` and produces a personal-account variant for each opted-in member, using their per-channel `voice_notes` example.
+Instead we feed `nanocoder run` a templated prompt file directly. Two prompt files live in `prompts/`:
+
+- **`prompts/release-pack.md`** — the initial generation prompt. Contains role, brand voice (distilled from the live brand doc plus the forbidden-terms list as belt-and-braces), per-channel rules, frontmatter / `meta.json` shape, the hard validation contract, and how-to-work guidance. The file is a *template* with `{{VAR}}` placeholders that the orchestrator (`scripts/generate-content.ts`) substitutes before sending: `{{PRODUCT_SLUG}}`, `{{VERSION}}`, `{{REPO_PATH}}`, `{{RELEASE_BODY}}`, `{{TEAM_JSON}}`, `{{CHANNELS_JSON}}`, `{{PACK_DIR}}`, etc.
+- **`prompts/auto-fix.md`** — the Layer-1 retry prompt. References the structured `validation-report.json` errors, instructs the agent to fix only the failing files, and embeds the original prompt at the bottom for full context.
+
+The agent invocation thus has all the context inline — no `.nanocoder/agents/*.md` file needed. The agent's tools (`read_file`, `write_file`, `find_files`, etc.) and approval mode come from the `nanocoder run --mode auto-accept` invocation.
+
+**Why this is right:**
+- One source of truth for the prompt, easy to diff and tune.
+- Works in non-interactive `run` mode without scheduler-mode caveats.
+- The orchestrator can substitute job-specific variables cleanly.
+- Same file shape supports Layer 2 (PR check uses no prompt) and Layer 1 retries (uses `prompts/auto-fix.md`).
 
 ### 6.4.1 Reference material the agent reads
 
@@ -404,9 +411,8 @@ Output lands in `content/<product>/_evergreen/<yyyy-mm-dd>/` and goes through th
 **Phase 2 — Generation pipeline (week 2–3)**
 - `config/products.json`, `config/channels.json`, `config/team.json`.
 - `agents.config.json` with MiniMax M2.7 (provider key configured by you) as the default provider.
-- `prompts/release-pack.md` — templated prompt.
-- `prompts/auto-fix.md` — templated prompt for retry invocations (re-uses the original prompt plus the error report). Used by Layer 1 in Phase 2; reused by Layer 3 in Phase 3.
-- `.nanocoder/agents/release-content-generator.md` — agent definition with brand voice rules and validation contract.
+- `prompts/release-pack.md` — templated initial prompt fed to `nanocoder run`.
+- `prompts/auto-fix.md` — templated retry prompt that references `validation-report.json` failures and embeds the original prompt for context. Used by Layer 1 in Phase 2; reused by Layer 3 in Phase 3.
 - `scripts/fetch-refs.ts`, `scripts/detect-releases.ts`, `scripts/generate-content.ts`, `scripts/validate-content.ts`.
 - `scripts/generate.local.ts` — local entry point (see §12.1) that does the same thing the workflow does, no GitHub Actions required.
 - `daily-content.yml` workflow (cron + `workflow_dispatch` with `product`/`version`/`dry_run` inputs).
@@ -561,11 +567,9 @@ contentforest/
 │   ├── channels.json
 │   └── team.json
 ├── prompts/
-│   └── release-pack.md                              ← templated prompt fed to nanocoder
-├── agents.config.json                               ← Nanocoder provider config (MiniMax M2.7)
-├── .nanocoder/
-│   └── agents/
-│       └── release-content-generator.md
+│   ├── release-pack.md                              ← templated prompt fed to nanocoder run
+│   └── auto-fix.md                                  ← retry prompt with embedded error report
+├── agents.config.json                               ← Nanocoder provider config (MiniMax)
 ├── _refs/                                           ← gitignored; populated per run by fetch-refs.ts
 ├── scripts/
 │   ├── fetch-refs.ts                                ← fetches llms.txt + referenced .md files
