@@ -32,10 +32,7 @@ export default function Document() {
         />
       </Head>
       <body className="antialiased">
-        <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: theme bootstrap
-          dangerouslySetInnerHTML={{ __html: themeScript }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Main />
         <NextScript />
       </body>

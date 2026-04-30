@@ -93,7 +93,6 @@ export default function MarkdownPane({ filename, raw, body }: Props) {
       {mode === "preview" ? (
         <article
           className="prose prose-sm dark:prose-invert max-w-none"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted internal markdown
           dangerouslySetInnerHTML={{ __html: rendered }}
         />
       ) : (
