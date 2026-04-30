@@ -84,21 +84,49 @@ export function readVersionPack(product: string, version: string): VersionPack {
   const root = join(CONTENT_DIR, product, version);
   const files: ContentFile[] = [];
 
-  const subdirs = ["channels", "personal"];
-  for (const sub of subdirs) {
-    const subPath = join(root, sub);
-    try {
-      const entries = readdirSync(subPath).filter((e) => e.endsWith(".md"));
-      for (const entry of entries) {
-        const channel =
-          sub === "channels"
-            ? entry.replace(/\.md$/, "")
-            : `personal:${entry.replace(/\.md$/, "")}`;
-        files.push(readMarkdown(join(subPath, entry), channel));
-      }
-    } catch {
-      // sub may not exist
+  // channels/*.md (flat)
+  const channelsPath = join(root, "channels");
+  try {
+    const entries = readdirSync(channelsPath).filter((e) => e.endsWith(".md"));
+    for (const entry of entries) {
+      const channel = entry.replace(/\.md$/, "");
+      files.push(readMarkdown(join(channelsPath, entry), channel));
     }
+  } catch {
+    // channels/ may not exist
+  }
+
+  // personal/<member>/<channel>.md (nested) — also handles the flat fallback
+  // personal/<member>-<channel>.md form that the validator accepts.
+  const personalPath = join(root, "personal");
+  try {
+    for (const memberEntry of readdirSync(personalPath)) {
+      const memberPath = join(personalPath, memberEntry);
+      const stat = statSync(memberPath);
+      if (stat.isDirectory()) {
+        for (const channelFile of readdirSync(memberPath)) {
+          if (!channelFile.endsWith(".md")) continue;
+          const channelSlug = channelFile.replace(/\.md$/, "");
+          files.push(
+            readMarkdown(
+              join(memberPath, channelFile),
+              `personal:${memberEntry}:${channelSlug}`,
+            ),
+          );
+        }
+      } else if (memberEntry.endsWith(".md")) {
+        // flat fallback: personal/will-linkedin.md or personal/will.md
+        const stem = memberEntry.replace(/\.md$/, "");
+        const dash = stem.indexOf("-");
+        const channel =
+          dash > 0
+            ? `personal:${stem.slice(0, dash)}:${stem.slice(dash + 1)}`
+            : `personal:${stem}`;
+        files.push(readMarkdown(memberPath, channel));
+      }
+    }
+  } catch {
+    // personal/ may not exist
   }
 
   let meta: Record<string, unknown> | null = null;

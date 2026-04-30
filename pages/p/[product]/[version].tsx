@@ -21,11 +21,13 @@ type Props = {
 function buildItems(pack: VersionPack): FileTreeItem[] {
   return pack.files.map((f) => {
     if (f.channel.startsWith("personal:")) {
-      return {
-        channel: f.channel,
-        label: `${f.channel.replace("personal:", "")}.md`,
-        group: "personal",
-      };
+      // "personal:will:linkedin" → "will / linkedin.md"
+      // "personal:will"          → "will.md"
+      const rest = f.channel.slice("personal:".length);
+      const parts = rest.split(":");
+      const label =
+        parts.length === 2 ? `${parts[0]} / ${parts[1]}.md` : `${rest}.md`;
+      return { channel: f.channel, label, group: "personal" };
     }
     return { channel: f.channel, label: `${f.channel}.md`, group: "channels" };
   });
@@ -37,9 +39,11 @@ export default function VersionPage({ pack }: Props) {
 
   const file = pack.files.find((f) => f.channel === selected);
 
-  const filename = selected.startsWith("personal:")
-    ? `${selected.replace("personal:", "")}.md`
-    : `${selected}.md`;
+  const filename = (() => {
+    if (!selected.startsWith("personal:")) return `${selected}.md`;
+    const parts = selected.slice("personal:".length).split(":");
+    return parts.length === 2 ? `${parts[1]}.md` : `${parts[0]}.md`;
+  })();
 
   return (
     <>
