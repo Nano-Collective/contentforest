@@ -208,37 +208,20 @@ Up to **3 retries**. If all 3 fail, the workflow still opens the PR but with a `
 **Layer 2 — `validate-content.yml` PR check.**
 Same validator, runs on every push to a PR (every commit, including the bot's own and any human edits). Catches anything that slipped through Layer 1 and anything a human breaks while editing. Failing blocks merge.
 
-**Layer 3 — Auto-fix on PR check failure.**
-A `auto-fix.yml` workflow listens for `validate-content.yml` failures on branches matching `auto/release-*` and `auto/weekly-*`:
+**Layer 3 — Auto-fix on PR check failure (deferred to Phase 3, conditional).**
+A `auto-fix.yml` workflow that listens for `validate-content.yml` failures on `auto/*` branches, checks out the branch, re-invokes Nanocoder with the validation error report, and force-pushes a fix commit. Capped at 2 attempts via `auto-fix-attempts/N` PR labels; on the third failure the PR is labelled `needs-human` and the loop stops.
 
-```yaml
-on:
-  workflow_run:
-    workflows: ["validate-content"]
-    types: [completed]
-```
+**Why deferred:** Layer 3 needs to push commits that re-trigger `validate-content.yml`. The default `GITHUB_TOKEN` is intentionally inert for that — pushes from the workflow token deliberately don't fire other workflows. The clean fixes are either a fine-grained PAT (`NC_BOT_TOKEN`) or a dedicated `nanocollective-bot` GitHub App. Both add operational overhead (token rotation or app installation) that we don't want to absorb up-front when Layer 1 likely catches most failures.
 
-When triggered with `conclusion: failure` on an `auto/*` branch, it:
+**Trigger to build it:** if more than 20% of release-pack PRs over the first month land with `failed-validation` because Layer 1's 3 retries weren't enough, build Layer 3 — and pair it with the `nanocollective-bot` GitHub App provisioning so we never need a PAT.
 
-1. Checks the PR's `auto-fix-attempts/N` label. If `N >= 2`, **stop**, add `needs-human` label, and comment with the error report.
-2. Otherwise, checks out the branch, downloads `validation-report.json` from the failed validator run's artifacts, fetches refs (`scripts/fetch-refs.ts`), and re-invokes Nanocoder with the same prompt-plus-error-report Layer 1 uses.
-3. Runs the validator locally as a sanity check.
-4. Commits and pushes the fix. The push triggers `validate-content.yml` again, which is the success/failure signal for the next iteration.
-5. Increments the attempt label (`auto-fix-attempts/0` → `auto-fix-attempts/1` → `auto-fix-attempts/2` → `needs-human`).
+**Phase 2 ships Layers 1 + 2 only.** That's enough to test the contract end-to-end: the agent generates, the validator gates the PR, humans review and merge.
 
-**Auth requirement:** Layer 3 must push commits that re-trigger `validate-content.yml`. The default `GITHUB_TOKEN` is intentionally inert for this — pushes from a workflow's default token don't trigger other workflows, to prevent loops. Two ways to solve it:
-
-- **Phase 2a (now):** use a fine-grained PAT scoped to this repo (`contents: write`, `pull-requests: write`), stored as a secret named `NC_BOT_TOKEN`. Use it for Layer 3's checkout and push only.
-- **Phase 3 (later):** swap the PAT for the `nanocollective-bot` GitHub App token when that App is provisioned.
-
-**Loop guards (essential):**
-- Hard cap of 2 Layer-3 attempts per PR (PR labels `auto-fix-attempts/0..2`).
-- Skip Layer 3 entirely if the PR has the `needs-human` label.
-- Skip Layer 3 if the most recent commit on the branch is by a human (detected via committer email != bot email) — humans get to fix things without the bot stomping on them.
-- Workflow `timeout-minutes: 15` so a stuck Nanocoder run can't burn forever.
-- Every retry is logged in `meta.json` (`generation_attempts: 3`, `auto_fix_attempts: 1`, `final_status: "passed"`). If a generation consistently needs Layer 3 we want to know — that's prompt-tuning signal.
-
-**Cost shape:** Layer 1 runs in the same job as initial generation (cheap, contained). Layer 3 runs in a separate workflow per PR check failure, capped at 2 attempts × N PRs. Worst-case per release pack: 1 generation + 3 retries + 2 PR fixes = 6 Nanocoder invocations. With MiniMax pricing on the coding plan, this is fine.
+**Loop-guard design (recorded for whenever Layer 3 lands):**
+- Hard cap of 2 Layer-3 attempts per PR (`auto-fix-attempts/0..2`).
+- Skip Layer 3 if the PR has `needs-human` or if the most recent commit on the branch was by a human (committer email ≠ bot email).
+- Workflow `timeout-minutes: 15`.
+- Retries logged in `meta.json` (`generation_attempts`, `auto_fix_attempts`, `final_status`).
 
 ## 7. Content Structure
 
@@ -248,16 +231,19 @@ content/
   nanocoder/
     index.json                     # latest version, all known versions
     1.25.2/
-      meta.json                    # { product, version, productUrl, generatedAt, model, sha }
-      release.md                   # canonical release announcement (long-form)
+      meta.json                    # { product, version, product_url, generated_at, model, ... }
       channels/
         linkedin.md
         x.md
-        github-discussion.md
+        github-discussion.md       # canonical long-form: posts to GH Discussions on
+                                   # Nano-Collective/website, which becomes the website blog post
         reddit.md                  # single Reddit post; team adapts per-subreddit manually
       personal/
-        will.md
-        <other-team-member>.md
+        will/
+          linkedin.md              # Will's LinkedIn variant
+          x.md                     # Will's X variant
+        <other-team-member>/
+          ...
       sources/                     # what the agent read — for traceability
         changelog-excerpt.md
   nanotune/
@@ -274,7 +260,7 @@ Each markdown file uses a short YAML frontmatter:
 ---
 product: nanocoder
 version: 1.25.2
-channel: linkedin            # or "release", "x", "reddit", "github-discussion", "personal:will"
+channel: linkedin            # or "x", "reddit", "github-discussion", "personal:will:linkedin"
 generated_at: 2026-04-30T08:13:22Z
 model: minimax-m2.7
 char_count: 412
@@ -366,10 +352,10 @@ The web app is purely a read-only viewer. No write-back, no API routes, no auth 
 The generator agent must be instructed to:
 
 1. **Never** use any term in the brand doc's "forbidden" list ("Sovereign AI", "Trustless AI", "Intimate Technology", "Intelligent Infrastructure"), nor synonyms in marketing register.
-2. **Always** include the canonical tagline on long-form release posts where appropriate.
+2. **Always** include the canonical tagline on the long-form `github-discussion.md` where appropriate.
 3. **Only** describe features that appear in the changelog or the actual source. The agent reads the repo; if it cannot ground a claim, it must omit it.
 4. **Match channel rules** (see §10) including character limits and tone.
-5. **Cite** internally — every release.md references the source GitHub release URL.
+5. **Cite** internally — every `github-discussion.md` references the source GitHub release URL in the body where relevant (link target rule still requires the repo root URL too).
 
 `scripts/validate-content.ts` enforces a subset mechanically (forbidden terms regex, X char limit, frontmatter shape). The rest is verified at human review.
 
@@ -377,18 +363,19 @@ The generator agent must be instructed to:
 
 Brand voice is uniform across all channels (operational, understated, honest — per `../docs` brand guidelines). Per-channel rules cover *length and shape*, not voice. Per-person flavour for personal accounts comes from `config/team.json` `voice_notes`.
 
-| Channel              | Length          | Shape                                                              | Link target                              |
-|----------------------|-----------------|--------------------------------------------------------------------|------------------------------------------|
-| Release (long-form)  | 300–600 words   | Tagline, summary of what changed, why it matters technically.      | Product GitHub repo root.                |
-| LinkedIn             | 150–250 words   | One CTA, no hashtag soup.                                          | Product GitHub repo root.                |
-| X                    | ≤ 280 chars     | One link, max two hashtags.                                        | Product GitHub repo root.                |
-| GitHub Discussion    | 200–400 words   | Engineering-doc register; posted in `Nano-Collective/website` discussions. | Product GitHub repo root.        |
-| Reddit               | 150–250 words   | Single post; team adapts per-subreddit manually (r/nanocoder is the primary). | Product GitHub repo root.   |
-| Personal accounts    | 150–250 words   | First-person, flavoured by member's `voice_notes`.                 | Product GitHub repo root.                |
+| Channel              | Length          | Shape                                                                          | Link target                  |
+|----------------------|-----------------|--------------------------------------------------------------------------------|------------------------------|
+| GitHub Discussion    | 300–1500 words  | The canonical long-form release post. Engineering-doc register. Posted in `Nano-Collective/website` discussions, which renders as the website blog post. | Product GitHub repo root. |
+| LinkedIn             | 150–250 words   | One CTA, no hashtag soup.                                                      | Product GitHub repo root.    |
+| X                    | ≤ 280 chars     | One link, max two hashtags.                                                    | Product GitHub repo root.    |
+| Reddit               | 150–600 words   | Single post; team adapts per-subreddit manually (r/nanocoder is the primary).  | Product GitHub repo root.    |
+| Personal accounts    | 150–250 words   | First-person, flavoured by member's per-channel `voice_notes`.                 | Product GitHub repo root.    |
 
 **Link policy:** every post links to the **product GitHub repo root URL** (e.g. `https://github.com/Nano-Collective/nano-coder`), never the release-specific URL. Validation (§6.6) enforces this.
 
-Up to ten outputs per release fits comfortably (5 channels + up to 5 personal variants ≤ 10).
+There is no separate `release.md` — `github-discussion.md` IS the canonical long-form artifact. The website blog reads from GitHub Discussions on `Nano-Collective/website`, so this file is what becomes the public release blog post once a human pastes it into a new Discussion.
+
+Up to ten outputs per release fits comfortably (4 channels + up to 6 personal variants ≤ 10).
 
 ## 11. "In-between" content
 
@@ -418,16 +405,16 @@ Output lands in `content/<product>/_evergreen/<yyyy-mm-dd>/` and goes through th
 - `config/products.json`, `config/channels.json`, `config/team.json`.
 - `agents.config.json` with MiniMax M2.7 (provider key configured by you) as the default provider.
 - `prompts/release-pack.md` — templated prompt.
-- `prompts/auto-fix.md` — templated prompt for retry/auto-fix invocations (re-uses the original prompt plus the error report).
+- `prompts/auto-fix.md` — templated prompt for retry invocations (re-uses the original prompt plus the error report). Used by Layer 1 in Phase 2; reused by Layer 3 in Phase 3.
 - `.nanocoder/agents/release-content-generator.md` — agent definition with brand voice rules and validation contract.
 - `scripts/fetch-refs.ts`, `scripts/detect-releases.ts`, `scripts/generate-content.ts`, `scripts/validate-content.ts`.
 - `scripts/generate.local.ts` — local entry point (see §12.1) that does the same thing the workflow does, no GitHub Actions required.
 - `daily-content.yml` workflow (cron + `workflow_dispatch` with `product`/`version`/`dry_run` inputs).
 - `validate-content.yml` workflow (PR check).
-- `auto-fix.yml` workflow — Layer 3 of §6.7 (commits fixes back to the failing PR, capped at 2 attempts, gated by the `auto-fix-attempts/*` and `needs-human` labels).
-- Provision `NC_BOT_TOKEN` (fine-grained PAT) for Layer 3 pushes that re-trigger validation.
-- All three auto-fix layers wired in (§6.7).
+- Layers 1 + 2 of §6.7 (Layer 3 deferred to Phase 3).
 - End-to-end test against a real Nanocoder release.
+
+**Only secret needed in Phase 2: `MINIMAX_API_KEY`.** No PAT.
 
 **Phase 2.5 — Testing strategy (within Phase 2)**
 - `workflow_dispatch` inputs on `daily-content.yml`: `product` (required), `version` (required), `dry_run` (default false).
@@ -435,12 +422,12 @@ Output lands in `content/<product>/_evergreen/<yyyy-mm-dd>/` and goes through th
 - **Backfill**: on launch, manually trigger one run per product (4 in total) for the most recent release of each so the team has live test data and the prompt gets early tuning.
 - `scripts/seed-fixtures.ts` pulls the latest released version for each product into `content/_test/` so we have a stable corpus for prompt-tuning sessions.
 
-**Phase 3 — Retire old action + weekly content**
+**Phase 3 — Retire old action + weekly content + (conditionally) Layer 3**
 - "In-between" weekly content job (`weekly-content.yml`).
 - Delete `nano-coder/.github/workflows/generate-release-content.yml`.
 - `docs/adding-a-product.md` — operator-facing version of §7.2.
 - `docs/runbook.md` — what to do when a generation run fails, when a PR check fails, how to roll back a bad merge.
-- **Conditional:** Replace the `NC_BOT_TOKEN` PAT with a dedicated `nanocollective-bot` GitHub App for prettier PR authoring.
+- **Conditional (gated on observed failure rate, see §6.7):** provision `nanocollective-bot` GitHub App and ship `auto-fix.yml` (Layer 3). Doing both together avoids ever introducing a PAT.
 
 **Phase 4 — Out of scope**
 - Posting integrations (one-click to LinkedIn / X / Reddit) — confirmed out of scope.
@@ -515,7 +502,7 @@ Confirmed via 2026-04-30 round 2 Q&A:
 - **Stale PR sweep:** out of scope for now.
 
 New in v3 (then revised after round-3 Q&A):
-- **Auto-fix loop on validation failure** (§6.7) — all three layers ship in Phase 2: Layer 1 (pre-PR retry), Layer 2 (PR check), Layer 3 (commits a fix back to a failing PR, capped at 2 attempts via `auto-fix-attempts/N` labels). Auth uses a `NC_BOT_TOKEN` PAT until the `nanocollective-bot` GitHub App is provisioned.
+- **Auto-fix loop on validation failure** (§6.7) — Layers 1 (pre-PR retry) and 2 (PR check) ship in Phase 2. Layer 3 (commits a fix back to a failing PR) is **deferred to Phase 3, conditional on a >20% observed failure rate**, and ships paired with the `nanocollective-bot` GitHub App so we never introduce a PAT.
 - **Local generation entry point** (§12.1) for prompt tuning without GitHub Actions. Uses `NC_REPOS_DIR` env var; falls back to cloning into a temp dir if not set.
 - **Reference fetching fails loudly** if `llms.txt` 404s or any referenced doc 404s. Human intervention is the intended outcome on docs unavailability.
 
@@ -523,9 +510,8 @@ New in v3 (then revised after round-3 Q&A):
 
 Rounds 1, 2, and 3 are all answered. The plan is build-ready. Remaining unblockers are operational, not design:
 
-1. **Cloudflare Zero Trust enablement** on the Nano Collective Cloudflare account (Will to do; admin access confirmed).
-2. **`MINIMAX_API_KEY` provisioned** as a GitHub Action secret on this repo (Will to do).
-3. **`NC_BOT_TOKEN` PAT created** with `contents: write` and `pull-requests: write` on this repo, stored as a secret (needed for Layer 3 auto-fix; can be created when we wire up Phase 2).
+1. ~~**Cloudflare Zero Trust enablement**~~ — done 2026-04-30.
+2. **`MINIMAX_API_KEY` provisioned** as a GitHub Action secret on this repo (needed for Phase 2 generation runs).
 
 Once Q1 is done, Phase 1 can ship (Next.js scaffold + copy from `../website` + Cloudflare Pages + Access policy). Phases 1 and 2 can be developed in parallel — Phase 1 has no dependency on the generation pipeline existing because we can hand-author a sample `content/nanocoder/0.0.0/` for the UI to render.
 

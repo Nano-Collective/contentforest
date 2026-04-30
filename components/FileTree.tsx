@@ -1,10 +1,10 @@
-import { File, FileText } from "lucide-react";
+import { File } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type FileTreeItem = {
   channel: string;
   label: string;
-  group: "release" | "channels" | "personal";
+  group: "channels" | "personal";
 };
 
 type Props = {
@@ -14,7 +14,6 @@ type Props = {
 };
 
 const GROUP_LABELS: Record<FileTreeItem["group"], string> = {
-  release: "Release",
   channels: "Channels",
   personal: "Personal",
 };
@@ -39,7 +38,6 @@ export default function FileTree({ items, selected, onSelect }: Props) {
               <ul className="flex flex-col gap-0.5">
                 {groupItems.map((item) => {
                   const isSelected = item.channel === selected;
-                  const Icon = group === "release" ? FileText : File;
                   return (
                     <li key={item.channel}>
                       <button
@@ -52,7 +50,7 @@ export default function FileTree({ items, selected, onSelect }: Props) {
                             : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                         )}
                       >
-                        <Icon className="h-4 w-4 shrink-0" />
+                        <File className="h-4 w-4 shrink-0" />
                         <span className="truncate text-left">{item.label}</span>
                       </button>
                     </li>

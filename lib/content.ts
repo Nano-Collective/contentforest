@@ -84,13 +84,6 @@ export function readVersionPack(product: string, version: string): VersionPack {
   const root = join(CONTENT_DIR, product, version);
   const files: ContentFile[] = [];
 
-  const releasePath = join(root, "release.md");
-  try {
-    files.push(readMarkdown(releasePath, "release"));
-  } catch {
-    // optional
-  }
-
   const subdirs = ["channels", "personal"];
   for (const sub of subdirs) {
     const subPath = join(root, sub);

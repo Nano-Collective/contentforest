@@ -18,7 +18,7 @@ The companion to [`planning.md`](./planning.md). Planning doc is the **what and 
 
 ## Current focus
 
-**Phase 1 in flight.** Next.js app scaffolded at repo root (build green, dev server confirmed serving the sample pack). Remaining Phase 1 work is the Cloudflare Pages deploy + Access policy.
+**Phase 2 in flight — foundation landed.** Configs, validator, and ref-fetcher built and verified end-to-end (97 docs pulled live; validator skips sample, would block real packs). Next: write the agent definition + prompt, then the generate-content orchestration script.
 
 ---
 
@@ -76,21 +76,18 @@ Goal: a deployed, gated, empty file viewer at `contentforest.nanocollective.org`
 Deploy pattern mirrors `../website`: GitHub Actions builds and pushes to Pages via API token (not Cloudflare auto-pulling from Git). Build runs in CI where lint + types are gated.
 
 - [x] `.github/workflows/deploy-cloudflare-pages.yaml` — runs on push to main + workflow_dispatch (2026-04-30)
-- [ ] Create Pages project `contentforest` under the Nano Collective Cloudflare account as **Direct Upload** type (no Git connection)
-- [ ] Generate Cloudflare API token (scope: `Account → Cloudflare Pages → Edit` on the Nano Collective account) — store as repo secret `CLOUDFLARE_API_TOKEN`
-- [ ] Get the Cloudflare Account ID (visible at the bottom-right of any account dashboard page) — store as repo secret `CLOUDFLARE_ACCOUNT_ID`
-- [ ] First push to `main` → action runs, pushes build to Pages, Pages assigns a `*.pages.dev` URL
-- [ ] Custom domain: in the Pages project → Custom domains → add `contentforest.nanocollective.org` (Cloudflare auto-creates the CNAME because the zone is on the same account)
+- [x] Create Pages project `contentforest` under the Nano Collective Cloudflare account as **Direct Upload** type (no Git connection) (2026-04-30)
+- [x] Generate Cloudflare API token (scope: `Account → Cloudflare Pages → Edit`) — stored as repo secret `CLOUDFLARE_API_TOKEN` (2026-04-30)
+- [x] Cloudflare Account ID stored as repo secret `CLOUDFLARE_ACCOUNT_ID` (2026-04-30)
+- [x] First push to `main` succeeded; build → deploy pipeline live (2026-04-30)
+- [x] Custom domain `contentforest.nanocollective.org` live (2026-04-30)
 
 ### Cloudflare Access policy
-- [ ] Zero Trust → Access → Applications → Add → Self-hosted
-- [ ] Application name: ContentForest, domain `contentforest.nanocollective.org`
-- [ ] Identity providers: GitHub only
-- [ ] Policy: Include → GitHub organisation → `Nano-Collective`
-- [ ] Test login flow: signed-in member can view, non-member is blocked
-- [ ] Test logout via `/cdn-cgi/access/logout`
+- [x] Self-hosted Access app on `contentforest.nanocollective.org`, GitHub IdP only, policy = `Nano-Collective` org membership (2026-04-30)
+- [x] Login flow tested (2026-04-30)
+- [x] Logout via `/cdn-cgi/access/logout` tested (2026-04-30)
 
-**Phase 1 exit criteria:** browse `contentforest.nanocollective.org`, log in with GitHub, see the sample Nanocoder 0.0.0 pack rendered.
+**Phase 1 done** — `contentforest.nanocollective.org` is live, gated, and rendering the sample pack.
 
 ---
 
@@ -99,12 +96,12 @@ Deploy pattern mirrors `../website`: GitHub Actions builds and pushes to Pages v
 Goal: daily cron + manual dispatch produce real release packs as PRs, with the three-layer auto-fix loop in place.
 
 ### Config
-- [ ] `config/products.json` (4 products)
-- [ ] `config/channels.json` (5 channels with length rules)
-- [ ] `config/team.json` — Will populates with per-channel handles + voice notes
-- [ ] `agents.config.json` — Nanocoder provider config pointing at MiniMax M2.7
+- [x] `config/products.json` (4 products) (2026-04-30)
+- [x] `config/channels.json` (5 channels with length rules) (2026-04-30)
+- [x] `config/team.json` — skeleton with one Will entry; voice_notes marked TODO for population from existing repo (2026-04-30)
+- [x] `agents.config.json` — MiniMax provider config (OpenAI-compatible endpoint, reads `MINIMAX_API_KEY`) (2026-04-30)
+- [ ] Populate `config/team.json` voice_notes (Will, from existing repo)
 - [ ] Provision `MINIMAX_API_KEY` as repo secret
-- [ ] Provision `NC_BOT_TOKEN` PAT (`contents: write`, `pull-requests: write`) as repo secret
 
 ### Agent + prompts
 - [ ] `.nanocoder/agents/release-content-generator.md` — agent definition
@@ -112,17 +109,18 @@ Goal: daily cron + manual dispatch produce real release packs as PRs, with the t
 - [ ] `prompts/auto-fix.md` — templated retry prompt (re-uses original + error report)
 
 ### Scripts
-- [ ] `scripts/fetch-refs.ts` — fetch `llms.txt` + every referenced doc into `_refs/`, fail loudly on 404
+- [x] `scripts/fetch-refs.ts` — fetches `llms.txt` + every referenced doc into `_refs/`, fails loudly on 404, `--allow-partial` for local. Verified: 97 docs pulled live (2026-04-30)
+- [x] `scripts/validate-content.ts` — hard + soft rules, frontmatter shape, length, forbidden terms, link target, placeholders; emits `validation-report.json`. Skips packs with `final_status: "sample"`. Verified clean against the seed pack (2026-04-30)
 - [ ] `scripts/detect-releases.ts` — diff GitHub releases against `content/<product>/index.json`
 - [ ] `scripts/generate-content.ts` — invoke Nanocoder, capture output, run validator, retry up to 3 times (Layer 1)
-- [ ] `scripts/validate-content.ts` — hard rules + soft rules, emit `validation-report.json`
 - [ ] `scripts/generate.local.ts` — local entry point honouring `NC_REPOS_DIR`, output to `content/_local/` by default
 - [ ] `scripts/seed-fixtures.ts` — pull latest releases into `content/_test/` for prompt-tuning
+- [x] Added `tsx` devDep + `pnpm fetch-refs` / `pnpm validate` scripts in `package.json` (2026-04-30)
 
-### Workflows
-- [ ] `.github/workflows/daily-content.yml` — cron 08:00 UTC + `workflow_dispatch` (`product`, `version`, `dry_run`)
+### Workflows (Phase 2 ships Layers 1 + 2 only; Layer 3 deferred)
+- [ ] `.github/workflows/daily-content.yml` — cron 08:00 UTC + `workflow_dispatch` (`product`, `version`, `dry_run`); includes Layer 1 retry loop
 - [ ] `.github/workflows/validate-content.yml` — Layer 2 PR check on `content/**`
-- [ ] `.github/workflows/auto-fix.yml` — Layer 3, listens for `validate-content` failures on `auto/*` branches, capped at 2 attempts via `auto-fix-attempts/N` labels
+- ⏸ `.github/workflows/auto-fix.yml` — **deferred to Phase 3, conditional on observed failure rate (>20% of PRs landing with `failed-validation`).** Will ship paired with the `nanocollective-bot` GitHub App so we never introduce a PAT.
 
 ### End-to-end
 - [ ] First real run against latest Nanocoder release (manual dispatch, `dry_run=false`)
@@ -130,7 +128,7 @@ Goal: daily cron + manual dispatch produce real release packs as PRs, with the t
 - [ ] Site rebuilds, new pack visible at `/p/nanocoder/<version>/`
 - [ ] Backfill: dispatch one run per other product (Nanotune, get-md, json-up) on their latest release
 
-**Phase 2 exit criteria:** four merged release packs (one per product), the daily cron is enabled, and at least one PR has been auto-fixed by Layer 1 or Layer 3 successfully.
+**Phase 2 exit criteria:** four merged release packs (one per product), the daily cron is enabled, and at least one PR has been auto-fixed by Layer 1 successfully (and we have a measurement of how often Layer 1 alone is sufficient — informs the Layer-3 build/skip decision in Phase 3).
 
 ---
 
@@ -149,7 +147,7 @@ Goal: daily cron + manual dispatch produce real release packs as PRs, with the t
 - [ ] `docs/adding-a-product.md` — operator-facing version of planning §7.2
 - [ ] `docs/runbook.md` — failure recovery, rollback, manual rerun
 - [ ] `docs/local-development.md` — local generation workflow
-- [ ] **Conditional:** create `nanocollective-bot` GitHub App, replace `NC_BOT_TOKEN` PAT
+- [ ] **Conditional (gated on >20% of release-pack PRs landing with `failed-validation` over the first month of Phase 2):** create `nanocollective-bot` GitHub App and ship `auto-fix.yml` (Layer 3). Doing both together avoids ever needing a PAT.
 
 ---
 
@@ -178,6 +176,12 @@ Deviations from `planning.md` made during build. If something here is load-beari
 | 2026-04-30 | Navbar trimmed: dropped nav links (Browse / Repo) and GitHub icon; left = brand, right = theme toggle + sign-out only. | Internal tool with three pages — nav links are noise, the brand text already links Home.    |
 | 2026-04-30 | Layout container standardised on `max-w-6xl mx-auto px-4` for both navbar and pages.                             | Tailwind 4's `container` class caps at the active breakpoint; pages with `container max-w-6xl` were wider than the navbar at 2xl viewports, causing left-edge misalignment. |
 | 2026-04-30 | Cloudflare Pages deploy via **GitHub Actions push** (not the dashboard's "Connect to Git" auto-pull), mirroring the website. | Build runs in CI where lint + types are gated. Pages project is Direct Upload only; secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` provisioned on the GH repo. `cloudflare/pages-action@v1` is the action — note: officially deprecated by Cloudflare in favour of `cloudflare/wrangler-action@v3`, but the website still uses v1 so we match for consistency; revisit if it breaks. |
+| 2026-04-30 | First two CI runs failed on Biome's `assist/source/organizeImports` rule (imports/exports not alphabetised in `components/ui/card.tsx` and `lib/content.ts`). Fixed by `pnpm lint:fix` and re-pushed. | The CI runs `pnpm run lint` (`biome check`, no auto-fix) so any unsorted imports break the build. Treat `pnpm lint:fix` as the pre-commit reflex when adding new files; the existing IDE biome assist will normally handle it on save but didn't in the initial scaffold burst. |
+| 2026-04-30 | **Layer 3 of the auto-fix loop deferred from Phase 2 to Phase 3** (conditional). Phase 2 ships only Layers 1 + 2. No PAT introduced. | Layer 3 needs to push commits that re-trigger `validate-content.yml`. The default `GITHUB_TOKEN` won't fire downstream workflows, so Layer 3 needs either a fine-grained PAT or a GitHub App. Both add operational overhead. Layer 1's 3-retry loop likely catches most failures; we'll measure for a month and only build Layer 3 if >20% of PRs need a human edit. When we do, we'll pair it with the `nanocollective-bot` GitHub App provisioning so we never carry a PAT. Phase 2 is also simpler — `MINIMAX_API_KEY` is the only new secret. |
+| 2026-04-30 | `meta.json` keys are **snake_case**, matching frontmatter (`generated_at`, `final_status`, `auto_fix_attempts`). | First sample used camelCase (`generatedAt`, `finalStatus`); validator checks snake_case so the sample failed the gate. One convention everywhere is the simplest fix. |
+| 2026-04-30 | Personal-account file layout supports **both** `personal/<member>/<channel>.md` (preferred) and flat `personal/<member>-<channel>.md` (fallback). Validator accepts either. | Locks the directory layout decision in code; the agent can pick the cleaner nested form, but if a future tool emits flat files the validator still passes. |
+| 2026-04-30 | `agents.config.json` declares MiniMax via the Anthropic-compatible endpoint at `https://api.minimax.io/anthropic/v1`, with `sdkProvider: "anthropic"` and `apiKey: "${MINIMAX_API_KEY}"` (inline env substitution). Wrapped under `nanocoder.providers` (array) per the official Nanocoder schema. | First draft used the wrong format (OpenAI-compatible, no wrapper, fake `apiKeyEnv` field); rewrote against `_refs/nanocoder/docs/v1.25.2/configuration/providers/minimax.md`. Model string `minimax-m2.7` is a placeholder — Will confirms when provider is wired up. |
+| 2026-04-30 | Dropped `release.md` from the schema — `channels/github-discussion.md` is now the canonical long-form artifact. The website's blog reads from GitHub Discussions on `Nano-Collective/website`, so the GH-Discussion file IS the public release blog post. | `release.md` and `github-discussion.md` were duplicates by design; one source of truth is simpler. Validator, lib/content, FileTree, version page, planning §7 + §10 all updated. `github-discussion` word range bumped to 300–1500 to fit a real release blog. |
 
 ---
 
@@ -189,8 +193,9 @@ _None._
 
 ## Reference URLs (live)
 
-- Cloudflare Pages project: _TBD — fill in once created_
-- Cloudflare Access app: _TBD — fill in once created_
+- Repo: `https://github.com/Nano-Collective/contentforest`
+- CI: `https://github.com/Nano-Collective/contentforest/actions`
+- Production URL: `https://contentforest.nanocollective.org` (gated by Cloudflare Access)
+- Cloudflare Pages project: `contentforest` (Direct Upload, on the Nano Collective account)
+- Cloudflare Access app: `ContentForest` on `contentforest.nanocollective.org`
 - GitHub OAuth App: `https://github.com/organizations/Nano-Collective/settings/applications` (private)
-- Production URL: `https://contentforest.nanocollective.org` _(not yet routable)_
-- Cloudflare team subdomain: _TBD — fill in from Phase 0 step 1.3_

@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Will Lamerton",
+    "channels": {
+      "linkedin": {
+        "handle": "william-lamerton",
+        "voice_notes": "TODO — populate from existing repo. Plain, longer-form, technical first-person. Talks about *why* something was built. No hashtags."
+      },
+      "x": {
+        "handle": "@willlamerton",
+        "voice_notes": "TODO — populate from existing repo. Short. One sentence per line. Drops in a code snippet or a number. No emoji, max one hashtag."
+      }
+    }
+  }
+]

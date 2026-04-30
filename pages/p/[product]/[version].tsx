@@ -20,9 +20,6 @@ type Props = {
 
 function buildItems(pack: VersionPack): FileTreeItem[] {
   return pack.files.map((f) => {
-    if (f.channel === "release") {
-      return { channel: f.channel, label: "release.md", group: "release" };
-    }
     if (f.channel.startsWith("personal:")) {
       return {
         channel: f.channel,
@@ -40,12 +37,9 @@ export default function VersionPage({ pack }: Props) {
 
   const file = pack.files.find((f) => f.channel === selected);
 
-  const filename =
-    selected === "release"
-      ? "release.md"
-      : selected.startsWith("personal:")
-        ? `${selected.replace("personal:", "")}.md`
-        : `${selected}.md`;
+  const filename = selected.startsWith("personal:")
+    ? `${selected.replace("personal:", "")}.md`
+    : `${selected}.md`;
 
   return (
     <>

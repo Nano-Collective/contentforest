@@ -41,3 +41,4 @@ next-env.d.ts.bak
 /_refs/
 /content/_local/
 /content/_test/
+/validation-report.json
