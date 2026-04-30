@@ -184,15 +184,16 @@ A second workflow `validate-content.yml` runs on every PR touching `content/**` 
 
 **Hard rules (fail the check, block merge):**
 - Frontmatter schema is correct (product, version, channel, generated_at, model, char_count).
-- Every expected file exists (`release.md`, one per channel in `config/channels.json`, one per opted-in team member).
-- X post is ≤ 280 chars; LinkedIn / Reddit / GitHub Discussion within configured ranges.
-- No forbidden term from `_refs/brand.md` "forbidden" list — regex check on canonical phrases ("Sovereign AI", "Trustless AI", "Intimate Technology", "Intelligent Infrastructure").
+- Every expected file exists (one per channel in `config/channels.json` plus opted-in personal variants from `config/team.json`, plus `meta.json`).
+- **Hard ceilings only:** X post ≤ 280 chars; LinkedIn / Reddit / GitHub Discussion within their `max_words`. No `min_words` enforcement — see soft rules.
+- No forbidden term from `_refs/collective/organisation/brand.md` "forbidden" list — regex check on canonical phrases ("Sovereign AI", "Trustless AI", "Intimate Technology", "Intelligent Infrastructure").
 - No `{{TODO}}`, `{{RELEASE_URL}}`, or other unresolved placeholder.
 - Each post links to the **product GitHub repo root URL**, not a release URL (see §10).
 - `meta.json` exists and is valid JSON.
 
 **Soft rules (annotate the PR with a warning, do not block merge):**
 - Marketing-register flagged terms ("transformative", "revolutionary", "game-changing", "unleash", "supercharge", etc.). The list lives in `scripts/validate-content.ts` and we tune it as we see what the model produces.
+- `min_words` shortfalls. For minor patch releases there is genuinely little to write about; padding to hit a floor produces the filler the brand voice forbids. The validator surfaces "this post is shorter than the soft target, review if the release was substantial" — the human decides.
 
 The validator emits a structured machine-readable report (`validation-report.json`) listing every failure with `{file, rule, expected, actual}`. This is what powers the auto-fix loop in §6.7.
 
@@ -282,7 +283,7 @@ There is **no `ready` flag** — merging the PR is the readiness signal. The web
 
 ```json
 [
-  { "slug": "nanocoder", "repo": "Nano-Collective/nano-coder" },
+  { "slug": "nanocoder", "repo": "Nano-Collective/nanocoder" },
   { "slug": "nanotune",  "repo": "Nano-Collective/nanotune"  },
   { "slug": "get-md",    "repo": "Nano-Collective/get-md"    },
   { "slug": "json-up",   "repo": "Nano-Collective/json-up"   }
@@ -378,7 +379,7 @@ Brand voice is uniform across all channels (operational, understated, honest —
 | Reddit               | 150–600 words   | Single post; team adapts per-subreddit manually (r/nanocoder is the primary).  | Product GitHub repo root.    |
 | Personal accounts    | 150–250 words   | First-person, flavoured by member's per-channel `voice_notes`.                 | Product GitHub repo root.    |
 
-**Link policy:** every post links to the **product GitHub repo root URL** (e.g. `https://github.com/Nano-Collective/nano-coder`), never the release-specific URL. Validation (§6.6) enforces this.
+**Link policy:** every post links to the **product GitHub repo root URL** (e.g. `https://github.com/Nano-Collective/nanocoder`), never the release-specific URL. Validation (§6.6) enforces this.
 
 There is no separate `release.md` — `github-discussion.md` IS the canonical long-form artifact. The website blog reads from GitHub Discussions on `Nano-Collective/website`, so this file is what becomes the public release blog post once a human pastes it into a new Discussion.
 

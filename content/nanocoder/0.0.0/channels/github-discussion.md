@@ -24,4 +24,4 @@ nanocoder
 
 ## Repo
 
-https://github.com/Nano-Collective/nano-coder
+https://github.com/Nano-Collective/nanocoder

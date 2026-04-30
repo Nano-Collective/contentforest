@@ -12,7 +12,10 @@
     "types": "tsc --noEmit",
     "test:all": "pnpm run types && pnpm run lint",
     "fetch-refs": "tsx scripts/fetch-refs.ts",
-    "validate": "tsx scripts/validate-content.ts"
+    "validate": "tsx scripts/validate-content.ts",
+    "generate": "tsx scripts/generate-content.ts",
+    "detect-releases": "tsx scripts/detect-releases.ts",
+    "seed-fixtures": "tsx scripts/seed-fixtures.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",

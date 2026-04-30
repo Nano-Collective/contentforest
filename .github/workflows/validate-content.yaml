@@ -1,0 +1,48 @@
+name: Validate Content
+
+on:
+  pull_request:
+    paths:
+      - "content/**"
+      - "config/channels.json"
+      - "config/products.json"
+      - "config/team.json"
+      - "scripts/validate-content.ts"
+  workflow_dispatch:
+
+concurrency:
+  group: validate-content-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Validate all committed content
+        run: pnpm validate
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report
+          path: validation-report.json
+          retention-days: 30

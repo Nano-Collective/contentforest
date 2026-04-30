@@ -24,6 +24,7 @@ type Args = {
 
 function parse(): Args {
   const { values } = parseArgs({
+    allowPositionals: true,
     options: {
       base: { type: "string", default: "https://docs.nanocollective.org" },
       "allow-partial": { type: "boolean", default: false },

@@ -39,6 +39,7 @@ next-env.d.ts.bak
 
 # ContentForest-specific
 /_refs/
+/_repos/
 /content/_local/
 /content/_test/
 /validation-report.json

@@ -11,4 +11,4 @@ Sample X post — placeholder content.
 
 Nanocoder: local-first CLI coding agent. Pick your provider, keep your code local.
 
-https://github.com/Nano-Collective/nano-coder
+https://github.com/Nano-Collective/nanocoder

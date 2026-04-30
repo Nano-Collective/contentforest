@@ -11,4 +11,4 @@ Sample LinkedIn post — placeholder content.
 
 Nanocoder is a local-first CLI coding agent. It runs against the provider you choose — local model via Ollama, OpenRouter, Anthropic, OpenAI — and never sends your code to a service you didn't pick.
 
-Repo: https://github.com/Nano-Collective/nano-coder
+Repo: https://github.com/Nano-Collective/nanocoder

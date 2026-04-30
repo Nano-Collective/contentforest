@@ -4,8 +4,8 @@
 
   Required substitutions (the orchestrator script fills these):
     {{PRODUCT_SLUG}}      e.g. "nanocoder"
-    {{PRODUCT_REPO}}      e.g. "Nano-Collective/nano-coder"
-    {{PRODUCT_REPO_URL}}  e.g. "https://github.com/Nano-Collective/nano-coder"
+    {{PRODUCT_REPO}}      e.g. "Nano-Collective/nanocoder"
+    {{PRODUCT_REPO_URL}}  e.g. "https://github.com/Nano-Collective/nanocoder"
     {{VERSION}}           e.g. "1.25.3"
     {{REPO_PATH}}         absolute path to a fresh clone of the product repo
     {{RELEASE_TAG_URL}}   absolute URL to the GitHub release page (used for
@@ -72,7 +72,7 @@ Output goes to `{{PACK_DIR}}` using the `write_file` tool. The exact files to pr
 
 # Channel specs
 
-Use `config/channels.json` (below) for length/char rules — these are enforced by `scripts/validate-content.ts`. Per-channel shape:
+Use `config/channels.json` (below) for length/char rules. The `max_*` values are **hard ceilings** — exceeding them fails validation. The `min_words` values are **soft targets** — for substantial releases aim near the middle of the range, but for minor patches with little to communicate write only what the release warrants. Padding to hit a minimum produces exactly the filler the brand voice forbids ("be specific", "trust the reader"). Per-channel shape:
 
 ```json
 {{CHANNELS_JSON}}

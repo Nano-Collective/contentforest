@@ -24,14 +24,14 @@ The validator emitted this list of failures (from `validation-report.json`):
 
 Each failure has:
 - `file` — the path that failed
-- `rule` — the validator rule (one of: `file-exists`, `frontmatter-shape`, `frontmatter-product`, `frontmatter-version`, `channel-known`, `min-words`, `max-words`, `max-chars`, `forbidden-term`, `no-placeholder`, `link-product-repo`, `link-not-release`, `meta-exists`, `meta-parses`)
+- `rule` — the validator rule (one of: `file-exists`, `frontmatter-shape`, `frontmatter-product`, `frontmatter-version`, `channel-known`, `max-words`, `max-chars`, `forbidden-term`, `no-placeholder`, `link-product-repo`, `link-not-release`, `meta-exists`, `meta-parses`)
 - `expected` / `actual` — the contract and what was produced
 
 # How to fix
 
 1. **Fix only the listed files.** Do not rewrite files that passed.
 2. Re-read `_refs/collective/organisation/brand.md` if the failures include `forbidden-term` — re-ground in the brand rules.
-3. For `min-words` / `max-words` / `max-chars`: adjust length without padding or stripping signal. Don't add filler to hit a minimum, and don't drop the substantive points to hit a maximum — restructure.
+3. For `max-words` / `max-chars`: trim without dropping substantive points — restructure rather than truncate.
 4. For `link-product-repo` / `link-not-release`: ensure every body contains the product repo root URL exactly once and contains no `/releases/tag/...` URL.
 5. For `frontmatter-*`: emit the exact frontmatter shape from the original prompt, with every required field populated.
 6. For `file-exists`: write the missing file using `write_file`.

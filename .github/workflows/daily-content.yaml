@@ -1,0 +1,173 @@
+name: Daily Content Generation
+
+on:
+  schedule:
+    # 08:00 UTC daily. Comment out while we're still backfilling manually.
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "Product slug (omit to detect all new releases)"
+        required: false
+        type: string
+      version:
+        description: "Version to generate (required if product is set)"
+        required: false
+        type: string
+      dry_run:
+        description: "Write to content/_test/ instead of opening a PR"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: daily-content
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install Nanocoder
+        run: npm install -g @nanocollective/nanocoder
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Ensure PR labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create auto-release --color "1f6feb" --description "Automated release pack PR" --force
+          gh label create failed-validation --color "d93f0b" --description "Validator found hard-rule failures" --force
+
+      - name: Fetch reference docs
+        run: pnpm fetch-refs
+
+      - name: Resolve jobs
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_PRODUCT: ${{ inputs.product }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -n "${INPUT_PRODUCT:-}" ]; then
+            if [ -z "${INPUT_VERSION:-}" ]; then
+              echo "::error::version is required when product is set"
+              exit 1
+            fi
+            JOBS=$(jq -nc \
+              --arg product "$INPUT_PRODUCT" \
+              --arg version "$INPUT_VERSION" \
+              '[{ "product": $product, "version": $version, "releaseBody": "", "releaseTagUrl": "" }]')
+          else
+            JOBS=$(pnpm --silent detect-releases)
+          fi
+          echo "$JOBS" > /tmp/jobs.json
+          COUNT=$(jq 'length' /tmp/jobs.json)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Resolved $COUNT job(s):"
+          jq . /tmp/jobs.json
+
+      - name: Generate, validate, and open PRs
+        if: steps.resolve.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          COUNT=$(jq 'length' /tmp/jobs.json)
+          for i in $(seq 0 $((COUNT - 1))); do
+            JOB=$(jq -c ".[$i]" /tmp/jobs.json)
+            PRODUCT=$(jq -r '.product' <<<"$JOB")
+            VERSION=$(jq -r '.version' <<<"$JOB")
+            BRANCH="auto/release-${PRODUCT}-${VERSION}"
+            echo ""
+            echo "::group::generate ${PRODUCT}@${VERSION}"
+
+            # Skip if a branch already exists for this pack — prevents
+            # duplicate PRs on retried runs.
+            if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+              echo "branch $BRANCH already exists on origin, skipping"
+              echo "::endgroup::"
+              continue
+            fi
+
+            git checkout -B "$BRANCH" origin/main
+
+            if [ "${DRY_RUN:-false}" = "true" ]; then
+              pnpm generate --job-spec "$JOB" --test
+              echo "dry_run: skipping PR open"
+              echo "::endgroup::"
+              continue
+            fi
+
+            # Run generation. Don't fail the workflow on validation failures —
+            # we still want a PR with `failed-validation` label so a human can
+            # see what went wrong.
+            set +e
+            pnpm generate --job-spec "$JOB" --commit
+            GEN_STATUS=$?
+            set -e
+
+            if [ -z "$(git status --porcelain content/)" ]; then
+              echo "no content changes produced; skipping PR"
+              echo "::endgroup::"
+              continue
+            fi
+
+            git add content/
+            git commit -m "auto: release pack ${PRODUCT} v${VERSION}"
+            git push --set-upstream origin "$BRANCH"
+
+            META_PATH="content/${PRODUCT}/${VERSION}/meta.json"
+            FINAL_STATUS=$(jq -r '.final_status // "unknown"' "$META_PATH" 2>/dev/null || echo "unknown")
+            GEN_ATTEMPTS=$(jq -r '.generation_attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
+            FIX_ATTEMPTS=$(jq -r '.auto_fix_attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
+
+            LABELS="auto-release"
+            if [ "$FINAL_STATUS" != "passed" ] || [ "$GEN_STATUS" -ne 0 ]; then
+              LABELS="auto-release,failed-validation"
+            fi
+
+            BODY=$(printf 'Automated release pack for **%s** v%s.\n\n- Final status: `%s`\n- Generation attempts: `%s`\n- Auto-fix attempts: `%s`\n\nThe validator runs on this PR via `validate-content.yaml`. If hard rules failed, see the validation-report artifact on the workflow run.' \
+              "$PRODUCT" "$VERSION" "$FINAL_STATUS" "$GEN_ATTEMPTS" "$FIX_ATTEMPTS")
+
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Release pack: ${PRODUCT} v${VERSION}" \
+              --body "$BODY" \
+              --label "$LABELS" || true
+
+            echo "::endgroup::"
+          done
