@@ -53,9 +53,7 @@ export default function FileTree({ items, selected, onSelect }: Props) {
                         )}
                       >
                         <Icon className="h-4 w-4 shrink-0" />
-                        <span className="truncate text-left">
-                          {item.label}
-                        </span>
+                        <span className="truncate text-left">{item.label}</span>
                       </button>
                     </li>
                   );

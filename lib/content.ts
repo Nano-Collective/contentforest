@@ -80,10 +80,7 @@ function readMarkdown(filePath: string, channel: string): ContentFile {
   };
 }
 
-export function readVersionPack(
-  product: string,
-  version: string,
-): VersionPack {
+export function readVersionPack(product: string, version: string): VersionPack {
   const root = join(CONTENT_DIR, product, version);
   const files: ContentFile[] = [];
 

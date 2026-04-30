@@ -2,12 +2,7 @@ import { ArrowLeft, ArrowRight, GitBranch } from "lucide-react";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { listProducts, listVersions } from "@/lib/content";
 
 type Props = {
@@ -44,10 +39,7 @@ export default function ProductPage({ product, versions }: Props) {
           <ul className="flex flex-col gap-3">
             {versions.map((version) => (
               <li key={version}>
-                <Link
-                  href={`/p/${product}/${version}`}
-                  className="block group"
-                >
+                <Link href={`/p/${product}/${version}`} className="block group">
                   <Card className="transition-colors group-hover:border-primary/50">
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between text-base font-mono">

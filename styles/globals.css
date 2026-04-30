@@ -52,20 +52,15 @@
   --shadow-2xs: 3px 3px 0px 0px rgb(141 161 1 / 0.3);
   --shadow-xs: 3px 3px 0px 0px rgb(141 161 1 / 0.3);
   --shadow-sm:
-    3px 3px 0px 0px rgb(141 161 1 / 0.5),
-    3px 1px 2px -1px rgb(141 161 1 / 0.5);
+    3px 3px 0px 0px rgb(141 161 1 / 0.5), 3px 1px 2px -1px rgb(141 161 1 / 0.5);
   --shadow:
-    3px 3px 0px 0px rgb(141 161 1 / 0.5),
-    3px 1px 2px -1px rgb(141 161 1 / 0.5);
+    3px 3px 0px 0px rgb(141 161 1 / 0.5), 3px 1px 2px -1px rgb(141 161 1 / 0.5);
   --shadow-md:
-    3px 3px 0px 0px rgb(141 161 1 / 0.5),
-    3px 2px 4px -1px rgb(141 161 1 / 0.5);
+    3px 3px 0px 0px rgb(141 161 1 / 0.5), 3px 2px 4px -1px rgb(141 161 1 / 0.5);
   --shadow-lg:
-    3px 3px 0px 0px rgb(141 161 1 / 0.5),
-    3px 4px 6px -1px rgb(141 161 1 / 0.5);
+    3px 3px 0px 0px rgb(141 161 1 / 0.5), 3px 4px 6px -1px rgb(141 161 1 / 0.5);
   --shadow-xl:
-    3px 3px 0px 0px rgb(141 161 1 / 0.5),
-    3px 8px 10px -1px rgb(141 161 1 / 0.5);
+    3px 3px 0px 0px rgb(141 161 1 / 0.5), 3px 8px 10px -1px rgb(141 161 1 / 0.5);
   --shadow-2xl: 3px 3px 0px 0px rgb(141 161 1 / 0.8);
   --tracking-normal: 0em;
 }
@@ -190,20 +185,15 @@ body {
   --shadow-2xs: 3px 3px 0px 0px rgb(31 36 41 / 0.5);
   --shadow-xs: 3px 3px 0px 0px rgb(31 36 41 / 0.5);
   --shadow-sm:
-    3px 3px 0px 0px rgb(31 36 41 / 1),
-    3px 1px 2px -1px rgb(31 36 41 / 1);
+    3px 3px 0px 0px rgb(31 36 41 / 1), 3px 1px 2px -1px rgb(31 36 41 / 1);
   --shadow:
-    3px 3px 0px 0px rgb(31 36 41 / 1),
-    3px 1px 2px -1px rgb(31 36 41 / 1);
+    3px 3px 0px 0px rgb(31 36 41 / 1), 3px 1px 2px -1px rgb(31 36 41 / 1);
   --shadow-md:
-    3px 3px 0px 0px rgb(31 36 41 / 1),
-    3px 2px 4px -1px rgb(31 36 41 / 1);
+    3px 3px 0px 0px rgb(31 36 41 / 1), 3px 2px 4px -1px rgb(31 36 41 / 1);
   --shadow-lg:
-    3px 3px 0px 0px rgb(31 36 41 / 1),
-    3px 4px 6px -1px rgb(31 36 41 / 1);
+    3px 3px 0px 0px rgb(31 36 41 / 1), 3px 4px 6px -1px rgb(31 36 41 / 1);
   --shadow-xl:
-    3px 3px 0px 0px rgb(31 36 41 / 1),
-    3px 8px 10px -1px rgb(31 36 41 / 1);
+    3px 3px 0px 0px rgb(31 36 41 / 1), 3px 8px 10px -1px rgb(31 36 41 / 1);
   --shadow-2xl: 3px 3px 0px 0px rgb(31 36 41 / 1);
 }
 
@@ -429,25 +419,13 @@ body {
 }
 
 .animated-gradient {
-  background: linear-gradient(
-    -45deg,
-    #fdf6e3,
-    #f4efd8,
-    #efebd4,
-    #fdf6e3
-  );
+  background: linear-gradient(-45deg, #fdf6e3, #f4efd8, #efebd4, #fdf6e3);
   background-size: 400% 400%;
   animation: gradient-shift 15s ease infinite;
 }
 
 .dark .animated-gradient {
-  background: linear-gradient(
-    -45deg,
-    #2d353b,
-    #343c43,
-    #3a4248,
-    #2d353b
-  );
+  background: linear-gradient(-45deg, #2d353b, #343c43, #3a4248, #2d353b);
   background-size: 400% 400%;
   animation: gradient-shift 15s ease infinite;
 }
