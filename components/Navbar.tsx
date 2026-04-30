@@ -1,10 +1,12 @@
 import { LogOut } from "lucide-react";
 import Link from "next/link";
-import { useIdentity } from "@/hooks/useIdentity";
+import { logoutUrlFor, useIdentity } from "@/hooks/useIdentity";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const identity = useIdentity();
+  const logoutUrl =
+    identity.status === "identified" ? logoutUrlFor(identity.identity) : null;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -28,14 +30,16 @@ export default function Navbar() {
             />
           )}
           <ThemeToggle />
-          <a
-            href="/cdn-cgi/access/logout"
-            className="p-2 text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <LogOut className="h-5 w-5" />
-          </a>
+          {logoutUrl && (
+            <a
+              href={logoutUrl}
+              className="p-2 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut className="h-5 w-5" />
+            </a>
+          )}
         </div>
       </div>
     </header>

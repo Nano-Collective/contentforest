@@ -6,6 +6,11 @@ export type Identity = {
   // Cloudflare Access populates this from the GitHub IdP token claims when
   // the user signed in via the GitHub provider.
   github_login?: string;
+  // The team's Access auth domain (e.g. "https://<team>.cloudflareaccess.com").
+  // Used to build the canonical logout URL — the per-app `/cdn-cgi/access/logout`
+  // path 404s on Cloudflare Pages static-export sites because Pages serves its
+  // 404 before Access intercepts. The team-domain logout always works.
+  iss?: string;
 };
 
 type State =
@@ -44,4 +49,17 @@ export function useIdentity(): State {
   }, []);
 
   return state;
+}
+
+/**
+ * The canonical Access logout URL for the signed-in user's team. Returns
+ * null when we don't have an identity (local dev, or before the identity
+ * fetch resolves) — caller should hide the sign-out affordance in that case.
+ */
+export function logoutUrlFor(identity: Identity | null): string | null {
+  if (!identity?.iss) return null;
+  // iss is "https://<team>.cloudflareaccess.com" — strip any trailing slash
+  // before appending the Access logout path.
+  const base = identity.iss.replace(/\/$/, "");
+  return `${base}/cdn-cgi/access/logout`;
 }
