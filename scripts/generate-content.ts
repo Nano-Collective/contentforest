@@ -1,16 +1,23 @@
 /**
- * Orchestrates a single release-pack generation:
+ * Orchestrates a single release-pack generation via the v2 four-agent
+ * pipeline (planning §6.4.3).
  *
  *   1. Resolve product repo (NC_REPOS_DIR/<product>/ if set, else shallow
  *      clone v<version> into _repos/<product>/).
  *   2. Read the GitHub release body via `gh api`.
- *   3. Load prompts/release-pack.md, substitute {{VAR}} placeholders.
- *   4. Spawn `nanocoder run "<prompt>" --mode yolo` from the repo root.
- *   5. Run scripts/validate-content.ts on the produced pack.
- *   6. On validation failure, build the auto-fix prompt with the structured
- *      error report and retry up to --max-retries (default 3). Layer 1 of
- *      the auto-fix loop in planning §6.7.
- *   7. Update meta.json with attempt counters and final_status.
+ *   3. For each agent in the pipeline (release-channels, release-personal,
+ *      article-channels, article-personal):
+ *        - Load prompts/agents/<slug>.md, substitute {{VAR}} placeholders.
+ *        - Spawn `nanocoder run "<prompt>" --mode yolo`.
+ *        - Run the validator at that agent's phase.
+ *        - On failure, build the auto-fix prompt with the structured error
+ *          report and retry up to --max-retries (default 6 = 1 initial + 5
+ *          retries) for that agent.
+ *        - If the agent exhausts retries, write meta.json with
+ *          final_status: "failed-validation" + failed_agent: <slug>, leave
+ *          whatever was produced on disk for inspection, and abort the run.
+ *   4. After all four agents pass, write final meta.json with cumulative
+ *      attempt counters and final_status: "passed".
  *
  *   pnpm generate -- --product nanocoder --version 1.25.3
  *   pnpm generate -- --product nanocoder --version 1.25.3 --commit
@@ -51,13 +58,44 @@ type JobSpec = {
 
 type RunMode = "commit" | "local" | "test";
 
+type Phase = "channels" | "personal" | "articles" | "personal-articles";
+
+type AgentSpec = {
+  slug: string;
+  phase: Phase;
+  promptFile: string;
+};
+
+const AGENTS: AgentSpec[] = [
+  {
+    slug: "release-channels",
+    phase: "channels",
+    promptFile: "agents/release-channels.md",
+  },
+  {
+    slug: "release-personal",
+    phase: "personal",
+    promptFile: "agents/release-personal.md",
+  },
+  {
+    slug: "article-channels",
+    phase: "articles",
+    promptFile: "agents/article-channels.md",
+  },
+  {
+    slug: "article-personal",
+    phase: "personal-articles",
+    promptFile: "agents/article-personal.md",
+  },
+];
+
 type Args = {
   product?: string;
   version?: string;
   jobSpec?: string;
   mode: RunMode;
   dryRun: boolean;
-  maxRetries: number;
+  maxAttemptsPerAgent: number;
 };
 
 function parse(): Args {
@@ -70,7 +108,7 @@ function parse(): Args {
       commit: { type: "boolean", default: false },
       test: { type: "boolean", default: false },
       "dry-run": { type: "boolean", default: false },
-      "max-retries": { type: "string", default: "3" },
+      "max-retries": { type: "string", default: "6" },
     },
   });
   const mode: RunMode = values.commit
@@ -84,7 +122,9 @@ function parse(): Args {
     jobSpec: values["job-spec"] as string | undefined,
     mode,
     dryRun: values["dry-run"] as boolean,
-    maxRetries: Number.parseInt(values["max-retries"] as string, 10),
+    // --max-retries is the *total attempts* per agent (1 initial + retries).
+    // Default 6 = 1 initial + up to 5 retries; cost ceiling = 4 agents × 6 = 24 spawns.
+    maxAttemptsPerAgent: Number.parseInt(values["max-retries"] as string, 10),
   };
 }
 
@@ -92,6 +132,12 @@ function packDirFor(mode: RunMode, product: string, version: string): string {
   if (mode === "commit") return join(ROOT, "content", product, version);
   if (mode === "test") return join(ROOT, "content", "_test", product, version);
   return join(ROOT, "content", "_local", product, version);
+}
+
+function validatorRootFor(mode: RunMode): string {
+  if (mode === "commit") return "content";
+  if (mode === "test") return "content/_test";
+  return "content/_local";
 }
 
 function loadProducts(): Product[] {
@@ -190,7 +236,11 @@ function substitute(template: string, vars: Record<string, string>): string {
   return out;
 }
 
-function buildPrompt(args: {
+/**
+ * Common variable bag for every agent prompt. Individual agent prompts
+ * use whichever subset they need; unused keys are silently ignored.
+ */
+function buildPromptVars(args: {
   product: Product;
   version: string;
   job: JobSpec;
@@ -198,11 +248,10 @@ function buildPrompt(args: {
   repoPath: string;
   generatedAt: string;
   model: string;
-}): string {
-  const template = readFile(join(PROMPTS_DIR, "release-pack.md"));
+}): Record<string, string> {
   const teamJson = readFile(join(CONFIG_DIR, "team.json"));
   const channelsJson = readFile(join(CONFIG_DIR, "channels.json"));
-  return substitute(template, {
+  return {
     PRODUCT_SLUG: args.product.slug,
     PRODUCT_REPO: args.product.repo,
     PRODUCT_REPO_URL: `https://github.com/${args.product.repo}`,
@@ -215,7 +264,15 @@ function buildPrompt(args: {
     TEAM_JSON: teamJson.trim(),
     CHANNELS_JSON: channelsJson.trim(),
     PACK_DIR: args.packDir,
-  });
+  };
+}
+
+function buildAgentPrompt(
+  agent: AgentSpec,
+  vars: Record<string, string>,
+): string {
+  const template = readFile(join(PROMPTS_DIR, agent.promptFile));
+  return substitute(template, vars);
 }
 
 function buildAutoFixPrompt(args: {
@@ -242,7 +299,7 @@ function buildAutoFixPrompt(args: {
  * `--mode yolo` runs every tool without prompting — required in CI where
  * there's no human to approve. `auto-accept` (Nanocoder's default for
  * non-interactive runs) still prompts for bash and destructive git, which
- * would hang the workflow indefinitely. Our prompt explicitly tells the
+ * would hang the workflow indefinitely. Our prompts explicitly tell each
  * agent not to run bash, so yolo's blast radius is bounded by the prompt
  * contract plus the gitignored / scoped working directory.
  *
@@ -319,6 +376,7 @@ type ValidationReport = {
 function runValidator(args: {
   packId: string;
   root: string;
+  phase: Phase;
 }): ValidationReport {
   const reportPath = join(tmpdir(), `cf-validation-${Date.now()}.json`);
   const result = spawnSync(
@@ -331,6 +389,8 @@ function runValidator(args: {
       args.root,
       "--report",
       reportPath,
+      "--phase",
+      args.phase,
       "--quiet",
     ],
     {
@@ -358,8 +418,9 @@ function writeMeta(args: {
   generationAttempts: number;
   autoFixAttempts: number;
   finalStatus: "passed" | "failed-validation" | "pending";
+  failedAgent?: string;
 }) {
-  const meta = {
+  const meta: Record<string, unknown> = {
     product: args.product,
     version: args.version,
     product_url: args.productUrl,
@@ -369,8 +430,120 @@ function writeMeta(args: {
     auto_fix_attempts: args.autoFixAttempts,
     final_status: args.finalStatus,
   };
+  if (args.failedAgent) meta.failed_agent = args.failedAgent;
   mkdirSync(args.packDir, { recursive: true });
   writeFileSync(join(args.packDir, "meta.json"), JSON.stringify(meta, null, 2));
+}
+
+type PipelineResult = {
+  finalStatus: "passed" | "failed-validation";
+  failedAgent?: string;
+  generationAttempts: number;
+  autoFixAttempts: number;
+};
+
+function runAgentPipeline(args: {
+  product: Product;
+  version: string;
+  job: JobSpec;
+  packDir: string;
+  repoPath: string;
+  generatedAt: string;
+  model: string;
+  validatorRoot: string;
+  maxAttemptsPerAgent: number;
+}): PipelineResult {
+  const promptVars = buildPromptVars({
+    product: args.product,
+    version: args.version,
+    job: args.job,
+    packDir: args.packDir,
+    repoPath: args.repoPath,
+    generatedAt: args.generatedAt,
+    model: args.model,
+  });
+  const packId = `${args.product.slug}/${args.version}`;
+
+  let totalGenerationAttempts = 0;
+  let totalAutoFixAttempts = 0;
+
+  for (const agent of AGENTS) {
+    console.log(
+      `\ngenerate: ━━━ agent: ${agent.slug} (phase=${agent.phase}) ━━━`,
+    );
+    const initialPrompt = buildAgentPrompt(agent, promptVars);
+    let prompt = initialPrompt;
+    let attempt = 0;
+    let lastReport: ValidationReport | null = null;
+
+    while (attempt < args.maxAttemptsPerAgent) {
+      attempt += 1;
+      totalGenerationAttempts += 1;
+      console.log(
+        `generate: ${agent.slug} attempt ${attempt}/${args.maxAttemptsPerAgent}`,
+      );
+      const code = runNanocoder(prompt, args.model);
+      if (code !== 0) {
+        console.error(
+          `generate: nanocoder exited ${code} on agent ${agent.slug}; aborting pipeline`,
+        );
+        return {
+          finalStatus: "failed-validation",
+          failedAgent: agent.slug,
+          generationAttempts: totalGenerationAttempts,
+          autoFixAttempts: totalAutoFixAttempts,
+        };
+      }
+
+      lastReport = runValidator({
+        packId,
+        root: args.validatorRoot,
+        phase: agent.phase,
+      });
+
+      if (lastReport.failures.length === 0) {
+        console.log(
+          `generate: ✓ ${agent.slug} passed phase ${agent.phase}` +
+            (lastReport.warnings.length > 0
+              ? ` (${lastReport.warnings.length} warnings)`
+              : ""),
+        );
+        break;
+      }
+
+      console.log(
+        `generate: ✗ ${agent.slug} failed validation (${lastReport.failures.length} failures)`,
+      );
+      if (attempt >= args.maxAttemptsPerAgent) break;
+
+      totalAutoFixAttempts += 1;
+      prompt = buildAutoFixPrompt({
+        originalPrompt: initialPrompt,
+        errorReport: JSON.stringify(lastReport.failures, null, 2),
+        packDir: args.packDir,
+        attemptNumber: attempt,
+        maxAttempts: args.maxAttemptsPerAgent - 1,
+      });
+    }
+
+    if (lastReport && lastReport.failures.length > 0) {
+      console.error(
+        `\ngenerate: gave up on ${agent.slug} after ${attempt} attempts; final report:\n${JSON.stringify(lastReport.failures, null, 2)}`,
+      );
+      return {
+        finalStatus: "failed-validation",
+        failedAgent: agent.slug,
+        generationAttempts: totalGenerationAttempts,
+        autoFixAttempts: totalAutoFixAttempts,
+      };
+    }
+  }
+
+  return {
+    finalStatus: "passed",
+    generationAttempts: totalGenerationAttempts,
+    autoFixAttempts: totalAutoFixAttempts,
+  };
 }
 
 async function main() {
@@ -398,14 +571,16 @@ async function main() {
   }
 
   const packDir = packDirFor(args.mode, product.slug, job.version);
+  const validatorRoot = validatorRootFor(args.mode);
   const generatedAt = new Date().toISOString();
   const model = "minimax-m2.7";
+  const productUrl = `https://github.com/${product.repo}`;
 
   console.log(
-    `generate: ${product.slug} v${job.version} → ${packDir.replace(ROOT, ".")} (mode=${args.mode})`,
+    `generate: ${product.slug} v${job.version} → ${packDir.replace(ROOT, ".")} (mode=${args.mode}, max-attempts/agent=${args.maxAttemptsPerAgent})`,
   );
 
-  // Inputs the prompt needs
+  // Inputs the prompts need
   const repoPath = resolveRepoPath(product, job.version);
   if (!job.releaseBody || !job.releaseTagUrl) {
     const fetched = fetchReleaseBody(product, job.version);
@@ -413,7 +588,32 @@ async function main() {
     job.releaseTagUrl = job.releaseTagUrl ?? fetched.url;
   }
 
-  const initialPrompt = buildPrompt({
+  if (args.dryRun) {
+    const promptVars = buildPromptVars({
+      product,
+      version: job.version,
+      job,
+      packDir,
+      repoPath,
+      generatedAt,
+      model,
+    });
+    console.log(
+      "\n--- DRY RUN: substituted agent prompts below, nanocoder NOT invoked ---\n",
+    );
+    for (const agent of AGENTS) {
+      console.log(
+        `\n━━━━━━━━━━ ${agent.slug} (phase=${agent.phase}) ━━━━━━━━━━\n`,
+      );
+      console.log(buildAgentPrompt(agent, promptVars));
+    }
+    process.exit(0);
+  }
+
+  // Pre-create pack dir so nanocoder can write into it cleanly
+  mkdirSync(packDir, { recursive: true });
+
+  const result = runAgentPipeline({
     product,
     version: job.version,
     job,
@@ -421,100 +621,33 @@ async function main() {
     repoPath,
     generatedAt,
     model,
+    validatorRoot,
+    maxAttemptsPerAgent: args.maxAttemptsPerAgent,
   });
 
-  if (args.dryRun) {
-    console.log(
-      "\n--- DRY RUN: substituted prompt below, nanocoder NOT invoked ---\n",
-    );
-    console.log(initialPrompt);
-    process.exit(0);
-  }
-
-  // Pre-create pack dir so nanocoder can write into it cleanly
-  mkdirSync(packDir, { recursive: true });
-
-  let attempt = 0;
-  let autoFixAttempts = 0;
-  let prompt = initialPrompt;
-  let finalReport: ValidationReport | null = null;
-
-  while (attempt < args.maxRetries) {
-    attempt += 1;
-    console.log(`\ngenerate: attempt ${attempt}/${args.maxRetries}`);
-    const code = runNanocoder(prompt, model);
-    if (code !== 0) {
-      console.error(`generate: nanocoder exited ${code}; aborting`);
-      writeMeta({
-        packDir,
-        product: product.slug,
-        version: job.version,
-        productUrl: `https://github.com/${product.repo}`,
-        generatedAt,
-        model,
-        generationAttempts: attempt,
-        autoFixAttempts,
-        finalStatus: "failed-validation",
-      });
-      process.exit(code);
-    }
-
-    const packId = `${product.slug}/${job.version}`;
-    const validatorRoot =
-      args.mode === "commit"
-        ? "content"
-        : args.mode === "test"
-          ? "content/_test"
-          : "content/_local";
-    finalReport = runValidator({ packId, root: validatorRoot });
-
-    if (finalReport.failures.length === 0) {
-      console.log(
-        `generate: ✓ validation passed${finalReport.warnings.length > 0 ? ` (${finalReport.warnings.length} warnings)` : ""}`,
-      );
-      writeMeta({
-        packDir,
-        product: product.slug,
-        version: job.version,
-        productUrl: `https://github.com/${product.repo}`,
-        generatedAt,
-        model,
-        generationAttempts: attempt,
-        autoFixAttempts,
-        finalStatus: "passed",
-      });
-      process.exit(0);
-    }
-
-    console.log(
-      `generate: ✗ validation failed (${finalReport.failures.length} failures)`,
-    );
-    if (attempt >= args.maxRetries) break;
-
-    autoFixAttempts += 1;
-    prompt = buildAutoFixPrompt({
-      originalPrompt: initialPrompt,
-      errorReport: JSON.stringify(finalReport.failures, null, 2),
-      packDir,
-      attemptNumber: autoFixAttempts,
-      maxAttempts: args.maxRetries - 1,
-    });
-  }
-
-  console.error(
-    `\ngenerate: gave up after ${attempt} attempts; final report:\n${JSON.stringify(finalReport?.failures, null, 2)}`,
-  );
   writeMeta({
     packDir,
     product: product.slug,
     version: job.version,
-    productUrl: `https://github.com/${product.repo}`,
+    productUrl,
     generatedAt,
     model,
-    generationAttempts: attempt,
-    autoFixAttempts,
-    finalStatus: "failed-validation",
+    generationAttempts: result.generationAttempts,
+    autoFixAttempts: result.autoFixAttempts,
+    finalStatus: result.finalStatus,
+    failedAgent: result.failedAgent,
   });
+
+  if (result.finalStatus === "passed") {
+    console.log(
+      `\ngenerate: ✓ pipeline complete (${result.generationAttempts} agent spawns, ${result.autoFixAttempts} auto-fix retries)`,
+    );
+    process.exit(0);
+  }
+
+  console.error(
+    `\ngenerate: ✗ pipeline failed at agent ${result.failedAgent} (${result.generationAttempts} agent spawns, ${result.autoFixAttempts} auto-fix retries)`,
+  );
   process.exit(1);
 }
 

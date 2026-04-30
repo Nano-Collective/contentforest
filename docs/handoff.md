@@ -81,7 +81,30 @@ pnpm seed-fixtures                           # latest release of each product in
 
 Listed in priority order; tackle top-down.
 
-### 1. Operational unblock (highest priority — these gate everything else)
+### 1. v2 four-agent pipeline redesign — TOP PRIORITY (planning §6.4.3)
+
+**Will's call as of 2026-04-30:** the single-prompt v1 path is too much for one model pass — quality drifts across the four conceptual slices of a release pack (announcement channels, announcement personal, article channels, article personal). v2 splits generation into four focused sequential agents.
+
+**Full design lives in `planning.md` §6.4.3.** Migration plan summary:
+
+1. **Write four new prompts** under `prompts/agents/`:
+   - `release-channels.md` — agent 1, produces `channels/{linkedin,x,github-discussion,reddit}.md` + top-level `meta.json`
+   - `release-personal.md` — agent 2, reads channels, produces `personal/<member>/<channel>.md` per opted-in pair
+   - `article-channels.md` — agent 3, decides 0–3 angles, produces `articles/<slug>/{meta.json,channels/*.md}`
+   - `article-personal.md` — agent 4, produces `articles/<slug>/personal/<member>/<channel>.md`
+   
+   Each prompt is self-contained (don't DRY the brand voice section — duplication is fine for prompts). Source from the existing `prompts/release-pack.md` for the brand-voice + channel-rules + frontmatter sections.
+2. **Refactor `scripts/generate-content.ts`**: extract `runNanocoder` into a generic `runAgent(promptFile, vars)`; add a `runAgentPipeline(job)` that loops the four agents with per-agent retry (default 2). Failure semantics: write `final_status: "failed-validation"` + `failed_agent: "<slug>"` in meta and abort — preserve earlier agents' output for inspection.
+3. **Add `--phase` to `scripts/validate-content.ts`**: phases are `channels`, `personal`, `articles`, `personal-articles`. Each phase is a superset of the previous. The phase determines which expected-files list is enforced; per-file rules (frontmatter, length, forbidden, link, placeholders) apply uniformly.
+4. **Test locally end-to-end** with `pnpm generate --product nanocoder --version 1.25.2 --test`. Output should be at least as good as v1 single-shot.
+5. **Delete `prompts/release-pack.md` and the v1 code path** once v2 is verified. Keep `prompts/auto-fix.md` (still used per-agent for retries — the `{{ORIGINAL_PROMPT}}` embed varies per agent).
+6. **Update planning §6.4 / §6.4.3** to mark v2 as live and v1 as historical.
+
+The v1 path stays in place during migration — A/B locally before flipping CI over.
+
+Cost ceiling: 4 agents × 2 retries = up to 12 spawns per pack. Wall time 8–15 min, comparable to v1's worst case.
+
+### 2. Operational unblock (gates the v1 pipeline shipping content while v2 is being built)
 
 These are GitHub-level toggles or one-time fills that someone with admin rights to the Nano-Collective org needs to perform.
 
@@ -95,7 +118,7 @@ These are GitHub-level toggles or one-time fills that someone with admin rights 
   Each opens its own PR. Review and merge.
 - [x] **Decide whether to keep the cron enabled.** It's currently on at 08:00 UTC daily. Comment out `schedule:` in `daily-content.yaml` if you want manual-only for now.
 
-### 2. Homepage redesign (the visible front-end story)
+### 3. Homepage redesign (the visible front-end story)
 
 Today the homepage at `pages/index.tsx` is a plain card grid of products. **Will wants it to mirror the main Nano Collective website** (`../website`) — a proper hero, animated three.js shader, the same visual identity.
 
@@ -121,7 +144,7 @@ components/home/
   EffectScene.tsx               ← copy from ../website (or new)
 ```
 
-### 3. Show the signed-in user in the UI (lightweight GitHub identity)
+### 4. Show the signed-in user in the UI (lightweight GitHub identity)
 
 Cloudflare Access already authenticates everyone — but the app itself has no idea who's logged in. Will wants this surfaced (avatar, name, GH username).
 
@@ -148,7 +171,7 @@ export function useIdentity(): Identity | null {
 
 Then `Navbar.tsx` renders avatar (Octocat + `github_login`) when present, falls back to current Sign-out-only state when not. Locally (not behind Access) the endpoint 404s and we render a "Local dev" badge or nothing.
 
-### 4. Full docs
+### 5. Full docs
 
 The repo today has `planning.md`, `implementation.md`, and this handoff. Per Nano Collective project conventions (`_refs/collective/projects/creating-a-new-project.md`) the canonical doc set should be:
 
@@ -180,7 +203,7 @@ The repo today has `planning.md`, `implementation.md`, and this handoff. Per Nan
 - [ ] **`.github/pull_request_template.md`** — at minimum, a "describe the change" + "checklist" template. The website has one to mirror.
 - [ ] **Issue templates** — likely skip for an internal tool. Add only if you start fielding bug reports.
 
-### 5. Phase 3 — conditional and longer-tail work
+### 6. Phase 3 — conditional and longer-tail work
 
 These are legitimately deferrable; revisit when the conditions trigger.
 
@@ -190,7 +213,7 @@ These are legitimately deferrable; revisit when the conditions trigger.
 - [ ] **Search inside the file viewer.** Out-of-scope at design time; revisit only if the team consistently asks for it.
 - [ ] **Posting integrations.** Explicitly out of scope (planning §12). Don't build.
 
-### 6. Polish (low-priority, do as you encounter them)
+### 7. Polish (low-priority, do as you encounter them)
 
 - [ ] **Tests for `validate-content.ts`.** It's pure logic with no integration; a few fixture-based unit tests would lock the rules in. Suggest `vitest` for consistency with most TS projects.
 - [ ] **Article view UX.** Currently each article gets its own section under the file tree with `meta.title` as heading and `meta.focus` as subtitle. If articles get heavy use, consider per-article pages (`/p/<product>/<version>/articles/<slug>`) with their own URLs for shareability.

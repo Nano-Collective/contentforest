@@ -19,8 +19,21 @@
  * Skips packs whose meta.json has `final_status: "sample"` so the seed pack
  * we ship for the UI doesn't fail the gate.
  *
- *   pnpm validate                          # all packs
+ * --phase scopes the expected-files contract for the v2 four-agent pipeline
+ * (planning §6.4.3). Phases are cumulative supersets:
+ *   channels          → meta.json + channels/*.md
+ *   personal          → above + personal/<member>/<channel>.md per opted-in pair
+ *   articles          → above + articles/<slug>/{meta.json,channels/*.md} per slug
+ *   personal-articles → full pack including articles/<slug>/personal/<member>/<channel>.md
+ *   (omitted)         → equivalent to personal-articles (full pack — used by
+ *                       CI Layer 2 and the seed-fixtures path)
+ * Per-file rules (frontmatter shape, length, forbidden terms, link policy,
+ * placeholders) apply uniformly to every .md actually present, regardless
+ * of phase.
+ *
+ *   pnpm validate                          # all packs (full phase)
  *   pnpm validate -- --pack nanocoder/0.0.0
+ *   pnpm validate -- --pack nanocoder/1.25.2 --phase channels
  *   pnpm validate -- --report validation-report.json
  */
 import {
@@ -155,6 +168,37 @@ function listMarkdownRecursive(
 const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const MAX_ARTICLES_PER_PACK = 3;
 
+type PackKind = "release" | "article";
+
+type Phase =
+  | "channels"
+  | "personal"
+  | "articles"
+  | "personal-articles"
+  | "full";
+
+const PHASES: Phase[] = [
+  "channels",
+  "personal",
+  "articles",
+  "personal-articles",
+  "full",
+];
+
+function phaseIncludesReleasePersonal(phase: Phase): boolean {
+  return phase !== "channels";
+}
+
+function phaseIncludesArticles(phase: Phase): boolean {
+  return (
+    phase === "articles" || phase === "personal-articles" || phase === "full"
+  );
+}
+
+function phaseIncludesArticlePersonal(phase: Phase): boolean {
+  return phase === "personal-articles" || phase === "full";
+}
+
 /**
  * Channel slug from a file path inside content/<product>/<version>/.
  * - channels/linkedin.md                → "linkedin"
@@ -196,6 +240,8 @@ function expectedFiles(args: {
   version: string;
   channels: ChannelRule[];
   team: TeamMember[];
+  phase: Phase;
+  kind: PackKind;
 }): { rel: string; reason: string }[] {
   const expected: { rel: string; reason: string }[] = [];
   expected.push({ rel: "meta.json", reason: "meta.json missing" });
@@ -205,6 +251,11 @@ function expectedFiles(args: {
       reason: `channels/${channel.slug}.md missing`,
     });
   }
+  const includePersonal =
+    args.kind === "release"
+      ? phaseIncludesReleasePersonal(args.phase)
+      : phaseIncludesArticlePersonal(args.phase);
+  if (!includePersonal) return expected;
   for (const member of args.team) {
     const memberSlug = member.name.split(/\s+/)[0].toLowerCase();
     for (const channel of Object.keys(member.channels)) {
@@ -227,8 +278,6 @@ function fileExistsAny(packRoot: string, rel: string): boolean {
   return false;
 }
 
-type PackKind = "release" | "article";
-
 function validatePack(args: {
   product: Product;
   version: string;
@@ -237,10 +286,12 @@ function validatePack(args: {
   team: TeamMember[];
   kind?: PackKind;
   articleSlug?: string;
+  phase?: Phase;
 }): { failures: Failure[]; warnings: Warning[]; skipped: boolean } {
   const failures: Failure[] = [];
   const warnings: Warning[] = [];
   const kind: PackKind = args.kind ?? "release";
+  const phase: Phase = args.phase ?? "full";
 
   // meta.json
   const metaPath = join(args.packRoot, "meta.json");
@@ -308,6 +359,8 @@ function validatePack(args: {
     version: args.version,
     channels: args.channels,
     team: args.team,
+    phase,
+    kind,
   })) {
     if (!fileExistsAny(args.packRoot, exp.rel)) {
       failures.push({
@@ -485,9 +538,18 @@ function main() {
       pack: { type: "string" },
       root: { type: "string", default: "content" },
       report: { type: "string", default: "validation-report.json" },
+      phase: { type: "string", default: "full" },
       quiet: { type: "boolean", default: false },
     },
   });
+
+  const phase = values.phase as Phase;
+  if (!PHASES.includes(phase)) {
+    console.error(
+      `Unknown --phase ${phase}; expected one of ${PHASES.join(", ")}`,
+    );
+    process.exit(2);
+  }
 
   const contentRoot = join(ROOT, values.root as string);
   const cfg = loadConfig();
@@ -536,6 +598,7 @@ function main() {
       channels: cfg.channels,
       team: cfg.team,
       kind: "release",
+      phase,
     });
     const id = `${product.slug}/${version}`;
     if (result.skipped) {
@@ -546,7 +609,10 @@ function main() {
     report.failures.push(...result.failures);
     report.warnings.push(...result.warnings);
 
-    // Articles: validate each subdir under articles/ as a sub-pack.
+    // Articles: validate each subdir under articles/ as a sub-pack — only at
+    // the articles / personal-articles / full phases. Earlier phases (channels,
+    // personal) run before agent 3 has produced any articles.
+    if (!phaseIncludesArticles(phase)) continue;
     const articlesDir = join(packRoot, "articles");
     if (existsSync(articlesDir)) {
       const articleSlugs = listDirs(articlesDir);
@@ -576,6 +642,7 @@ function main() {
           team: cfg.team,
           kind: "article",
           articleSlug: slug,
+          phase,
         });
         report.scannedPacks.push(`${id}#${slug}`);
         report.failures.push(...articleResult.failures);
