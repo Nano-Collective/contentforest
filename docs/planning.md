@@ -127,7 +127,7 @@ Notes:
 - We clone the **target product repo** into the workspace so Nanocoder can read its actual `CHANGELOG.md`, `README.md`, source files, and brand-relevant references for technical accuracy.
 - We also have the **docs repo** available (mounted/cloned) so the prompt instructs Nanocoder to consult `collective/organisation/brand.md` — this is how brand-voice enforcement is wired in.
 - Output is captured by Nanocoder writing files directly via its `Write` tool into `content/<product>/<version>/...`. We do **not** rely on stdout redirection for the multi-file case — we instruct the agent to write each artifact to its target path.
-- `--mode auto-accept` is appropriate; `yolo` is reserved for cases where bash steps are also auto-approved. We will start with `auto-accept` and escalate only if needed.
+- `--mode yolo` is required for CI. `auto-accept` still prompts for bash and destructive git, which would hang a non-interactive workflow indefinitely. The blast radius is bounded by the prompt contract (the agent is told not to run bash) and the working directory (the contentforest repo on a fresh CI checkout, or `_local`/`_test` paths locally).
 - **Cost** is managed at the provider level (you're on the coding plan), so there is no in-action job cap.
 
 ### 6.4 Prompt files (no subagent)

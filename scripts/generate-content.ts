@@ -5,7 +5,7 @@
  *      clone v<version> into _repos/<product>/).
  *   2. Read the GitHub release body via `gh api`.
  *   3. Load prompts/release-pack.md, substitute {{VAR}} placeholders.
- *   4. Spawn `nanocoder run "<prompt>" --mode auto-accept` from the repo root.
+ *   4. Spawn `nanocoder run "<prompt>" --mode yolo` from the repo root.
  *   5. Run scripts/validate-content.ts on the produced pack.
  *   6. On validation failure, build the auto-fix prompt with the structured
  *      error report and retry up to --max-retries (default 3). Layer 1 of
@@ -237,14 +237,18 @@ function buildAutoFixPrompt(args: {
 /**
  * Spawns `nanocoder run` with the given prompt. Inherits stdio so the user
  * sees progress in real time. Returns the exit code.
+ *
+ * `--mode yolo` runs every tool without prompting — required in CI where
+ * there's no human to approve. `auto-accept` (Nanocoder's default for
+ * non-interactive runs) still prompts for bash and destructive git, which
+ * would hang the workflow indefinitely. Our prompt explicitly tells the
+ * agent not to run bash, so yolo's blast radius is bounded by the prompt
+ * contract plus the gitignored / scoped working directory.
  */
 function runNanocoder(prompt: string, model: string): number {
-  // The provider is selected by the first entry in agents.config.json's
-  // providers[] when not specified, or via --provider. We pass --model
-  // explicitly so the run is reproducible.
   const result = spawnSync(
     "nanocoder",
-    ["run", prompt, "--mode", "auto-accept", "--model", model],
+    ["run", prompt, "--mode", "yolo", "--model", model],
     {
       cwd: ROOT,
       stdio: "inherit",
