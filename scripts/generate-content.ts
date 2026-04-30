@@ -29,6 +29,7 @@ import {
   mkdirSync,
   readFileSync,
   rmSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -244,27 +245,66 @@ function buildAutoFixPrompt(args: {
  * would hang the workflow indefinitely. Our prompt explicitly tells the
  * agent not to run bash, so yolo's blast radius is bounded by the prompt
  * contract plus the gitignored / scoped working directory.
+ *
+ * **TTY:** Nanocoder is built on Ink, which requires raw-mode TTY input even
+ * in `run` (non-interactive) mode (see `nano-coder/source/cli.tsx` — render()
+ * is unconditional). GitHub Actions runners have no TTY on stdin, so Ink
+ * crashes with "Raw mode is not supported" before any tool calls execute.
+ * On non-TTY parents we wrap the spawn in `script(1)` (util-linux) which
+ * allocates a pty. On a real TTY we spawn nanocoder directly for the
+ * cleanest UX. The prompt is passed via a temp file to avoid shell
+ * escaping the agent's markdown.
  */
 function runNanocoder(prompt: string, model: string): number {
-  const result = spawnSync(
-    "nanocoder",
-    ["run", prompt, "--mode", "yolo", "--model", model],
-    {
+  const isTTY = Boolean(process.stdout.isTTY);
+
+  if (isTTY) {
+    const result = spawnSync(
+      "nanocoder",
+      ["run", prompt, "--mode", "yolo", "--model", model],
+      { cwd: ROOT, stdio: "inherit", env: process.env },
+    );
+    if (result.error) {
+      if ((result.error as NodeJS.ErrnoException).code === "ENOENT") {
+        console.error(
+          "generate: `nanocoder` not on PATH. Install it (npm i -g @nanocollective/nanocoder).",
+        );
+        return 127;
+      }
+      throw result.error;
+    }
+    return result.status ?? 1;
+  }
+
+  // Non-TTY parent (CI): allocate a pty via `script` so Ink can set raw mode.
+  // We write the prompt to a temp file and substitute it via $(cat ...) so
+  // we don't have to shell-escape the markdown body.
+  const promptFile = join(tmpdir(), `cf-prompt-${Date.now()}.md`);
+  writeFileSync(promptFile, prompt, "utf8");
+  try {
+    const cmd = `nanocoder run "$(cat ${promptFile})" --mode yolo --model ${model}`;
+    const result = spawnSync("script", ["-qec", cmd, "/dev/null"], {
       cwd: ROOT,
       stdio: "inherit",
       env: process.env,
-    },
-  );
-  if (result.error) {
-    if ((result.error as NodeJS.ErrnoException).code === "ENOENT") {
-      console.error(
-        "generate: `nanocoder` not on PATH. Install it (npm i -g @nanocollective/nanocoder) or set up via brew/nix.",
-      );
-      return 127;
+    });
+    if (result.error) {
+      if ((result.error as NodeJS.ErrnoException).code === "ENOENT") {
+        console.error(
+          "generate: `script(1)` not on PATH. Install util-linux (apt-get install bsdmainutils on Debian/Ubuntu).",
+        );
+        return 127;
+      }
+      throw result.error;
     }
-    throw result.error;
+    return result.status ?? 1;
+  } finally {
+    try {
+      unlinkSync(promptFile);
+    } catch {
+      // best-effort cleanup
+    }
   }
-  return result.status ?? 1;
 }
 
 type ValidationReport = {
