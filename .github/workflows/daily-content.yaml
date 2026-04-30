@@ -53,8 +53,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Install Nanocoder
-        run: npm install -g @nanocollective/nanocoder
+      - name: Build and install Nanocoder from main
+        run: |
+          git clone --depth 1 https://github.com/Nano-Collective/nanocoder.git /tmp/nanocoder
+          cd /tmp/nanocoder
+          npm install
+          npm run build
+          npm link
+          which nanocoder
+          nanocoder --version || true
 
       - name: Configure git
         run: |
@@ -103,9 +110,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
           DRY_RUN: ${{ inputs.dry_run }}
-          # Make Nanocoder emit its own log lines so CI sees forward progress
-          # even when Ink's TUI redraws produce nothing visible in the log.
-          NANOCODER_LOG_LEVEL: info
           # Skip the model-context probe to models.dev for unknown providers.
           NANOCODER_CONTEXT_LIMIT: "128000"
         run: |

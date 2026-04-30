@@ -255,7 +255,35 @@ function buildAutoFixPrompt(args: {
  * cleanest UX. The prompt is passed via a temp file to avoid shell
  * escaping the agent's markdown.
  */
+/**
+ * Ensures the current working directory is in Nanocoder's trustedDirectories
+ * list, writing a project-level `nanocoder-preferences.json` if needed.
+ * Without this, Nanocoder shows an interactive "Do you trust this folder?"
+ * prompt on every fresh invocation — yolo mode doesn't bypass the trust
+ * gate. Project-level prefs override user-level so this is self-contained.
+ * The file is gitignored.
+ */
+function ensureDirectoryTrusted(): void {
+  const prefsPath = join(ROOT, "nanocoder-preferences.json");
+  type Prefs = { trustedDirectories?: string[]; [k: string]: unknown };
+  let prefs: Prefs = {};
+  try {
+    if (existsSync(prefsPath)) {
+      prefs = JSON.parse(readFileSync(prefsPath, "utf8")) as Prefs;
+    }
+  } catch {
+    prefs = {};
+  }
+  const trusted = new Set(prefs.trustedDirectories ?? []);
+  if (!trusted.has(ROOT)) {
+    trusted.add(ROOT);
+    prefs.trustedDirectories = [...trusted];
+    writeFileSync(prefsPath, `${JSON.stringify(prefs, null, 2)}\n`, "utf8");
+  }
+}
+
 function runNanocoder(prompt: string, model: string): number {
+  ensureDirectoryTrusted();
   const isTTY = Boolean(process.stdout.isTTY);
 
   if (isTTY) {
