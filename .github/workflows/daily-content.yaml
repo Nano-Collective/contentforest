@@ -27,7 +27,7 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
 
     permissions:
       contents: write
@@ -103,14 +103,26 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
           DRY_RUN: ${{ inputs.dry_run }}
+          # Make Nanocoder emit its own log lines so CI sees forward progress
+          # even when Ink's TUI redraws produce nothing visible in the log.
+          NANOCODER_LOG_LEVEL: info
+          # Skip the model-context probe to models.dev for unknown providers.
+          NANOCODER_CONTEXT_LIMIT: "128000"
         run: |
           set -euo pipefail
           COUNT=$(jq 'length' /tmp/jobs.json)
+          # Track whether any iteration hit a system failure so we can fail
+          # the whole step at the end (we still want to attempt every job
+          # rather than aborting the loop on the first hard failure).
+          ANY_SYSTEM_FAILURE=0
+
           for i in $(seq 0 $((COUNT - 1))); do
             JOB=$(jq -c ".[$i]" /tmp/jobs.json)
             PRODUCT=$(jq -r '.product' <<<"$JOB")
             VERSION=$(jq -r '.version' <<<"$JOB")
             BRANCH="auto/release-${PRODUCT}-${VERSION}"
+            PACK_DIR="content/${PRODUCT}/${VERSION}"
+            CHANNELS_DIR="${PACK_DIR}/channels"
             echo ""
             echo "::group::generate ${PRODUCT}@${VERSION}"
 
@@ -131,25 +143,45 @@ jobs:
               continue
             fi
 
-            # Run generation. Don't fail the workflow on validation failures —
-            # we still want a PR with `failed-validation` label so a human can
-            # see what went wrong.
+            # Run generation. Validation failures (content present but rules
+            # broken) are NOT system failures — we still open a PR with the
+            # failed-validation label. Generation crashes (Nanocoder Ink
+            # error, network, etc.) ARE system failures — we clean up and
+            # surface them as red workflow status.
             set +e
             pnpm generate --job-spec "$JOB" --commit
             GEN_STATUS=$?
             set -e
 
-            if [ -z "$(git status --porcelain content/)" ]; then
-              echo "no content changes produced; skipping PR"
+            # Discriminator: did Nanocoder actually write channel files?
+            # If not, it's a system failure (most often: Ink TTY error,
+            # API key error, model unavailable). Don't push junk to origin.
+            CHANNEL_COUNT=$(find "$CHANNELS_DIR" -maxdepth 1 -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+            if [ "${CHANNEL_COUNT:-0}" -lt 1 ]; then
+              echo "::error::nanocoder produced no channel files for ${PRODUCT}@${VERSION} — system failure"
+              # Clean up the half-written pack so a retry starts fresh.
+              rm -rf "$PACK_DIR"
+              # Reset the local branch — we never want to keep this state.
+              git checkout main
+              git branch -D "$BRANCH" 2>/dev/null || true
+              ANY_SYSTEM_FAILURE=1
               echo "::endgroup::"
               continue
             fi
 
+            # We have content. Stage, commit, push.
             git add content/
+            if [ -z "$(git diff --cached --name-only)" ]; then
+              echo "no content changes after add; skipping PR"
+              git checkout main
+              git branch -D "$BRANCH" 2>/dev/null || true
+              echo "::endgroup::"
+              continue
+            fi
             git commit -m "auto: release pack ${PRODUCT} v${VERSION}"
             git push --set-upstream origin "$BRANCH"
 
-            META_PATH="content/${PRODUCT}/${VERSION}/meta.json"
+            META_PATH="${PACK_DIR}/meta.json"
             FINAL_STATUS=$(jq -r '.final_status // "unknown"' "$META_PATH" 2>/dev/null || echo "unknown")
             GEN_ATTEMPTS=$(jq -r '.generation_attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
             FIX_ATTEMPTS=$(jq -r '.auto_fix_attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
@@ -162,12 +194,31 @@ jobs:
             BODY=$(printf 'Automated release pack for **%s** v%s.\n\n- Final status: `%s`\n- Generation attempts: `%s`\n- Auto-fix attempts: `%s`\n\nThe validator runs on this PR via `validate-content.yaml`. If hard rules failed, see the validation-report artifact on the workflow run.' \
               "$PRODUCT" "$VERSION" "$FINAL_STATUS" "$GEN_ATTEMPTS" "$FIX_ATTEMPTS")
 
+            # Try to open the PR. If creation fails (auth, transient API
+            # error), the branch on origin is orphaned — delete it so the
+            # next run isn't blocked by the idempotency guard.
+            set +e
             gh pr create \
               --base main \
               --head "$BRANCH" \
               --title "Release pack: ${PRODUCT} v${VERSION}" \
               --body "$BODY" \
-              --label "$LABELS" || true
+              --label "$LABELS"
+            PR_STATUS=$?
+            set -e
 
+            if [ "$PR_STATUS" -ne 0 ]; then
+              echo "::error::pr creation failed for ${PRODUCT}@${VERSION} — deleting remote branch to unblock retries"
+              git push origin --delete "$BRANCH" 2>/dev/null || true
+              ANY_SYSTEM_FAILURE=1
+            fi
+
+            git checkout main
+            git branch -D "$BRANCH" 2>/dev/null || true
             echo "::endgroup::"
           done
+
+          if [ "$ANY_SYSTEM_FAILURE" -eq 1 ]; then
+            echo "::error::one or more jobs hit a system failure; see logs above"
+            exit 1
+          fi

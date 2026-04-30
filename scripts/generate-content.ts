@@ -279,11 +279,13 @@ function runNanocoder(prompt: string, model: string): number {
   // Non-TTY parent (CI): allocate a pty via `script` so Ink can set raw mode.
   // We write the prompt to a temp file and substitute it via $(cat ...) so
   // we don't have to shell-escape the markdown body.
+  // -f flushes output after every write — without it CI logs are silent for
+  // minutes at a time while a generation is actually progressing.
   const promptFile = join(tmpdir(), `cf-prompt-${Date.now()}.md`);
   writeFileSync(promptFile, prompt, "utf8");
   try {
     const cmd = `nanocoder run "$(cat ${promptFile})" --mode yolo --model ${model}`;
-    const result = spawnSync("script", ["-qec", cmd, "/dev/null"], {
+    const result = spawnSync("script", ["-qfec", cmd, "/dev/null"], {
       cwd: ROOT,
       stdio: "inherit",
       env: process.env,
