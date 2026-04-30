@@ -1,0 +1,11 @@
+{
+  "product": "nanocoder",
+  "version": "0.0.0",
+  "productUrl": "https://github.com/Nano-Collective/nano-coder",
+  "generatedAt": "2026-04-30T12:00:00Z",
+  "model": "stub-sample",
+  "generationAttempts": 0,
+  "autoFixAttempts": 0,
+  "finalStatus": "sample",
+  "note": "Hand-authored placeholder so the ContentForest UI has something to render before the generation pipeline is built. Replace once the first real release pack lands."
+}
