@@ -73,10 +73,14 @@ Goal: a deployed, gated, empty file viewer at `contentforest.nanocollective.org`
 - [x] `pnpm dev` — all three routes serve 200 with the sample pack rendering (2026-04-30)
 
 ### Cloudflare Pages
-- [ ] Create Pages project under the Nano Collective Cloudflare account
-- [ ] Connect to this GitHub repo, set build command `pnpm build`, output dir `dist/` (or whatever `next build` writes when `output: "export"` is set)
-- [ ] Add custom domain `contentforest.nanocollective.org`
-- [ ] DNS: CNAME `contentforest` → Cloudflare Pages target
+Deploy pattern mirrors `../website`: GitHub Actions builds and pushes to Pages via API token (not Cloudflare auto-pulling from Git). Build runs in CI where lint + types are gated.
+
+- [x] `.github/workflows/deploy-cloudflare-pages.yaml` — runs on push to main + workflow_dispatch (2026-04-30)
+- [ ] Create Pages project `contentforest` under the Nano Collective Cloudflare account as **Direct Upload** type (no Git connection)
+- [ ] Generate Cloudflare API token (scope: `Account → Cloudflare Pages → Edit` on the Nano Collective account) — store as repo secret `CLOUDFLARE_API_TOKEN`
+- [ ] Get the Cloudflare Account ID (visible at the bottom-right of any account dashboard page) — store as repo secret `CLOUDFLARE_ACCOUNT_ID`
+- [ ] First push to `main` → action runs, pushes build to Pages, Pages assigns a `*.pages.dev` URL
+- [ ] Custom domain: in the Pages project → Custom domains → add `contentforest.nanocollective.org` (Cloudflare auto-creates the CNAME because the zone is on the same account)
 
 ### Cloudflare Access policy
 - [ ] Zero Trust → Access → Applications → Add → Self-hosted
@@ -173,6 +177,7 @@ Deviations from `planning.md` made during build. If something here is load-beari
 | 2026-04-30 | Theme swapped from website's Tokyo Night to **Everforest** (light + dark) — Nanocoder's terminal theme.          | Visual continuity with Nanocoder where most release content originates; user preference.     |
 | 2026-04-30 | Navbar trimmed: dropped nav links (Browse / Repo) and GitHub icon; left = brand, right = theme toggle + sign-out only. | Internal tool with three pages — nav links are noise, the brand text already links Home.    |
 | 2026-04-30 | Layout container standardised on `max-w-6xl mx-auto px-4` for both navbar and pages.                             | Tailwind 4's `container` class caps at the active breakpoint; pages with `container max-w-6xl` were wider than the navbar at 2xl viewports, causing left-edge misalignment. |
+| 2026-04-30 | Cloudflare Pages deploy via **GitHub Actions push** (not the dashboard's "Connect to Git" auto-pull), mirroring the website. | Build runs in CI where lint + types are gated. Pages project is Direct Upload only; secrets `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` provisioned on the GH repo. `cloudflare/pages-action@v1` is the action — note: officially deprecated by Cloudflare in favour of `cloudflare/wrangler-action@v3`, but the website still uses v1 so we match for consistency; revisit if it breaks. |
 
 ---
 
