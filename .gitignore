@@ -43,7 +43,6 @@ next-env.d.ts.bak
 /content/_local/
 /content/_test/
 /validation-report.json
-/nanocoder-preferences.json
 
 # Nanocoder runtime state (local sessions, task list, checkpoints).
 # We don't ship any project-level Nanocoder agents/commands/schedules in this

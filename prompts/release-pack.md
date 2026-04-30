@@ -127,6 +127,48 @@ Write `{{PACK_DIR}}/meta.json` with exactly:
 }
 ```
 
+# Drip articles (in addition to the announcement)
+
+Beyond the headline announcement above, identify **0 to 3 substantive angles** in this release that warrant a deeper drip-article — content the team posts over the weeks following the release, rather than at the moment of release.
+
+For each angle, generate a complete content pack at `articles/<slug>/` with the same channel set + opted-in personal variants as the announcement.
+
+**Pick angles, not summaries:**
+- A new-feature deep-dive ("how MCP support works and what to use it for")
+- A behind-the-scenes ("why we rewrote the logger")
+- A how-to or use-case piece anchored in something this release enables
+- An opinionated take grounded in something concrete from this release
+
+**Don't:**
+- Rehash the announcement at a different length — articles must say new things
+- Cover multiple angles in one article — one focus per article
+- Generate articles when the release is genuinely thin (zero is fine for trivial patches like docs-only updates)
+
+**Slugs:** kebab-case derived from the angle (lowercase letters, digits, single hyphens). Examples: `mcp-support`, `auto-compact-mode`, `logger-rewrite`. The slug becomes the directory name under `articles/`.
+
+**Hard cap of 3 articles per release.** Stop at three even if more angles seem worth covering — the team can review and request more if needed.
+
+**Per-article meta.json** at `articles/<slug>/meta.json`:
+
+```json
+{
+  "slug": "<kebab-case>",
+  "title": "Short headline summarising the article angle",
+  "focus": "One-line description of what this article is about",
+  "generated_at": "{{GENERATED_AT}}",
+  "model": "{{MODEL}}"
+}
+```
+
+`slug` MUST match the directory name.
+
+**Per-article files** — same structure as the announcement:
+
+- `articles/<slug>/channels/{linkedin,x,github-discussion,reddit}.md`
+- `articles/<slug>/personal/<member>/<channel>.md` for each opted-in personal variant
+
+All channel rules, forbidden terms, link policy, and frontmatter schema apply identically. The frontmatter `product` and `version` fields on every file (including those inside articles/) match the parent release.
+
 # Hard validation rules (your output must satisfy)
 
 These are enforced by `scripts/validate-content.ts`; failing any one fails the build.

@@ -12,11 +12,17 @@ export type ContentFile = {
   frontmatter: Record<string, unknown>;
 };
 
+export type Article = {
+  slug: string;
+  meta: Record<string, unknown> | null;
+};
+
 export type VersionPack = {
   product: string;
   version: string;
   meta: Record<string, unknown> | null;
   files: ContentFile[];
+  articles: Article[];
 };
 
 export type ProductSummary = {
@@ -80,24 +86,31 @@ function readMarkdown(filePath: string, channel: string): ContentFile {
   };
 }
 
-export function readVersionPack(product: string, version: string): VersionPack {
-  const root = join(CONTENT_DIR, product, version);
-  const files: ContentFile[] = [];
-
+/**
+ * Reads channels/*.md and personal/<member>/<channel>.md from the given root,
+ * pushing each as a ContentFile. Channel slug is prefixed with `prefix` so we
+ * can disambiguate top-level files from per-article files.
+ */
+function readChannelsAndPersonal(
+  root: string,
+  prefix: string,
+  files: ContentFile[],
+) {
   // channels/*.md (flat)
   const channelsPath = join(root, "channels");
   try {
     const entries = readdirSync(channelsPath).filter((e) => e.endsWith(".md"));
     for (const entry of entries) {
       const channel = entry.replace(/\.md$/, "");
-      files.push(readMarkdown(join(channelsPath, entry), channel));
+      files.push(
+        readMarkdown(join(channelsPath, entry), `${prefix}${channel}`),
+      );
     }
   } catch {
     // channels/ may not exist
   }
 
-  // personal/<member>/<channel>.md (nested) — also handles the flat fallback
-  // personal/<member>-<channel>.md form that the validator accepts.
+  // personal/<member>/<channel>.md (nested) + flat fallback
   const personalPath = join(root, "personal");
   try {
     for (const memberEntry of readdirSync(personalPath)) {
@@ -110,24 +123,58 @@ export function readVersionPack(product: string, version: string): VersionPack {
           files.push(
             readMarkdown(
               join(memberPath, channelFile),
-              `personal:${memberEntry}:${channelSlug}`,
+              `${prefix}personal:${memberEntry}:${channelSlug}`,
             ),
           );
         }
       } else if (memberEntry.endsWith(".md")) {
-        // flat fallback: personal/will-linkedin.md or personal/will.md
         const stem = memberEntry.replace(/\.md$/, "");
         const dash = stem.indexOf("-");
-        const channel =
+        const channelSuffix =
           dash > 0
             ? `personal:${stem.slice(0, dash)}:${stem.slice(dash + 1)}`
             : `personal:${stem}`;
-        files.push(readMarkdown(memberPath, channel));
+        files.push(readMarkdown(memberPath, `${prefix}${channelSuffix}`));
       }
     }
   } catch {
     // personal/ may not exist
   }
+}
+
+export function readVersionPack(product: string, version: string): VersionPack {
+  const root = join(CONTENT_DIR, product, version);
+  const files: ContentFile[] = [];
+
+  readChannelsAndPersonal(root, "", files);
+
+  // articles/<slug>/{channels,personal} — each article becomes its own
+  // sub-pack with files keyed under `article:<slug>:` so the viewer can
+  // group them.
+  const articles: Article[] = [];
+  const articlesPath = join(root, "articles");
+  try {
+    for (const slug of readdirSync(articlesPath)) {
+      const articleRoot = join(articlesPath, slug);
+      const stat = statSync(articleRoot);
+      if (!stat.isDirectory()) continue;
+      let articleMeta: Record<string, unknown> | null = null;
+      try {
+        articleMeta = JSON.parse(
+          readFileSync(join(articleRoot, "meta.json"), "utf8"),
+        );
+      } catch {
+        // meta optional during in-flight generation
+      }
+      articles.push({ slug, meta: articleMeta });
+      readChannelsAndPersonal(articleRoot, `article:${slug}:`, files);
+    }
+  } catch {
+    // articles/ may not exist
+  }
+
+  // Stable order: by slug
+  articles.sort((a, b) => a.slug.localeCompare(b.slug));
 
   let meta: Record<string, unknown> | null = null;
   try {
@@ -136,5 +183,5 @@ export function readVersionPack(product: string, version: string): VersionPack {
     // meta is optional in early scaffold
   }
 
-  return { product, version, meta, files };
+  return { product, version, meta, files, articles };
 }

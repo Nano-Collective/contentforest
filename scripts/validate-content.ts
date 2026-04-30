@@ -133,20 +133,27 @@ function listDirs(path: string): string[] {
   );
 }
 
-function listMarkdownRecursive(path: string): string[] {
+function listMarkdownRecursive(
+  path: string,
+  excludeDirs: string[] = [],
+): string[] {
   const out: string[] = [];
   if (!existsSync(path)) return out;
   for (const entry of readdirSync(path)) {
     const full = join(path, entry);
     const stat = statSync(full);
     if (stat.isDirectory()) {
-      out.push(...listMarkdownRecursive(full));
+      if (excludeDirs.includes(entry)) continue;
+      out.push(...listMarkdownRecursive(full, excludeDirs));
     } else if (entry.endsWith(".md")) {
       out.push(full);
     }
   }
   return out;
 }
+
+const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const MAX_ARTICLES_PER_PACK = 3;
 
 /**
  * Channel slug from a file path inside content/<product>/<version>/.
@@ -220,15 +227,20 @@ function fileExistsAny(packRoot: string, rel: string): boolean {
   return false;
 }
 
+type PackKind = "release" | "article";
+
 function validatePack(args: {
   product: Product;
   version: string;
   packRoot: string;
   channels: ChannelRule[];
   team: TeamMember[];
+  kind?: PackKind;
+  articleSlug?: string;
 }): { failures: Failure[]; warnings: Warning[]; skipped: boolean } {
   const failures: Failure[] = [];
   const warnings: Warning[] = [];
+  const kind: PackKind = args.kind ?? "release";
 
   // meta.json
   const metaPath = join(args.packRoot, "meta.json");
@@ -254,13 +266,40 @@ function validatePack(args: {
   }
 
   // Sample-content escape hatch — skip the gate entirely for hand-authored
-  // seed packs used to bootstrap the UI.
+  // seed packs used to bootstrap the UI. Only applies to release packs;
+  // articles inside a sample release wouldn't exist in practice.
   if (
+    kind === "release" &&
     meta &&
     typeof meta.final_status === "string" &&
     meta.final_status === "sample"
   ) {
     return { failures: [], warnings: [], skipped: true };
+  }
+
+  // Article meta-shape: slug must match dir name, plus title/focus required.
+  if (kind === "article" && meta) {
+    if (typeof meta.slug !== "string" || meta.slug !== args.articleSlug) {
+      failures.push({
+        file: relative(ROOT, metaPath),
+        rule: "article-slug-matches",
+        expected: `slug === "${args.articleSlug}"`,
+        actual: String(meta.slug ?? "<missing>"),
+      });
+    }
+    for (const field of ["title", "focus", "generated_at", "model"]) {
+      if (
+        typeof meta[field] !== "string" ||
+        (meta[field] as string).length === 0
+      ) {
+        failures.push({
+          file: relative(ROOT, metaPath),
+          rule: "article-meta-shape",
+          expected: `field "${field}" is a non-empty string`,
+          actual: String(meta[field] ?? "<missing>"),
+        });
+      }
+    }
   }
 
   // Expected files
@@ -287,7 +326,10 @@ function validatePack(args: {
     "i",
   );
 
-  for (const file of listMarkdownRecursive(args.packRoot)) {
+  // Don't recurse into articles/ at the release level — articles are
+  // validated as separate sub-packs by the caller.
+  const excludeDirs = kind === "release" ? ["articles"] : [];
+  for (const file of listMarkdownRecursive(args.packRoot, excludeDirs)) {
     const fileRel = relative(ROOT, file);
     const raw = readFileSync(file, "utf8");
     const parsed = matter(raw);
@@ -493,14 +535,52 @@ function main() {
       packRoot,
       channels: cfg.channels,
       team: cfg.team,
+      kind: "release",
     });
     const id = `${product.slug}/${version}`;
     if (result.skipped) {
       report.skippedPacks.push(id);
-    } else {
-      report.scannedPacks.push(id);
-      report.failures.push(...result.failures);
-      report.warnings.push(...result.warnings);
+      continue;
+    }
+    report.scannedPacks.push(id);
+    report.failures.push(...result.failures);
+    report.warnings.push(...result.warnings);
+
+    // Articles: validate each subdir under articles/ as a sub-pack.
+    const articlesDir = join(packRoot, "articles");
+    if (existsSync(articlesDir)) {
+      const articleSlugs = listDirs(articlesDir);
+      if (articleSlugs.length > MAX_ARTICLES_PER_PACK) {
+        report.failures.push({
+          file: relative(ROOT, articlesDir),
+          rule: "articles-cap",
+          expected: `≤ ${MAX_ARTICLES_PER_PACK} articles per release`,
+          actual: String(articleSlugs.length),
+        });
+      }
+      for (const slug of articleSlugs) {
+        if (!KEBAB_CASE.test(slug)) {
+          report.failures.push({
+            file: relative(ROOT, join(articlesDir, slug)),
+            rule: "article-slug-kebab-case",
+            expected: "kebab-case (lowercase letters, digits, single hyphens)",
+            actual: slug,
+          });
+          continue;
+        }
+        const articleResult = validatePack({
+          product,
+          version,
+          packRoot: join(articlesDir, slug),
+          channels: cfg.channels,
+          team: cfg.team,
+          kind: "article",
+          articleSlug: slug,
+        });
+        report.scannedPacks.push(`${id}#${slug}`);
+        report.failures.push(...articleResult.failures);
+        report.warnings.push(...articleResult.warnings);
+      }
     }
   }
 

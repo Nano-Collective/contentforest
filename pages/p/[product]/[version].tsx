@@ -5,7 +5,10 @@ import type { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import FileTree, { type FileTreeItem } from "@/components/FileTree";
+import FileTree, {
+  type FileTreeItem,
+  type FileTreeSection,
+} from "@/components/FileTree";
 import MarkdownPane from "@/components/MarkdownPane";
 import {
   listProducts,
@@ -18,32 +21,101 @@ type Props = {
   pack: VersionPack;
 };
 
-function buildItems(pack: VersionPack): FileTreeItem[] {
-  return pack.files.map((f) => {
-    if (f.channel.startsWith("personal:")) {
-      // "personal:will:linkedin" → "will / linkedin.md"
-      // "personal:will"          → "will.md"
-      const rest = f.channel.slice("personal:".length);
-      const parts = rest.split(":");
-      const label =
-        parts.length === 2 ? `${parts[0]} / ${parts[1]}.md` : `${rest}.md`;
-      return { channel: f.channel, label, group: "personal" };
+/**
+ * Strips the section prefix from a channel slug and returns a label + group.
+ * The slug format depends on where the file came from:
+ *   "linkedin"                          → channels group, label "linkedin.md"
+ *   "personal:will:linkedin"            → personal group, label "will / linkedin.md"
+ *   "article:mcp-support:linkedin"      → channels group (within article), label "linkedin.md"
+ *   "article:mcp-support:personal:will:linkedin" → personal group, label "will / linkedin.md"
+ */
+function classify(slug: string): { item: FileTreeItem; section: string } {
+  // Strip the article: prefix if present, remembering which article we're in.
+  let section = "release";
+  let rest = slug;
+  if (slug.startsWith("article:")) {
+    const parts = slug.slice("article:".length).split(":");
+    section = `article:${parts[0]}`;
+    rest = parts.slice(1).join(":");
+  }
+
+  if (rest.startsWith("personal:")) {
+    const personalRest = rest.slice("personal:".length);
+    const parts = personalRest.split(":");
+    const label =
+      parts.length === 2
+        ? `${parts[0]} / ${parts[1]}.md`
+        : `${personalRest}.md`;
+    return {
+      item: { channel: slug, label, group: "personal" },
+      section,
+    };
+  }
+
+  return {
+    item: { channel: slug, label: `${rest}.md`, group: "channels" },
+    section,
+  };
+}
+
+function buildSections(pack: VersionPack): FileTreeSection[] {
+  const release: FileTreeItem[] = [];
+  const byArticle: Map<string, FileTreeItem[]> = new Map();
+
+  for (const f of pack.files) {
+    const { item, section } = classify(f.channel);
+    if (section === "release") {
+      release.push(item);
+    } else {
+      const slug = section.slice("article:".length);
+      const arr = byArticle.get(slug) ?? [];
+      arr.push(item);
+      byArticle.set(slug, arr);
     }
-    return { channel: f.channel, label: `${f.channel}.md`, group: "channels" };
-  });
+  }
+
+  const sections: FileTreeSection[] = [
+    { key: "release", title: "Release", items: release },
+  ];
+  for (const article of pack.articles) {
+    const items = byArticle.get(article.slug) ?? [];
+    const title =
+      typeof article.meta?.title === "string"
+        ? (article.meta.title as string)
+        : article.slug;
+    sections.push({
+      key: `article:${article.slug}`,
+      title,
+      subtitle:
+        typeof article.meta?.focus === "string"
+          ? (article.meta.focus as string)
+          : `articles/${article.slug}`,
+      items,
+    });
+  }
+  return sections;
+}
+
+function filenameFor(slug: string): string {
+  // Drop article: prefix for filename purposes.
+  let rest = slug;
+  if (slug.startsWith("article:")) {
+    rest = slug.slice("article:".length).split(":").slice(1).join(":");
+  }
+  if (rest.startsWith("personal:")) {
+    const parts = rest.slice("personal:".length).split(":");
+    return parts.length === 2 ? `${parts[1]}.md` : `${parts[0]}.md`;
+  }
+  return `${rest}.md`;
 }
 
 export default function VersionPage({ pack }: Props) {
-  const items = buildItems(pack);
-  const [selected, setSelected] = useState(items[0]?.channel ?? "");
+  const sections = buildSections(pack);
+  const firstChannel = sections.flatMap((s) => s.items)[0]?.channel ?? "";
+  const [selected, setSelected] = useState(firstChannel);
 
   const file = pack.files.find((f) => f.channel === selected);
-
-  const filename = (() => {
-    if (!selected.startsWith("personal:")) return `${selected}.md`;
-    const parts = selected.slice("personal:".length).split(":");
-    return parts.length === 2 ? `${parts[1]}.md` : `${parts[0]}.md`;
-  })();
+  const filename = filenameFor(selected);
 
   return (
     <>
@@ -88,7 +160,7 @@ export default function VersionPage({ pack }: Props) {
         <div className="grid gap-6 md:grid-cols-[220px_1fr]">
           <aside className="md:sticky md:top-20 md:self-start">
             <FileTree
-              items={items}
+              sections={sections}
               selected={selected}
               onSelect={setSelected}
             />

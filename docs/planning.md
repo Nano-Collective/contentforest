@@ -147,6 +147,83 @@ The agent invocation thus has all the context inline — no `.nanocoder/agents/*
 - The orchestrator can substitute job-specific variables cleanly.
 - Same file shape supports Layer 2 (PR check uses no prompt) and Layer 1 retries (uses `prompts/auto-fix.md`).
 
+> **v2 redesign in flight (2026-04-30):** the single-prompt approach above is the v1 baseline. Will identified that the per-pack task is too large for one model invocation — quality drifts across the announcement, personal variants, articles, and per-article personals. The v2 design splits generation into **four sequential focused agents**, each with its own prompt and validation phase. See §6.4.3 below for the v2 design. The v1 single-prompt path stays in place until v2 is shipped and validated against a real release.
+
+### 6.4.3 v2 — Four-agent sequential pipeline (TO IMPLEMENT)
+
+Replace the single `prompts/release-pack.md` invocation with four sequential Nanocoder runs, each producing a focused slice of the release pack. Each agent has its own retry loop (Layer 1 of the auto-fix loop, scoped to that agent's slice) and its own validation phase. Failure after retries on any agent aborts the run.
+
+#### The four agents
+
+| # | Slug | Reads | Writes | Validation phase |
+| --- | --- | --- | --- | --- |
+| 1 | `release-channels` | `_refs/`, cloned product repo, release body | `channels/{linkedin,x,github-discussion,reddit}.md` + top-level `meta.json` | `channels` |
+| 2 | `release-personal` | everything from agent 1 + `config/team.json` | `personal/<member>/<channel>.md` for each opted-in member × channel | `personal` |
+| 3 | `article-channels` | everything from agents 1+2 | 0–3 `articles/<slug>/channels/*.md` + per-article `meta.json` | `articles` |
+| 4 | `article-personal` | everything from agents 1–3 | `articles/<slug>/personal/<member>/<channel>.md` for each article × opted-in member × channel | `personal-articles` (full pack) |
+
+The **personal agents read the channels output that already exists on disk** and adapt it into a member's voice. The **article agent reads the announcement** so it can pick angles that don't rehash and write deep-dives that reference the headline. Each agent's smaller scope means a smaller prompt, less drift, and clearer validation feedback.
+
+#### Files to land
+
+- `prompts/agents/release-channels.md`
+- `prompts/agents/release-personal.md`
+- `prompts/agents/article-channels.md`
+- `prompts/agents/article-personal.md`
+- `prompts/auto-fix.md` (kept; agent-aware via the {{ORIGINAL_PROMPT}} embed)
+- Delete `prompts/release-pack.md` once the four are live and verified.
+
+Each new prompt is self-contained and **not** DRY'd via shared snippets — duplication is fine because clarity beats compactness for prompts. The brand-voice stub, channel rules, frontmatter shape, link policy, and forbidden-terms list appear in each (each a few hundred lines max).
+
+#### Orchestrator flow
+
+```
+clone repo + fetch refs
+
+for agent in [release-channels, release-personal, article-channels, article-personal]:
+  attempt = 0
+  while attempt < MAX_RETRIES_PER_AGENT (default 2):
+    invoke nanocoder with prompts/agents/<agent>.md
+    run validator at agent's phase (--phase <slug>)
+    if pass: break
+    build auto-fix prompt with phase-scoped errors
+    attempt++
+  if still failing:
+    write meta.json with final_status: "failed-validation" + which-agent
+    abort the run (skip subsequent agents)
+
+write final meta.json: cumulative attempts across all four agents
+```
+
+Cost ceiling: 4 agents × 2 retries = up to 12 Nanocoder spawns per pack. With cold-start ~10s and avg generation ~1–2 min per agent, total wall time 8–15 min. Roughly comparable to current single-shot worst case (1 + 3 retries × ~3 min ≈ 12 min). Token cost is similar — smaller per-agent output offsets the per-agent context overhead.
+
+#### Validator phases
+
+Add a `--phase` flag to `scripts/validate-content.ts`:
+
+- `channels` (after agent 1) — `channels/*.md` exist and pass per-file rules; meta.json present and valid.
+- `personal` (after agent 2) — channels still pass; `personal/<member>/<channel>.md` exists for each opted-in pair; per-file rules.
+- `articles` (after agent 3) — everything from `personal` phase plus `articles/<slug>/{meta.json,channels/*.md}` for each slug, ≤ 3 slugs, kebab-case slugs, article meta shape.
+- `personal-articles` (after agent 4) — full pack including `articles/<slug>/personal/<member>/<channel>.md`.
+
+Each phase is a superset of the previous. A phase failure is a hard stop for the orchestrator's current agent retry loop.
+
+#### Failure semantics
+
+- Agent N fails after retries → write `final_status: "failed-validation"` and `failed_agent: "<slug>"` in meta.json. Skip subsequent agents (preserves whatever earlier agents produced for human inspection). The workflow's per-pack discriminator (planning §6.5) still distinguishes "no channel files at all" (system failure → wipe pack) from "some content present, validation failed" (open PR with `failed-validation` label).
+- Agent 3 produces zero articles → not a failure; the agent legitimately judged the release thin. Agent 4 has nothing to do and is a no-op.
+
+#### Migration plan
+
+1. Land the four new prompts under `prompts/agents/`.
+2. Refactor `runNanocoder` in `scripts/generate-content.ts` into a generic `runAgent(promptFile, args)` and add a `runAgentPipeline(job)` that loops the four agents.
+3. Add `--phase` to the validator.
+4. Run `pnpm generate --product nanocoder --version 1.25.2 --test` end-to-end locally; verify output is at least as good as the v1 single-shot.
+5. Delete `prompts/release-pack.md` and the v1 code path.
+6. Update planning §6.4 / §6.4.3 to reflect v2 as the live path; mark v1 as historical.
+
+The v1 code path stays in place during the migration so we can A/B compare locally before flipping CI over.
+
 ### 6.4.1 Reference material the agent reads
 
 At the top of every generation run, the workflow fetches reference material **from the live docs site** and materialises it locally so the agent reads from disk, not from the network.
@@ -240,7 +317,7 @@ content/
     index.json                     # latest version, all known versions
     1.25.2/
       meta.json                    # { product, version, product_url, generated_at, model, ... }
-      channels/
+      channels/                    # the headline release announcement
         linkedin.md
         x.md
         github-discussion.md       # canonical long-form: posts to GH Discussions on
@@ -252,8 +329,21 @@ content/
           x.md                     # Will's X variant
         <other-team-member>/
           ...
-      sources/                     # what the agent read — for traceability
-        changelog-excerpt.md
+      articles/                    # 0–3 drip-post articles, each diving deep on
+                                   # ONE angle from this release (see §11)
+        mcp-support/
+          meta.json                # { slug, title, focus, generated_at, model }
+          channels/
+            linkedin.md
+            x.md
+            github-discussion.md
+            reddit.md
+          personal/
+            will/
+              linkedin.md
+              x.md
+        auto-compact-mode/
+          ...                      # same shape
   nanotune/
     ...
   get-md/
@@ -385,15 +475,28 @@ There is no separate `release.md` — `github-discussion.md` IS the canonical lo
 
 Up to ten outputs per release fits comfortably (4 channels + up to 6 personal variants ≤ 10).
 
-## 11. "In-between" content
+## 11. "In-between" content — drip articles inside the release pack
 
-Beyond per-release packs, the brief calls for interesting standalone content per product to fill the gap between releases. **Confirmed in scope.**
+The brief calls for interesting standalone content per product to fill the gap between releases. **Resolved by folding it into the release pack itself** rather than running a separate weekly job.
 
-Design: a second scheduled job (`weekly-content.yml`, default Monday 08:00 UTC) that, for each product, generates a **full content pack** — one post per channel plus per-team-member personal variants, same shape as a release pack — grounded in the repo's recent activity (commits, merged PRs, open discussions, README sections worth highlighting) since the last weekly run. We deliberately keep the structure identical to a release pack so the validator, the agent, the auto-fix loop, and the web viewer all work without branching logic.
+When the agent generates a release pack, it also identifies **0–3 substantive angles** in that release worth a deeper drip-article — content the team posts over the weeks following the release rather than at the moment of release. Each article is a full content pack (channels + personal variants, same channel set and rules) at `articles/<slug>/` inside the release directory, with its own `meta.json` (`{ slug, title, focus, generated_at, model }`).
 
-Output lands in `content/<product>/_evergreen/<yyyy-mm-dd>/` and goes through the same PR-per-batch flow.
+**Why this shape:**
+- One workflow run, one PR per release contains the announcement *and* the drip articles. No separate weekly cron, no separate detection script, no `_evergreen/` directory tree.
+- The agent already has full context (release body, source, docs); asking it to also produce 0–3 angle-pieces is cheaper than spinning up a parallel weekly job that would have less context.
+- The team gets a complete content calendar for the post-release weeks at the moment of merge.
+- The validator, content reader, and viewer all branch on a thin "is this an article sub-pack?" check — same per-file rules apply.
 
-**Deferred to Phase 3** — release packs ship first so we can prove the agent + brand-enforcement loop on a smaller surface.
+**Constraints (enforced by the validator):**
+- Hard cap of 3 articles per release.
+- Slugs are kebab-case.
+- `slug` in `articles/<slug>/meta.json` matches the directory name.
+- Each article's `meta.json` has `title`, `focus`, `generated_at`, `model` populated.
+- Same channel rules, forbidden terms, link policy, and frontmatter schema as the announcement.
+
+**Article guidance in the prompt:** pick angles, not summaries. A new-feature deep-dive, a behind-the-scenes, a how-to, an opinionated take grounded in the release. Do not rehash the announcement at a different length. Generate zero articles for trivial patches (e.g. docs-only updates) — that's correct behaviour, not a failure.
+
+**No separate weekly job.** The previous design (`weekly-content.yml`) is dropped.
 
 ## 12. Phasing
 
@@ -429,8 +532,7 @@ Output lands in `content/<product>/_evergreen/<yyyy-mm-dd>/` and goes through th
 - **Backfill**: on launch, manually trigger one run per product (4 in total) for the most recent release of each so the team has live test data and the prompt gets early tuning.
 - `scripts/seed-fixtures.ts` pulls the latest released version for each product into `content/_test/` so we have a stable corpus for prompt-tuning sessions.
 
-**Phase 3 — Retire old action + weekly content + (conditionally) Layer 3**
-- "In-between" weekly content job (`weekly-content.yml`).
+**Phase 3 — Retire old action + (conditionally) Layer 3**
 - Delete `nano-coder/.github/workflows/generate-release-content.yml`.
 - `docs/adding-a-product.md` — operator-facing version of §7.2.
 - `docs/runbook.md` — what to do when a generation run fails, when a PR check fails, how to roll back a bad merge.
