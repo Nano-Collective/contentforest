@@ -1,7 +1,7 @@
 name: Daily Content Generation
 
 on:
-  schedule:
+  # schedule:
     # 08:00 UTC daily. Comment out while we're still backfilling manually.
     # - cron: "0 8 * * *"
   workflow_dispatch:
