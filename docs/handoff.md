@@ -87,22 +87,22 @@ Listed in priority order; tackle top-down.
 
 **Full design lives in `planning.md` §6.4.3.** Migration plan summary:
 
-1. **Write four new prompts** under `prompts/agents/`:
+1. - [x] **Write four new prompts** under `prompts/agents/` (2026-04-30):
    - `release-channels.md` — agent 1, produces `channels/{linkedin,x,github-discussion,reddit}.md` + top-level `meta.json`
    - `release-personal.md` — agent 2, reads channels, produces `personal/<member>/<channel>.md` per opted-in pair
    - `article-channels.md` — agent 3, decides 0–3 angles, produces `articles/<slug>/{meta.json,channels/*.md}`
    - `article-personal.md` — agent 4, produces `articles/<slug>/personal/<member>/<channel>.md`
-   
-   Each prompt is self-contained (don't DRY the brand voice section — duplication is fine for prompts). Source from the existing `prompts/release-pack.md` for the brand-voice + channel-rules + frontmatter sections.
-2. **Refactor `scripts/generate-content.ts`**: extract `runNanocoder` into a generic `runAgent(promptFile, vars)`; add a `runAgentPipeline(job)` that loops the four agents with per-agent retry (default 2). Failure semantics: write `final_status: "failed-validation"` + `failed_agent: "<slug>"` in meta and abort — preserve earlier agents' output for inspection.
-3. **Add `--phase` to `scripts/validate-content.ts`**: phases are `channels`, `personal`, `articles`, `personal-articles`. Each phase is a superset of the previous. The phase determines which expected-files list is enforced; per-file rules (frontmatter, length, forbidden, link, placeholders) apply uniformly.
-4. **Test locally end-to-end** with `pnpm generate --product nanocoder --version 1.25.2 --test`. Output should be at least as good as v1 single-shot.
-5. **Delete `prompts/release-pack.md` and the v1 code path** once v2 is verified. Keep `prompts/auto-fix.md` (still used per-agent for retries — the `{{ORIGINAL_PROMPT}}` embed varies per agent).
-6. **Update planning §6.4 / §6.4.3** to mark v2 as live and v1 as historical.
+2. - [x] **Refactor `scripts/generate-content.ts`** (2026-04-30): `runNanocoder` extracted; `runAgentPipeline(job)` loops the four agents with per-agent retry (default bumped to **5 retries** at Will's call — `--max-retries 6` = 1 initial + 5 retries; cost ceiling 4 × 6 = 24 spawns). Per-agent failure writes `final_status: "failed-validation"` + `failed_agent: "<slug>"` in meta and aborts subsequent agents — earlier agents' output preserved on disk.
+3. - [x] **Add `--phase` to `scripts/validate-content.ts`** (2026-04-30): phases `channels`, `personal`, `articles`, `personal-articles` plus `full` (default, used by Layer 2 PR check + seed-fixtures). Per-file rules apply uniformly.
+4. - [ ] **Test locally end-to-end** with `pnpm generate --product nanocoder --version 1.25.2 --test`. Output should be at least as good as v1 single-shot. **← Will's verification step (needs API key).** A 1.25.0 test run already exists at `content/_test/nanocoder/1.25.0/` from a partial earlier run.
+5. - [ ] **Delete `prompts/release-pack.md` and the v1 code path** once v2 is verified. Keep `prompts/auto-fix.md` (still used per-agent for retries — the `{{ORIGINAL_PROMPT}}` embed varies per agent). v1 prompt currently sits next to `prompts/agents/` as reference; nothing in the orchestrator wires it.
+6. - [ ] **Update planning §6.4 / §6.4.3** to mark v2 as live and v1 as historical.
 
-The v1 path stays in place during migration — A/B locally before flipping CI over.
+The v1 prompt stays in place during migration; the orchestrator already runs v2 only. A `git revert` is the rollback if A/B regresses.
 
-Cost ceiling: 4 agents × 2 retries = up to 12 spawns per pack. Wall time 8–15 min, comparable to v1's worst case.
+**Length caps relaxed (2026-04-30, mid-implementation tick):** LinkedIn `max_words` 250 → 500, GitHub Discussion 1500 → 3000, Reddit 600 → 1500 in `config/channels.json`. Prompt guidance changed from "aim near the middle of the range" → "write what the substance warrants up to the cap; don't anchor to the middle." Triggered by Will reviewing the v1.25.0 plan-mode-two-phase article LinkedIn post and flagging it as compressed. See `docs/implementation.md` decision log.
+
+Cost ceiling: 4 agents × 6 attempts = up to 24 spawns per pack. Wall time worst case 16–30 min; typical case much lower since most agents pass on attempt 1.
 
 ### 2. Operational unblock (gates the v1 pipeline shipping content while v2 is being built)
 
@@ -118,7 +118,13 @@ These are GitHub-level toggles or one-time fills that someone with admin rights 
   Each opens its own PR. Review and merge.
 - [x] **Decide whether to keep the cron enabled.** It's currently on at 08:00 UTC daily. Comment out `schedule:` in `daily-content.yaml` if you want manual-only for now.
 
-### 3. Homepage redesign (the visible front-end story)
+### 3. Homepage redesign (the visible front-end story) — DONE 2026-04-30
+
+✓ Done. `pages/index.tsx` is a thin orchestrator. New `components/home/Hero.tsx` mirrors the website pattern: full-bleed three.js / ASCII shader (`components/EffectScene.tsx` + `components/AsciiEffect.tsx` copied verbatim from `../website`, video at `public/video/cat-in-city.mp4`), badge + heading + paragraph (with `animate-on-scroll` + `animate-delay-*` classes already in `globals.css`), Browse-packs / Repo CTAs. ContentForest-themed copy: "Release content for the Nano Collective. Browse, copy, post." Product grid extracted to `components/home/ProductGrid.tsx` with `card-hover-glow` re-enabled. Three.js deps pinned to website versions (`@react-three/fiber@9`, `@react-three/drei@10`, `@react-three/postprocessing@3`, `three@0.183`).
+
+Still on the table for a follow-up pass: swap the `cat-in-city.mp4` video for a forest-themed motif if Will wants to lean into the ContentForest naming. The hero machinery is asset-agnostic — drop a new file at `public/video/cat-in-city.mp4` (or rename + update `EffectScene.tsx`) and it picks up automatically.
+
+**Original brief (kept for context):**
 
 Today the homepage at `pages/index.tsx` is a plain card grid of products. **Will wants it to mirror the main Nano Collective website** (`../website`) — a proper hero, animated three.js shader, the same visual identity.
 
@@ -144,7 +150,13 @@ components/home/
   EffectScene.tsx               ← copy from ../website (or new)
 ```
 
-### 4. Show the signed-in user in the UI (lightweight GitHub identity)
+### 4. Show the signed-in user in the UI (lightweight GitHub identity) — DONE 2026-04-30
+
+✓ Done. `hooks/useIdentity.ts` fetches `/cdn-cgi/access/get-identity` on mount and returns `loading` / `anonymous` / `identified`. `Navbar.tsx` renders an `IdentityBadge` (GitHub avatar from `https://github.com/<login>.png` + display name; title attr carries name + email + login for SR users) when `identified`, falls back gracefully to no badge on local dev (where the endpoint 404s).
+
+**Logout fix shipped same day:** the per-app `/cdn-cgi/access/logout` path 404s on Cloudflare Pages static-export sites because Pages serves its 404 before Access intercepts. Fix: derive the canonical team-domain logout URL from the `iss` field in the get-identity response (`https://<team>.cloudflareaccess.com/cdn-cgi/access/logout`) — `logoutUrlFor()` in `hooks/useIdentity.ts`. Sign-out button is hidden when there's no identity (local dev).
+
+**Original brief (kept for context):**
 
 Cloudflare Access already authenticates everyone — but the app itself has no idea who's logged in. Will wants this surfaced (avatar, name, GH username).
 
