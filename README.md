@@ -2,18 +2,25 @@
 
 Built by the [Nano Collective](https://nanocollective.org) — a community collective building AI tooling not for profit, but for the community.
 
-ContentForest is the Nano Collective's release-content cockpit: a daily GitHub Action detects new releases across NC product repos, runs Nanocoder against a templated prompt to generate a complete content pack per release (announcement channel posts plus 0–3 deep-dive drip-articles), validates the output, and opens a PR. Merged PRs deploy to a Cloudflare-Pages-hosted file viewer at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org), gated by Cloudflare Access to `Nano-Collective` org members.
+ContentForest is the Nano Collective's release-content cockpit: a daily GitHub Action detects new releases across NC product repos, runs Nanocoder against a templated prompt to generate a complete content pack per release (announcement channel posts plus 0–3 deep-dive drip-articles), validates the output, and opens a PR. Merged PRs deploy to a Cloudflare-Pages-hosted file viewer at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org).
 
-This is an **internal tool**. The site is private, and there is no install path — sign in at the URL above, or read the docs below if you maintain it.
+This is an **internal tool** built for the Nano Collective. The repo is public for transparency; the deployed site, issue tracker, and request flows below are intended for `Nano-Collective` org members.
 
 ## Quick start
 
-### For team members
+Open [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org), browse the latest packs from the homepage, and copy the channel posts you need into your social tool of choice — there is no automated posting (by design).
 
-1. Sign in at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org) with your GitHub account (you must be a member of [`Nano-Collective`](https://github.com/Nano-Collective)).
-2. Browse the latest packs from the homepage. Copy the channel posts you need and paste them into your social tool of choice — there is no automated posting (by design).
+## Requesting content or amends
 
-### For maintainers
+You don't need to touch the repo or run anything locally to ask for a change. Two issue templates trigger an agent that does the work and opens a PR for review:
+
+- **[Request a content change](https://github.com/Nano-Collective/contentforest/issues/new?template=change-request.yml)** — apply a targeted edit to an existing release pack. Fill in the product, version, scope (whole pack / headline channels / specific article / specific file), and the request itself. The agent applies the edit, runs the validator, and opens a PR that auto-closes the issue on merge. If the first attempt doesn't land cleanly, comment `/retry` to re-run.
+
+- **[Request a collective post](https://github.com/Nano-Collective/contentforest/issues/new?template=collective-request.yml)** — create or edit a collective-level pack at `content/_collective/<slug>/`. Use this for posts about the Nano Collective itself rather than a product release (announcements, ecosystem updates, anything not tied to a single product version). Same shape as change-request: fill the form, the agent does the work, you get a PR.
+
+Issues filed by non-org members are auto-closed by [`gate-issues.yaml`](.github/workflows/gate-issues.yaml) — see [CONTRIBUTING.md](./CONTRIBUTING.md) for why and how to surface your org membership if it isn't recognised.
+
+## For maintainers
 
 ```bash
 pnpm install
@@ -44,4 +51,4 @@ For a real CI-driven generation, dispatch [`.github/workflows/daily-content.yaml
 
 ## License
 
-MIT. See [LICENSE.md](./LICENSE.md).
+MIT. See [LICENSE](./LICENSE).
