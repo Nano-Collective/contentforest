@@ -45,7 +45,7 @@ function FloatingContent() {
   // Cover viewport fully with slight overscale to prevent edge gaps
   const isMobile = viewportAspect < 1;
   const isTablet = viewportAspect >= 1 && viewportAspect < 1.5;
-  const scale = isMobile ? 1.15 : isTablet ? 1.10 : 1.08;
+  const scale = isMobile ? 1.15 : isTablet ? 1.1 : 1.08;
   const planeWidth =
     (viewportAspect > videoAspect
       ? viewport.width
