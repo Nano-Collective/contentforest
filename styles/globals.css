@@ -495,9 +495,9 @@ body {
 
 /* Hero overlay */
 :root:not(.dark) .hero-overlay {
-  background: rgb(253 246 227 / 0.7);
+  background: rgb(253 246 227 / 0.8);
 }
 
 :root.dark .hero-overlay {
-  background: rgb(45 53 59 / 0.7);
+  background: rgb(45 53 59 / 0.8);
 }

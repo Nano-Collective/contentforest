@@ -12,7 +12,7 @@ function FloatingContent() {
 
   useEffect(() => {
     const video = document.createElement("video");
-    video.src = "/video/cat-in-city.mp4";
+    video.src = "/video/cat-in-forest.mp4";
     video.crossOrigin = "anonymous";
     video.loop = true;
     video.muted = true;
@@ -43,7 +43,9 @@ function FloatingContent() {
   const viewportAspect = viewport.width / viewport.height;
 
   // Cover viewport fully with slight overscale to prevent edge gaps
-  const scale = 1.05;
+  const isMobile = viewportAspect < 1;
+  const isTablet = viewportAspect >= 1 && viewportAspect < 1.5;
+  const scale = isMobile ? 1.15 : isTablet ? 1.10 : 1.08;
   const planeWidth =
     (viewportAspect > videoAspect
       ? viewport.width
@@ -54,7 +56,6 @@ function FloatingContent() {
   const yOffset = (planeHeight - viewport.height) / 2 - viewport.height * 0.1;
 
   // On narrow/mobile viewports, shift video left so subject is more visible
-  const isMobile = viewportAspect < 1;
   const xOffset = isMobile ? -viewport.width * 0.35 : 0;
 
   useFrame(() => {
@@ -123,7 +124,7 @@ export function EffectScene() {
         <EffectComposer>
           <AsciiEffect
             style="standard"
-            cellSize={6}
+            cellSize={4}
             invert={false}
             color={true}
             resolution={resolution}

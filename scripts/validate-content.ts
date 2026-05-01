@@ -5,8 +5,7 @@
  *
  * Hard rules:
  *  - Frontmatter has the required fields with the right shapes.
- *  - Every expected file exists (one file per channel in config/channels.json
- *    + opted-in personal variants per config/team.json).
+ *  - Every expected file exists (one file per channel in config/channels.json).
  *  - X post is ≤ max_chars; long-form/social channels meet min/max words.
  *  - No forbidden brand-doc terms.
  *  - No unresolved placeholders ({{TODO}}, {{RELEASE_URL}}, etc).
@@ -19,17 +18,17 @@
  * Skips packs whose meta.json has `final_status: "sample"` so the seed pack
  * we ship for the UI doesn't fail the gate.
  *
- * --phase scopes the expected-files contract for the v2 four-agent pipeline
+ * --phase scopes the expected-files contract for the v2 two-agent pipeline
  * (planning §6.4.3). Phases are cumulative supersets:
- *   channels          → meta.json + channels/*.md
- *   personal          → above + personal/<member>/<channel>.md per opted-in pair
- *   articles          → above + articles/<slug>/{meta.json,channels/*.md} per slug
- *   personal-articles → full pack including articles/<slug>/personal/<member>/<channel>.md
- *   (omitted)         → equivalent to personal-articles (full pack — used by
- *                       CI Layer 2 and the seed-fixtures path)
+ *   channels  → meta.json + channels/*.md
+ *   articles  → above + articles/<slug>/{meta.json,channels/*.md} per slug
+ *   (omitted) → equivalent to "full" (channels + articles — used by CI
+ *               Layer 2 and the seed-fixtures path)
  * Per-file rules (frontmatter shape, length, forbidden terms, link policy,
  * placeholders) apply uniformly to every .md actually present, regardless
- * of phase.
+ * of phase. Legacy personal/<member>/<channel>.md files in older packs are
+ * still parsed cleanly (channelSlugFromPath handles them) but no longer
+ * required by any phase.
  *
  *   pnpm validate                          # all packs (full phase)
  *   pnpm validate -- --pack nanocoder/0.0.0
@@ -58,11 +57,6 @@ type ChannelRule = {
 };
 
 type Product = { slug: string; repo: string };
-
-type TeamMember = {
-  name: string;
-  channels: Record<string, { handle: string; voice_notes: string }>;
-};
 
 type Failure = {
   file: string;
@@ -127,8 +121,7 @@ function readJson<T>(path: string): T {
 function loadConfig() {
   const products = readJson<Product[]>(join(ROOT, "config/products.json"));
   const channels = readJson<ChannelRule[]>(join(ROOT, "config/channels.json"));
-  const team = readJson<TeamMember[]>(join(ROOT, "config/team.json"));
-  return { products, channels, team };
+  return { products, channels };
 }
 
 function findChannel(channels: ChannelRule[], slug: string) {
@@ -170,33 +163,12 @@ const MAX_ARTICLES_PER_PACK = 3;
 
 type PackKind = "release" | "article";
 
-type Phase =
-  | "channels"
-  | "personal"
-  | "articles"
-  | "personal-articles"
-  | "full";
+type Phase = "channels" | "articles" | "full";
 
-const PHASES: Phase[] = [
-  "channels",
-  "personal",
-  "articles",
-  "personal-articles",
-  "full",
-];
-
-function phaseIncludesReleasePersonal(phase: Phase): boolean {
-  return phase !== "channels";
-}
+const PHASES: Phase[] = ["channels", "articles", "full"];
 
 function phaseIncludesArticles(phase: Phase): boolean {
-  return (
-    phase === "articles" || phase === "personal-articles" || phase === "full"
-  );
-}
-
-function phaseIncludesArticlePersonal(phase: Phase): boolean {
-  return phase === "personal-articles" || phase === "full";
+  return phase === "articles" || phase === "full";
 }
 
 /**
@@ -239,9 +211,6 @@ function expectedFiles(args: {
   product: string;
   version: string;
   channels: ChannelRule[];
-  team: TeamMember[];
-  phase: Phase;
-  kind: PackKind;
 }): { rel: string; reason: string }[] {
   const expected: { rel: string; reason: string }[] = [];
   expected.push({ rel: "meta.json", reason: "meta.json missing" });
@@ -250,20 +219,6 @@ function expectedFiles(args: {
       rel: `channels/${channel.slug}.md`,
       reason: `channels/${channel.slug}.md missing`,
     });
-  }
-  const includePersonal =
-    args.kind === "release"
-      ? phaseIncludesReleasePersonal(args.phase)
-      : phaseIncludesArticlePersonal(args.phase);
-  if (!includePersonal) return expected;
-  for (const member of args.team) {
-    const memberSlug = member.name.split(/\s+/)[0].toLowerCase();
-    for (const channel of Object.keys(member.channels)) {
-      expected.push({
-        rel: `personal/${memberSlug}/${channel}.md`,
-        reason: `personal/${memberSlug}/${channel}.md missing (or flat equivalent personal/${memberSlug}-${channel}.md)`,
-      });
-    }
   }
   return expected;
 }
@@ -283,15 +238,12 @@ function validatePack(args: {
   version: string;
   packRoot: string;
   channels: ChannelRule[];
-  team: TeamMember[];
   kind?: PackKind;
   articleSlug?: string;
-  phase?: Phase;
 }): { failures: Failure[]; warnings: Warning[]; skipped: boolean } {
   const failures: Failure[] = [];
   const warnings: Warning[] = [];
   const kind: PackKind = args.kind ?? "release";
-  const phase: Phase = args.phase ?? "full";
 
   // meta.json
   const metaPath = join(args.packRoot, "meta.json");
@@ -358,9 +310,6 @@ function validatePack(args: {
     product: args.product.slug,
     version: args.version,
     channels: args.channels,
-    team: args.team,
-    phase,
-    kind,
   })) {
     if (!fileExistsAny(args.packRoot, exp.rel)) {
       failures.push({
@@ -596,9 +545,7 @@ function main() {
       version,
       packRoot,
       channels: cfg.channels,
-      team: cfg.team,
       kind: "release",
-      phase,
     });
     const id = `${product.slug}/${version}`;
     if (result.skipped) {
@@ -610,8 +557,8 @@ function main() {
     report.warnings.push(...result.warnings);
 
     // Articles: validate each subdir under articles/ as a sub-pack — only at
-    // the articles / personal-articles / full phases. Earlier phases (channels,
-    // personal) run before agent 3 has produced any articles.
+    // the articles / full phases. The earlier `channels` phase runs before
+    // the article agent has produced anything.
     if (!phaseIncludesArticles(phase)) continue;
     const articlesDir = join(packRoot, "articles");
     if (existsSync(articlesDir)) {
@@ -639,10 +586,8 @@ function main() {
           version,
           packRoot: join(articlesDir, slug),
           channels: cfg.channels,
-          team: cfg.team,
           kind: "article",
           articleSlug: slug,
-          phase,
         });
         report.scannedPacks.push(`${id}#${slug}`);
         report.failures.push(...articleResult.failures);

@@ -149,9 +149,11 @@ The agent invocation thus has all the context inline — no `.nanocoder/agents/*
 
 > **v2 redesign in flight (2026-04-30):** the single-prompt approach above is the v1 baseline. Will identified that the per-pack task is too large for one model invocation — quality drifts across the announcement, personal variants, articles, and per-article personals. The v2 design splits generation into **four sequential focused agents**, each with its own prompt and validation phase. See §6.4.3 below for the v2 design. The v1 single-prompt path stays in place until v2 is shipped and validated against a real release.
 
-### 6.4.3 v2 — Four-agent sequential pipeline (TO IMPLEMENT)
+### 6.4.3 v2 — Sequential agent pipeline
 
-Replace the single `prompts/release-pack.md` invocation with four sequential Nanocoder runs, each producing a focused slice of the release pack. Each agent has its own retry loop (Layer 1 of the auto-fix loop, scoped to that agent's slice) and its own validation phase. Failure after retries on any agent aborts the run.
+> **Update 2026-05-01 — collapsed to two agents.** This section was originally written for a four-agent pipeline (channels + personal × release + articles). On 2026-05-01 the personal-variant agents were removed: the live pipeline is now **two agents**, `release-channels` → `article-channels`. `config/team.json`, the `personal-*` prompts, and the `personal` / `personal-articles` validator phases are all gone. Reasoning in `docs/implementation.md` decision log. The original four-agent design is preserved below for context; the table and prose below should be read as historical until this section gets a full rewrite (handoff §1 step 7).
+
+Replace the single `prompts/release-pack.md` invocation with sequential Nanocoder runs, each producing a focused slice of the release pack. Each agent has its own retry loop (Layer 1 of the auto-fix loop, scoped to that agent's slice) and its own validation phase. Failure after retries on any agent aborts the run.
 
 #### The four agents
 

@@ -1,12 +1,11 @@
 /**
- * Orchestrates a single release-pack generation via the v2 four-agent
+ * Orchestrates a single release-pack generation via the v2 two-agent
  * pipeline (planning §6.4.3).
  *
  *   1. Resolve product repo (NC_REPOS_DIR/<product>/ if set, else shallow
  *      clone v<version> into _repos/<product>/).
  *   2. Read the GitHub release body via `gh api`.
- *   3. For each agent in the pipeline (release-channels, release-personal,
- *      article-channels, article-personal):
+ *   3. For each agent in the pipeline (release-channels, article-channels):
  *        - Load prompts/agents/<slug>.md, substitute {{VAR}} placeholders.
  *        - Spawn `nanocoder run "<prompt>" --mode yolo`.
  *        - Run the validator at that agent's phase.
@@ -58,7 +57,7 @@ type JobSpec = {
 
 type RunMode = "commit" | "local" | "test";
 
-type Phase = "channels" | "personal" | "articles" | "personal-articles";
+type Phase = "channels" | "articles";
 
 type AgentSpec = {
   slug: string;
@@ -73,19 +72,9 @@ const AGENTS: AgentSpec[] = [
     promptFile: "agents/release-channels.md",
   },
   {
-    slug: "release-personal",
-    phase: "personal",
-    promptFile: "agents/release-personal.md",
-  },
-  {
     slug: "article-channels",
     phase: "articles",
     promptFile: "agents/article-channels.md",
-  },
-  {
-    slug: "article-personal",
-    phase: "personal-articles",
-    promptFile: "agents/article-personal.md",
   },
 ];
 
@@ -123,7 +112,7 @@ function parse(): Args {
     mode,
     dryRun: values["dry-run"] as boolean,
     // --max-retries is the *total attempts* per agent (1 initial + retries).
-    // Default 6 = 1 initial + up to 5 retries; cost ceiling = 4 agents × 6 = 24 spawns.
+    // Default 6 = 1 initial + up to 5 retries; cost ceiling = 2 agents × 6 = 12 spawns.
     maxAttemptsPerAgent: Number.parseInt(values["max-retries"] as string, 10),
   };
 }
@@ -239,6 +228,12 @@ function substitute(template: string, vars: Record<string, string>): string {
 /**
  * Common variable bag for every agent prompt. Individual agent prompts
  * use whichever subset they need; unused keys are silently ignored.
+ *
+ * PACK_ID and VALIDATOR_ROOT are surfaced so each agent can run
+ * `pnpm validate` against itself in-process before exiting (planning
+ * §6.4.3 — the in-spawn self-check optimisation). The orchestrator
+ * still validates after the spawn returns; the self-check just lets
+ * the model converge in one spawn instead of needing a fresh one.
  */
 function buildPromptVars(args: {
   product: Product;
@@ -248,8 +243,8 @@ function buildPromptVars(args: {
   repoPath: string;
   generatedAt: string;
   model: string;
+  validatorRoot: string;
 }): Record<string, string> {
-  const teamJson = readFile(join(CONFIG_DIR, "team.json"));
   const channelsJson = readFile(join(CONFIG_DIR, "channels.json"));
   return {
     PRODUCT_SLUG: args.product.slug,
@@ -261,9 +256,10 @@ function buildPromptVars(args: {
     RELEASE_BODY: args.job.releaseBody ?? "",
     GENERATED_AT: args.generatedAt,
     MODEL: args.model,
-    TEAM_JSON: teamJson.trim(),
     CHANNELS_JSON: channelsJson.trim(),
     PACK_DIR: args.packDir,
+    PACK_ID: `${args.product.slug}/${args.version}`,
+    VALIDATOR_ROOT: args.validatorRoot,
   };
 }
 
@@ -461,6 +457,7 @@ function runAgentPipeline(args: {
     repoPath: args.repoPath,
     generatedAt: args.generatedAt,
     model: args.model,
+    validatorRoot: args.validatorRoot,
   });
   const packId = `${args.product.slug}/${args.version}`;
 
@@ -597,6 +594,7 @@ async function main() {
       repoPath,
       generatedAt,
       model,
+      validatorRoot,
     });
     console.log(
       "\n--- DRY RUN: substituted agent prompts below, nanocoder NOT invoked ---\n",
