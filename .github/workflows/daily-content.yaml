@@ -158,8 +158,8 @@ jobs:
             set -e
 
             # Discriminator: did Nanocoder actually write channel files?
-            # If not, it's a system failure (most often: Ink TTY error,
-            # API key error, model unavailable). Don't push junk to origin.
+            # If not, it's a system failure (API key error, model
+            # unavailable, etc.). Don't push junk to origin.
             CHANNEL_COUNT=$(find "$CHANNELS_DIR" -maxdepth 1 -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
             if [ "${CHANNEL_COUNT:-0}" -lt 1 ]; then
               echo "::error::nanocoder produced no channel files for ${PRODUCT}@${VERSION} — system failure"

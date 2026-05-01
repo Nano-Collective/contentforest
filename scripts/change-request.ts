@@ -31,7 +31,6 @@ import {
 	mkdirSync,
 	readFileSync,
 	rmSync,
-	unlinkSync,
 	writeFileSync,
 } from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
@@ -205,58 +204,27 @@ export function buildAutoFixPrompt(args: {
 }
 
 /**
- * Spawn `nanocoder run`. Same TTY/pty handling as generate-content.ts —
- * GitHub Actions runners have no TTY on stdin, Ink crashes there, so on
- * non-TTY parents we wrap in `script(1)`.
+ * Spawn `nanocoder run`. Nanocoder auto-enables its Ink-free `--plain`
+ * runtime when stdout isn't a TTY or CI is detected, so a single direct
+ * spawn works both locally and on GitHub Actions runners.
  */
 /* c8 ignore start */
 function runNanocoder(prompt: string, model: string): number {
-	const isTTY = Boolean(process.stdout.isTTY);
-
-	if (isTTY) {
-		const result = spawnSync(
-			'nanocoder',
-			['run', prompt, '--mode', 'yolo', '--model', model, '--trust-directory'],
-			{cwd: ROOT, stdio: 'inherit', env: process.env},
-		);
-		if (result.error) {
-			if ((result.error as NodeJS.ErrnoException).code === 'ENOENT') {
-				console.error(
-					'change-request: `nanocoder` not on PATH. Install it (npm i -g @nanocollective/nanocoder).',
-				);
-				return 127;
-			}
-			throw result.error;
+	const result = spawnSync(
+		'nanocoder',
+		['run', prompt, '--mode', 'yolo', '--model', model, '--trust-directory'],
+		{cwd: ROOT, stdio: 'inherit', env: process.env},
+	);
+	if (result.error) {
+		if ((result.error as NodeJS.ErrnoException).code === 'ENOENT') {
+			console.error(
+				'change-request: `nanocoder` not on PATH. Install it (npm i -g @nanocollective/nanocoder).',
+			);
+			return 127;
 		}
-		return result.status ?? 1;
+		throw result.error;
 	}
-
-	const promptFile = join(tmpdir(), `cf-change-${Date.now()}.md`);
-	writeFileSync(promptFile, prompt, 'utf8');
-	try {
-		const cmd = `nanocoder run "$(cat ${promptFile})" --mode yolo --model ${model} --trust-directory`;
-		const result = spawnSync('script', ['-qfec', cmd, '/dev/null'], {
-			cwd: ROOT,
-			stdio: 'inherit',
-			env: process.env,
-		});
-		if (result.error) {
-			if ((result.error as NodeJS.ErrnoException).code === 'ENOENT') {
-				console.error(
-					'change-request: `script(1)` not on PATH. Install util-linux.',
-				);
-				return 127;
-			}
-			throw result.error;
-		}
-		return result.status ?? 1;
-	} finally {
-		try {
-			unlinkSync(promptFile);
-		} catch {
-			// best-effort cleanup
-		}
-	}
+	return result.status ?? 1;
 }
 
 type ValidationReport = {
