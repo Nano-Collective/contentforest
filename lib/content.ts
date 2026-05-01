@@ -31,6 +31,19 @@ export type ProductSummary = {
 	versions: string[];
 };
 
+export type CollectivePackSummary = {
+	slug: string;
+	meta: Record<string, unknown> | null;
+};
+
+export type CollectivePack = {
+	slug: string;
+	meta: Record<string, unknown> | null;
+	files: ContentFile[];
+};
+
+const COLLECTIVE_DIR = '_collective';
+
 function listDirs(path: string): string[] {
 	try {
 		return readdirSync(path).filter(entry => {
@@ -71,6 +84,46 @@ export function listVersions(
 	contentDir: string = DEFAULT_CONTENT_DIR,
 ): string[] {
 	return listDirs(join(contentDir, product)).sort(compareVersionsDesc);
+}
+
+function readMetaJson(dir: string): Record<string, unknown> | null {
+	try {
+		return JSON.parse(readFileSync(join(dir, 'meta.json'), 'utf8'));
+	} catch {
+		return null;
+	}
+}
+
+function generatedAtOf(meta: Record<string, unknown> | null): string {
+	const v = meta?.generated_at;
+	return typeof v === 'string' ? v : '';
+}
+
+export function listCollectivePacks(
+	contentDir: string = DEFAULT_CONTENT_DIR,
+): CollectivePackSummary[] {
+	const root = join(contentDir, COLLECTIVE_DIR);
+	let entries: string[];
+	try {
+		entries = readdirSync(root).filter(entry => {
+			try {
+				return statSync(join(root, entry)).isDirectory();
+			} catch {
+				return false;
+			}
+		});
+	} catch {
+		return [];
+	}
+	const packs = entries.map(slug => ({
+		slug,
+		meta: readMetaJson(join(root, slug)),
+	}));
+	packs.sort((a, b) => {
+		const diff = generatedAtOf(b.meta).localeCompare(generatedAtOf(a.meta));
+		return diff !== 0 ? diff : a.slug.localeCompare(b.slug);
+	});
+	return packs;
 }
 
 function readMarkdown(filePath: string, channel: string): ContentFile {
@@ -183,12 +236,17 @@ export function readVersionPack(
 	// Stable order: by slug
 	articles.sort((a, b) => a.slug.localeCompare(b.slug));
 
-	let meta: Record<string, unknown> | null = null;
-	try {
-		meta = JSON.parse(readFileSync(join(root, 'meta.json'), 'utf8'));
-	} catch {
-		// meta is optional in early scaffold
-	}
+	const meta = readMetaJson(root);
 
 	return {product, version, meta, files, articles};
+}
+
+export function readCollectivePack(
+	slug: string,
+	contentDir: string = DEFAULT_CONTENT_DIR,
+): CollectivePack {
+	const root = join(contentDir, COLLECTIVE_DIR, slug);
+	const files: ContentFile[] = [];
+	readChannelsAndPersonal(root, '', files);
+	return {slug, meta: readMetaJson(root), files};
 }

@@ -4,8 +4,10 @@ import {join} from 'node:path';
 import test from 'ava';
 import {
 	compareVersionsDesc,
+	listCollectivePacks,
 	listProducts,
 	listVersions,
+	readCollectivePack,
 	readVersionPack,
 } from './content.js';
 
@@ -217,5 +219,79 @@ test('readVersionPack: round-trips Date frontmatter to ISO strings', t => {
 	);
 	const pack = readVersionPack('nanocoder', '1.0.0', tmp);
 	t.is(typeof pack.files[0].frontmatter.generated_at, 'string');
+	rmSync(tmp, {recursive: true});
+});
+
+test('listCollectivePacks: returns empty array when _collective is missing', t => {
+	const tmp = makeTempContentDir();
+	t.deepEqual(listCollectivePacks(tmp), []);
+	rmSync(tmp, {recursive: true});
+});
+
+test('listCollectivePacks: lists every pack with its meta', t => {
+	const tmp = makeTempContentDir();
+	mkdirSync(join(tmp, '_collective', 'launch'), {recursive: true});
+	mkdirSync(join(tmp, '_collective', 'economics-charter'), {recursive: true});
+	writeFileSync(
+		join(tmp, '_collective', 'launch', 'meta.json'),
+		JSON.stringify({slug: 'launch', generated_at: '2026-05-01T00:00:00Z'}),
+	);
+	writeFileSync(
+		join(tmp, '_collective', 'economics-charter', 'meta.json'),
+		JSON.stringify({
+			slug: 'economics-charter',
+			generated_at: '2026-04-15T00:00:00Z',
+		}),
+	);
+	const packs = listCollectivePacks(tmp);
+	t.deepEqual(
+		packs.map(p => p.slug),
+		['launch', 'economics-charter'],
+	);
+	t.is(packs[0].meta?.slug, 'launch');
+	rmSync(tmp, {recursive: true});
+});
+
+test('listCollectivePacks: packs without meta sort to the bottom by slug', t => {
+	const tmp = makeTempContentDir();
+	mkdirSync(join(tmp, '_collective', 'zebra'), {recursive: true});
+	mkdirSync(join(tmp, '_collective', 'alpha'), {recursive: true});
+	const packs = listCollectivePacks(tmp);
+	t.deepEqual(
+		packs.map(p => p.slug),
+		['alpha', 'zebra'],
+	);
+	rmSync(tmp, {recursive: true});
+});
+
+test('readCollectivePack: reads channels/*.md and meta.json', t => {
+	const tmp = makeTempContentDir();
+	const root = join(tmp, '_collective', 'launch');
+	writeFile(
+		join(root, 'channels/linkedin.md'),
+		'---\nkind: collective\nslug: launch\nchannel: linkedin\n---\n\nAnnouncement.',
+	);
+	writeFile(
+		join(root, 'channels/x.md'),
+		'---\nkind: collective\nslug: launch\nchannel: x\n---\n\nShort.',
+	);
+	mkdirSync(root, {recursive: true});
+	writeFileSync(
+		join(root, 'meta.json'),
+		JSON.stringify({kind: 'collective', slug: 'launch'}),
+	);
+	const pack = readCollectivePack('launch', tmp);
+	t.is(pack.slug, 'launch');
+	t.is(pack.files.length, 2);
+	t.deepEqual(pack.files.map(f => f.channel).sort(), ['linkedin', 'x']);
+	t.is(pack.meta?.kind, 'collective');
+	rmSync(tmp, {recursive: true});
+});
+
+test('readCollectivePack: returns empty files when pack dir is missing', t => {
+	const tmp = makeTempContentDir();
+	const pack = readCollectivePack('does-not-exist', tmp);
+	t.deepEqual(pack.files, []);
+	t.is(pack.meta, null);
 	rmSync(tmp, {recursive: true});
 });
