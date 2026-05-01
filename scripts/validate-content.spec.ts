@@ -715,3 +715,224 @@ test('warn: marketing-register term produces warning, not failure', t => {
 		cleanup(root);
 	}
 });
+
+// ---------------------------------------------------------------------------
+// Collective packs (content/_collective/<slug>/)
+// ---------------------------------------------------------------------------
+
+const COLLECTIVE_SLUG = 'economics-charter';
+const COLLECTIVE_PACK_ID = `_collective/${COLLECTIVE_SLUG}`;
+const COLLECTIVE_URL = 'https://nanocollective.org';
+
+const COLLECTIVE_LONG_BODY = `${[
+	'The Nano Collective shipped its economics charter today.',
+	'The charter sets out how revenue from the collective is split, who gets paid, and on what cadence.',
+	'It is short on philosophy and long on numbers — every clause references a specific project, a specific role, or a specific decision-making cadence.',
+	'The intended audience is members and contributors who want to understand exactly what they are agreeing to before they ship code.',
+	'The charter does not promise outcomes; it sets the rules of engagement, and we expect those rules to be revised as we learn what does and does not work in practice.',
+	'Read the full charter on the collective home and give us feedback in the relevant Discord channel.',
+	`${COLLECTIVE_URL}/economics-charter`,
+].join('\n\n')}`;
+
+const COLLECTIVE_X_BODY = `New: the Nano Collective economics charter is live. Plain rules for who gets paid for what, on what cadence. ${COLLECTIVE_URL}`;
+
+function buildCollectiveMd(
+	channel: string,
+	body: string,
+	overrides: Partial<{
+		kind: string;
+		slug: string;
+		channel: string;
+		generated_at: string;
+		model: string;
+		char_count: number;
+	}> = {},
+) {
+	const meta = {
+		kind: 'collective',
+		slug: COLLECTIVE_SLUG,
+		channel,
+		generated_at: '2026-05-01T00:00:00Z',
+		model: 'test',
+		char_count: body.length,
+		...overrides,
+	};
+	const lines = Object.entries(meta).map(([k, v]) => {
+		if (v === undefined || v === null) return null;
+		if (typeof v === 'string') return `${k}: "${v}"`;
+		return `${k}: ${v}`;
+	});
+	const fmYaml = lines.filter(Boolean).join('\n');
+	return `---\n${fmYaml}\n---\n${body}\n`;
+}
+
+function writeHappyCollectivePack(contentRoot: string): string {
+	const packDir = join(contentRoot, '_collective', COLLECTIVE_SLUG);
+	mkdirSync(join(packDir, 'channels'), {recursive: true});
+	writeFileSync(
+		join(packDir, 'meta.json'),
+		JSON.stringify(
+			{
+				kind: 'collective',
+				slug: COLLECTIVE_SLUG,
+				generated_at: '2026-05-01T00:00:00Z',
+				model: 'test',
+			},
+			null,
+			2,
+		),
+	);
+	writeFileSync(
+		join(packDir, 'channels/linkedin.md'),
+		buildCollectiveMd('linkedin', COLLECTIVE_LONG_BODY),
+	);
+	writeFileSync(
+		join(packDir, 'channels/x.md'),
+		buildCollectiveMd('x', COLLECTIVE_X_BODY),
+	);
+	writeFileSync(
+		join(packDir, 'channels/github-discussion.md'),
+		buildCollectiveMd('github-discussion', COLLECTIVE_LONG_BODY),
+	);
+	writeFileSync(
+		join(packDir, 'channels/reddit.md'),
+		buildCollectiveMd('reddit', COLLECTIVE_LONG_BODY),
+	);
+	return packDir;
+}
+
+test('collective: happy path passes when pack filter targets _collective/<slug>', t => {
+	const root = makeTmpRoot();
+	try {
+		writeHappyCollectivePack(root);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
+		t.deepEqual(report.scannedPacks, [COLLECTIVE_PACK_ID]);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: included in default scan when no filter is set', t => {
+	const root = makeTmpRoot();
+	try {
+		writeHappyCollectivePack(root);
+		const report = runValidate({contentRoot: root, config: CONFIG});
+		t.deepEqual(report.failures, []);
+		t.true(report.scannedPacks.includes(COLLECTIVE_PACK_ID));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: missing collective URL → link-collective', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyCollectivePack(root);
+		const body = COLLECTIVE_LONG_BODY.replaceAll(COLLECTIVE_URL, '');
+		writeFileSync(
+			join(packDir, 'channels/linkedin.md'),
+			buildCollectiveMd('linkedin', body),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'link-collective'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: wrong frontmatter kind → frontmatter-kind', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyCollectivePack(root);
+		writeFileSync(
+			join(packDir, 'channels/linkedin.md'),
+			buildCollectiveMd('linkedin', COLLECTIVE_LONG_BODY, {kind: 'release'}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'frontmatter-kind'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: slug mismatch → frontmatter-slug', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyCollectivePack(root);
+		writeFileSync(
+			join(packDir, 'channels/linkedin.md'),
+			buildCollectiveMd('linkedin', COLLECTIVE_LONG_BODY, {slug: 'other'}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'frontmatter-slug'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: missing channel file → file-exists', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyCollectivePack(root);
+		rmSync(join(packDir, 'channels/linkedin.md'));
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected.includes('linkedin'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: non-kebab slug dir → collective-slug-kebab-case', t => {
+	const root = makeTmpRoot();
+	try {
+		const badSlug = 'Bad_Slug';
+		const packDir = join(root, '_collective', badSlug);
+		mkdirSync(packDir, {recursive: true});
+		const report = runValidate({contentRoot: root, config: CONFIG});
+		t.true(report.failures.some(f => f.rule === 'collective-slug-kebab-case'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: pack filter missing slug throws', t => {
+	const root = makeTmpRoot();
+	try {
+		t.throws(
+			() =>
+				runValidate({
+					contentRoot: root,
+					packFilter: '_collective/',
+					config: CONFIG,
+				}),
+			{message: /<slug>/},
+		);
+	} finally {
+		cleanup(root);
+	}
+});

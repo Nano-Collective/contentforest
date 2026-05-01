@@ -1,0 +1,63 @@
+name: Request collective content
+description: Ask an agent to create or edit a collective-level content pack (not tied to a product release).
+title: "[collective]: "
+labels: ["collective-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit this issue and an agent will write (or edit) a collective-level content pack — channel posts about the Nano Collective itself, independent of any product release. The agent opens a PR which auto-closes this issue on merge.
+
+        Use this for things like a community update, an economics-charter explainer, a brand-voice post, a governance-model writeup. For per-release product packs, use the **release** auto-pipeline; for edits to an existing release pack, use **Request a content change**.
+
+        If the first attempt doesn't land cleanly, comment `/retry` to re-run with the same fields. Edit the issue body if you want to refine the request first; only `/retry` triggers the agent.
+
+  - type: input
+    id: slug
+    attributes:
+      label: Slug
+      description: Kebab-case identifier for this content pack. Becomes the directory name at `content/_collective/<slug>/`. If a pack already exists at that slug, the agent edits in place; otherwise it creates a new pack.
+      placeholder: "economics-charter-explainer"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: |
+        - **Whole pack** — anything in the pack. Default for new packs.
+        - **Headline channels (channels/*.md)** — only the channel posts.
+        - **Specific file** — one file only. Requires File path.
+      options:
+        - Whole pack
+        - Headline channels (channels/*.md)
+        - Specific file
+    validations:
+      required: true
+
+  - type: input
+    id: file_path
+    attributes:
+      label: File path
+      description: Required if scope = "Specific file". Path relative to the pack root.
+      placeholder: "channels/linkedin.md"
+
+  - type: textarea
+    id: request
+    attributes:
+      label: Request
+      description: What should the agent write or change? Be specific about angle, audience, and what point you want made.
+      placeholder: |
+        e.g. "Write a LinkedIn post explaining why we built the economics charter — the angle is that revenue-sharing inside a small collective is a coordination problem, not a fairness problem. Audience: founder-engineers thinking about side projects."
+        e.g. "Tighten the GitHub Discussion piece on governance — drop the abstract framing and lead with the concrete decision-making cadence."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional. Background, examples, links the agent should read, or anything else that should shape the piece.
+      placeholder: |
+        Optional. e.g. "We just published _refs/collective/organisation/economics-charter.md — that's the source of truth, ground claims there. The audience is the same one we wrote to for the brand-voice post last month."

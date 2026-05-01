@@ -13,6 +13,11 @@ ContentForest is an internal Nano Collective tool that:
 
 The generation pipeline is **two sequential agents** (since 2026-05-01): `release-channels` produces the announcement channel posts, then `article-channels` produces 0–3 deep-dive drip articles. Each agent has its own retry budget, its own validator phase, and an in-spawn self-validation step. The live agent prompts are under `prompts/agents/`; the orchestrator is `scripts/generate-content.ts`.
 
+Two issue-driven side flows sit alongside the release pipeline:
+
+- **Change-request** edits an existing release pack (per product/version) on demand. Trigger: the `change-request` issue template plus the `change-request` label. Orchestrator: `scripts/change-request.ts`. Prompt: `prompts/change-request.md`.
+- **Collective-request** creates or edits a product-independent collective-level pack at `content/_collective/<slug>/` — content about the Nano Collective itself, not a product release. Trigger: the `collective-request` issue template plus the `collective-request` label. Orchestrator: `scripts/collective-request.ts`. Prompt: `prompts/collective-request.md`. The validator handles `_collective/<slug>` packs alongside product packs (different frontmatter shape, link policy points to nanocollective.org).
+
 ## Conventions worth following
 
 - **Pre-flight before claiming done:** `pnpm test:all`. Runs format, types, lint, AVA, knip, audit, Semgrep — same gate that `pr-checks.yml` runs in CI. `pnpm test:lint:fix` is the pre-commit reflex if formatting drifts.

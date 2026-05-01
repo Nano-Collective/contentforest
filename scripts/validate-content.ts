@@ -167,6 +167,9 @@ function listMarkdownRecursive(
 const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const MAX_ARTICLES_PER_PACK = 3;
 
+const COLLECTIVE_DIR = '_collective';
+const COLLECTIVE_URL = 'https://nanocollective.org';
+
 type PackKind = 'release' | 'article';
 
 type Phase = 'channels' | 'articles' | 'full';
@@ -488,6 +491,201 @@ function validatePack(args: {
 }
 
 /**
+ * Validates a collective-level pack at content/_collective/<slug>/.
+ *
+ * Collective packs are product-independent: no product / version, no
+ * articles, no release-tag link policy. The shared rules (channel length,
+ * forbidden terms, placeholders, sample-pack skip) still apply, but
+ * frontmatter is `kind: collective` + `slug` instead of product/version,
+ * and the link policy points to nanocollective.org.
+ */
+function validateCollectivePack(args: {
+	slug: string;
+	packRoot: string;
+	channels: ChannelRule[];
+}): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
+	const failures: Failure[] = [];
+	const warnings: Warning[] = [];
+
+	const metaPath = join(args.packRoot, 'meta.json');
+	let meta: Record<string, unknown> | null = null;
+	if (!existsSync(metaPath)) {
+		failures.push({
+			file: relative(ROOT, metaPath),
+			rule: 'meta-exists',
+			expected: 'meta.json present',
+			actual: 'missing',
+		});
+	} else {
+		try {
+			meta = readJson(metaPath);
+		} catch (e) {
+			failures.push({
+				file: relative(ROOT, metaPath),
+				rule: 'meta-parses',
+				expected: 'valid JSON',
+				actual: (e as Error).message,
+			});
+		}
+	}
+
+	if (
+		meta &&
+		typeof meta.final_status === 'string' &&
+		meta.final_status === 'sample'
+	) {
+		return {failures: [], warnings: [], skipped: true};
+	}
+
+	// Expected files: meta.json + one .md per channel.
+	const expected: {rel: string; reason: string}[] = [
+		{rel: 'meta.json', reason: 'meta.json missing'},
+		...args.channels.map(c => ({
+			rel: `channels/${c.slug}.md`,
+			reason: `channels/${c.slug}.md missing`,
+		})),
+	];
+	for (const exp of expected) {
+		if (!existsSync(join(args.packRoot, exp.rel))) {
+			failures.push({
+				file: relative(ROOT, join(args.packRoot, exp.rel)),
+				rule: 'file-exists',
+				expected: exp.rel,
+				actual: 'missing',
+			});
+		}
+	}
+
+	for (const file of listMarkdownRecursive(args.packRoot)) {
+		const fileRel = relative(ROOT, file);
+		const raw = readFileSync(file, 'utf8');
+		const parsed = matter(raw);
+		const fm = parsed.data as Record<string, unknown>;
+		const body = parsed.content;
+
+		const requiredFields = [
+			'kind',
+			'slug',
+			'channel',
+			'generated_at',
+			'model',
+			'char_count',
+		];
+		for (const field of requiredFields) {
+			if (fm[field] === undefined || fm[field] === null) {
+				failures.push({
+					file: fileRel,
+					rule: 'frontmatter-shape',
+					expected: `field "${field}" present`,
+					actual: 'missing',
+				});
+			}
+		}
+		if (fm.kind !== undefined && fm.kind !== 'collective') {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-kind',
+				expected: 'collective',
+				actual: String(fm.kind),
+			});
+		}
+		if (fm.slug !== undefined && fm.slug !== args.slug) {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-slug',
+				expected: args.slug,
+				actual: String(fm.slug),
+			});
+		}
+
+		const slug =
+			typeof fm.channel === 'string'
+				? fm.channel
+				: channelSlugFromPath(args.packRoot, file);
+		const rule = channelRuleFor(args.channels, slug);
+		if (!rule) {
+			failures.push({
+				file: fileRel,
+				rule: 'channel-known',
+				expected: 'slug listed in config/channels.json',
+				actual: slug,
+			});
+		} else {
+			const charCount = body.trim().length;
+			const wordCount = countWords(body);
+			if (rule.max_chars !== undefined && charCount > rule.max_chars) {
+				failures.push({
+					file: fileRel,
+					rule: 'max-chars',
+					expected: `≤${rule.max_chars}`,
+					actual: String(charCount),
+				});
+			}
+			if (rule.min_words !== undefined && wordCount < rule.min_words) {
+				warnings.push({
+					file: fileRel,
+					rule: 'min-words',
+					message: `${wordCount} words; soft target ≥${rule.min_words}.`,
+				});
+			}
+			if (rule.max_words !== undefined && wordCount > rule.max_words) {
+				failures.push({
+					file: fileRel,
+					rule: 'max-words',
+					expected: `≤${rule.max_words}`,
+					actual: String(wordCount),
+				});
+			}
+		}
+
+		for (const term of FORBIDDEN_HARD) {
+			const re = new RegExp(`\\b${term}\\b`, 'i');
+			if (re.test(body)) {
+				failures.push({
+					file: fileRel,
+					rule: 'forbidden-term',
+					expected: `no "${term}"`,
+					actual: 'present',
+				});
+			}
+		}
+
+		for (const term of FORBIDDEN_SOFT) {
+			const re = new RegExp(`\\b${term}\\b`, 'i');
+			if (re.test(body)) {
+				warnings.push({
+					file: fileRel,
+					rule: 'marketing-register',
+					message: `"${term}" — consider replacing with a plainer phrasing`,
+				});
+			}
+		}
+
+		for (const pattern of PLACEHOLDER_PATTERNS) {
+			if (pattern.test(body)) {
+				failures.push({
+					file: fileRel,
+					rule: 'no-placeholder',
+					expected: `no ${pattern.source}`,
+					actual: 'present',
+				});
+			}
+		}
+
+		if (!body.includes(COLLECTIVE_URL)) {
+			failures.push({
+				file: fileRel,
+				rule: 'link-collective',
+				expected: `link to ${COLLECTIVE_URL}`,
+				actual: 'missing',
+			});
+		}
+	}
+
+	return {failures, warnings, skipped: false};
+}
+
+/**
  * Programmatic entry point — used by the CLI `main()` and by `*.spec.ts`
  * tests. Returns the structured Report; never prints, never exits, never
  * writes files. The CLI wraps this with arg parsing, output formatting,
@@ -517,19 +715,33 @@ export function runValidate(options: {
 	};
 
 	const packsToScan: {product: Product; version: string}[] = [];
+	const collectivePacksToScan: {slug: string}[] = [];
 	if (options.packFilter) {
-		const [productSlug, version] = options.packFilter.split('/');
-		const product = productsBySlug.get(productSlug);
-		if (!product) {
-			throw new Error(`Unknown product: ${productSlug}`);
+		const [first, second] = options.packFilter.split('/');
+		if (first === COLLECTIVE_DIR) {
+			if (!second) {
+				throw new Error(
+					`Collective pack filter must be "${COLLECTIVE_DIR}/<slug>"`,
+				);
+			}
+			collectivePacksToScan.push({slug: second});
+		} else {
+			const product = productsBySlug.get(first);
+			if (!product) {
+				throw new Error(`Unknown product: ${first}`);
+			}
+			packsToScan.push({product, version: second});
 		}
-		packsToScan.push({product, version});
 	} else {
 		for (const product of cfg.products) {
 			const productDir = join(options.contentRoot, product.slug);
 			for (const version of listDirs(productDir)) {
 				packsToScan.push({product, version});
 			}
+		}
+		const collectiveDir = join(options.contentRoot, COLLECTIVE_DIR);
+		for (const slug of listDirs(collectiveDir)) {
+			collectivePacksToScan.push({slug});
 		}
 	}
 
@@ -598,6 +810,41 @@ export function runValidate(options: {
 				report.warnings.push(...articleResult.warnings);
 			}
 		}
+	}
+
+	for (const {slug} of collectivePacksToScan) {
+		const packRoot = join(options.contentRoot, COLLECTIVE_DIR, slug);
+		const id = `${COLLECTIVE_DIR}/${slug}`;
+		if (!existsSync(packRoot)) {
+			report.failures.push({
+				file: relative(ROOT, packRoot),
+				rule: 'pack-exists',
+				expected: 'directory present',
+				actual: 'missing',
+			});
+			continue;
+		}
+		if (!KEBAB_CASE.test(slug)) {
+			report.failures.push({
+				file: relative(ROOT, packRoot),
+				rule: 'collective-slug-kebab-case',
+				expected: 'kebab-case (lowercase letters, digits, single hyphens)',
+				actual: slug,
+			});
+			continue;
+		}
+		const result = validateCollectivePack({
+			slug,
+			packRoot,
+			channels: cfg.channels,
+		});
+		if (result.skipped) {
+			report.skippedPacks.push(id);
+			continue;
+		}
+		report.scannedPacks.push(id);
+		report.failures.push(...result.failures);
+		report.warnings.push(...result.warnings);
 	}
 
 	return report;
