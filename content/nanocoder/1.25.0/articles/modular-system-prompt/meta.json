@@ -1,0 +1,7 @@
+{
+  "slug": "modular-system-prompt",
+  "title": "How the Nanocoder system prompt is now assembled",
+  "focus": "The modular prompt architecture in v1.25.0 and what it means for customisation and auditing",
+  "generated_at": "2026-05-01T16:23:25.085Z",
+  "model": "minimax-m2.7"
+}
