@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { BlendFunction, Effect } from "postprocessing";
-import { forwardRef, useMemo } from "react";
-import type { WebGLRenderer, WebGLRenderTarget } from "three";
-import { Uniform, Vector2 } from "three";
+import {BlendFunction, Effect} from 'postprocessing';
+import {forwardRef, useMemo} from 'react';
+import type {WebGLRenderer, WebGLRenderTarget} from 'three';
+import {Uniform, Vector2} from 'three';
 
 const fragmentShader = `
 // Basic uniforms
@@ -229,49 +229,49 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 `;
 
 interface PostFxOptions {
-  scanlineIntensity?: number;
-  scanlineCount?: number;
-  targetFPS?: number;
-  jitterIntensity?: number;
-  jitterSpeed?: number;
-  mouseGlowEnabled?: boolean;
-  mouseGlowRadius?: number;
-  mouseGlowIntensity?: number;
-  vignetteIntensity?: number;
-  vignetteRadius?: number;
-  colorPalette?: string | number;
-  curvature?: number;
-  aberrationStrength?: number;
-  noiseIntensity?: number;
-  noiseScale?: number;
-  noiseSpeed?: number;
-  waveAmplitude?: number;
-  waveFrequency?: number;
-  waveSpeed?: number;
-  glitchIntensity?: number;
-  glitchFrequency?: number;
-  brightnessAdjust?: number;
-  contrastAdjust?: number;
+	scanlineIntensity?: number;
+	scanlineCount?: number;
+	targetFPS?: number;
+	jitterIntensity?: number;
+	jitterSpeed?: number;
+	mouseGlowEnabled?: boolean;
+	mouseGlowRadius?: number;
+	mouseGlowIntensity?: number;
+	vignetteIntensity?: number;
+	vignetteRadius?: number;
+	colorPalette?: string | number;
+	curvature?: number;
+	aberrationStrength?: number;
+	noiseIntensity?: number;
+	noiseScale?: number;
+	noiseSpeed?: number;
+	waveAmplitude?: number;
+	waveFrequency?: number;
+	waveSpeed?: number;
+	glitchIntensity?: number;
+	glitchFrequency?: number;
+	brightnessAdjust?: number;
+	contrastAdjust?: number;
 }
 
 interface AsciiEffectOptions {
-  cellSize?: number;
-  invert?: boolean;
-  color?: boolean;
-  style?: number;
-  resolution?: Vector2;
-  mousePos?: Vector2;
-  postfx?: PostFxOptions;
+	cellSize?: number;
+	invert?: boolean;
+	color?: boolean;
+	style?: number;
+	resolution?: Vector2;
+	mousePos?: Vector2;
+	postfx?: PostFxOptions;
 }
 
 interface AsciiEffectProps {
-  style?: "standard" | "dense" | "minimal" | "blocks";
-  cellSize?: number;
-  invert?: boolean;
-  color?: boolean;
-  postfx?: PostFxOptions;
-  resolution?: Vector2;
-  mousePos?: Vector2;
+	style?: 'standard' | 'dense' | 'minimal' | 'blocks';
+	cellSize?: number;
+	invert?: boolean;
+	color?: boolean;
+	postfx?: PostFxOptions;
+	resolution?: Vector2;
+	mousePos?: Vector2;
 }
 
 // Module-level variables for state management
@@ -285,140 +285,140 @@ let _resolution = new Vector2(1920, 1080);
 let _mousePos = new Vector2(0, 0);
 
 class AsciiEffectImpl extends Effect {
-  constructor(options: AsciiEffectOptions) {
-    const {
-      cellSize = 10,
-      invert = false,
-      color = true,
-      style = 0,
-      resolution = new Vector2(1920, 1080),
-      mousePos = new Vector2(0, 0),
-      postfx = {},
-    } = options;
+	constructor(options: AsciiEffectOptions) {
+		const {
+			cellSize = 10,
+			invert = false,
+			color = true,
+			style = 0,
+			resolution = new Vector2(1920, 1080),
+			mousePos = new Vector2(0, 0),
+			postfx = {},
+		} = options;
 
-    super("AsciiEffect", fragmentShader, {
-      blendFunction: BlendFunction.NORMAL,
-      uniforms: new Map<string, Uniform<unknown>>([
-        ["cellSize", new Uniform(cellSize)],
-        ["invert", new Uniform(invert)],
-        ["colorMode", new Uniform(color)],
-        ["asciiStyle", new Uniform(style)],
-        ["time", new Uniform(0)],
-        ["resolution", new Uniform(resolution)],
-        ["mousePos", new Uniform(mousePos)],
-        ["scanlineIntensity", new Uniform(postfx.scanlineIntensity || 0)],
-        ["scanlineCount", new Uniform(postfx.scanlineCount || 200)],
-        ["targetFPS", new Uniform(postfx.targetFPS || 0)],
-        ["jitterIntensity", new Uniform(postfx.jitterIntensity || 0)],
-        ["jitterSpeed", new Uniform(postfx.jitterSpeed || 1)],
-        ["mouseGlowEnabled", new Uniform(postfx.mouseGlowEnabled || false)],
-        ["mouseGlowRadius", new Uniform(postfx.mouseGlowRadius || 200)],
-        ["mouseGlowIntensity", new Uniform(postfx.mouseGlowIntensity || 1.5)],
-        ["vignetteIntensity", new Uniform(postfx.vignetteIntensity || 0)],
-        ["vignetteRadius", new Uniform(postfx.vignetteRadius || 0.8)],
-        ["colorPalette", new Uniform(postfx.colorPalette || 0)],
-        ["curvature", new Uniform(postfx.curvature || 0)],
-        ["aberrationStrength", new Uniform(postfx.aberrationStrength || 0)],
-        ["noiseIntensity", new Uniform(postfx.noiseIntensity || 0)],
-        ["noiseScale", new Uniform(postfx.noiseScale || 1)],
-        ["noiseSpeed", new Uniform(postfx.noiseSpeed || 1)],
-        ["waveAmplitude", new Uniform(postfx.waveAmplitude || 0)],
-        ["waveFrequency", new Uniform(postfx.waveFrequency || 10)],
-        ["waveSpeed", new Uniform(postfx.waveSpeed || 1)],
-        ["glitchIntensity", new Uniform(postfx.glitchIntensity || 0)],
-        ["glitchFrequency", new Uniform(postfx.glitchFrequency || 0)],
-        ["brightnessAdjust", new Uniform(postfx.brightnessAdjust || 0)],
-        ["contrastAdjust", new Uniform(postfx.contrastAdjust || 1)],
-      ]),
-    });
+		super('AsciiEffect', fragmentShader, {
+			blendFunction: BlendFunction.NORMAL,
+			uniforms: new Map<string, Uniform<unknown>>([
+				['cellSize', new Uniform(cellSize)],
+				['invert', new Uniform(invert)],
+				['colorMode', new Uniform(color)],
+				['asciiStyle', new Uniform(style)],
+				['time', new Uniform(0)],
+				['resolution', new Uniform(resolution)],
+				['mousePos', new Uniform(mousePos)],
+				['scanlineIntensity', new Uniform(postfx.scanlineIntensity || 0)],
+				['scanlineCount', new Uniform(postfx.scanlineCount || 200)],
+				['targetFPS', new Uniform(postfx.targetFPS || 0)],
+				['jitterIntensity', new Uniform(postfx.jitterIntensity || 0)],
+				['jitterSpeed', new Uniform(postfx.jitterSpeed || 1)],
+				['mouseGlowEnabled', new Uniform(postfx.mouseGlowEnabled || false)],
+				['mouseGlowRadius', new Uniform(postfx.mouseGlowRadius || 200)],
+				['mouseGlowIntensity', new Uniform(postfx.mouseGlowIntensity || 1.5)],
+				['vignetteIntensity', new Uniform(postfx.vignetteIntensity || 0)],
+				['vignetteRadius', new Uniform(postfx.vignetteRadius || 0.8)],
+				['colorPalette', new Uniform(postfx.colorPalette || 0)],
+				['curvature', new Uniform(postfx.curvature || 0)],
+				['aberrationStrength', new Uniform(postfx.aberrationStrength || 0)],
+				['noiseIntensity', new Uniform(postfx.noiseIntensity || 0)],
+				['noiseScale', new Uniform(postfx.noiseScale || 1)],
+				['noiseSpeed', new Uniform(postfx.noiseSpeed || 1)],
+				['waveAmplitude', new Uniform(postfx.waveAmplitude || 0)],
+				['waveFrequency', new Uniform(postfx.waveFrequency || 10)],
+				['waveSpeed', new Uniform(postfx.waveSpeed || 1)],
+				['glitchIntensity', new Uniform(postfx.glitchIntensity || 0)],
+				['glitchFrequency', new Uniform(postfx.glitchFrequency || 0)],
+				['brightnessAdjust', new Uniform(postfx.brightnessAdjust || 0)],
+				['contrastAdjust', new Uniform(postfx.contrastAdjust || 1)],
+			]),
+		});
 
-    _cellSize = cellSize;
-    _invert = invert;
-    _colorMode = color;
-    _asciiStyle = style;
-    _resolution = resolution;
-    _mousePos = mousePos;
-  }
+		_cellSize = cellSize;
+		_invert = invert;
+		_colorMode = color;
+		_asciiStyle = style;
+		_resolution = resolution;
+		_mousePos = mousePos;
+	}
 
-  private setUniform(name: string, value: unknown) {
-    const uniform = this.uniforms.get(name);
-    if (uniform) uniform.value = value;
-  }
+	private setUniform(name: string, value: unknown) {
+		const uniform = this.uniforms.get(name);
+		if (uniform) uniform.value = value;
+	}
 
-  update(
-    _renderer: WebGLRenderer,
-    _inputBuffer: WebGLRenderTarget,
-    deltaTime: number,
-  ) {
-    const targetFPSUniform = this.uniforms.get("targetFPS");
-    const targetFPS = targetFPSUniform ? targetFPSUniform.value : 0;
+	update(
+		_renderer: WebGLRenderer,
+		_inputBuffer: WebGLRenderTarget,
+		deltaTime: number,
+	) {
+		const targetFPSUniform = this.uniforms.get('targetFPS');
+		const targetFPS = targetFPSUniform ? targetFPSUniform.value : 0;
 
-    if (targetFPS > 0) {
-      const frameDuration = 1 / targetFPS;
-      _deltaAccumulator += deltaTime;
-      if (_deltaAccumulator >= frameDuration) {
-        _time += frameDuration;
-        _deltaAccumulator = _deltaAccumulator % frameDuration;
-      }
-    } else {
-      _time += deltaTime;
-    }
+		if (targetFPS > 0) {
+			const frameDuration = 1 / targetFPS;
+			_deltaAccumulator += deltaTime;
+			if (_deltaAccumulator >= frameDuration) {
+				_time += frameDuration;
+				_deltaAccumulator = _deltaAccumulator % frameDuration;
+			}
+		} else {
+			_time += deltaTime;
+		}
 
-    this.setUniform("time", _time);
-    this.setUniform("cellSize", _cellSize);
-    this.setUniform("invert", _invert);
-    this.setUniform("colorMode", _colorMode);
-    this.setUniform("asciiStyle", _asciiStyle);
-    this.setUniform("resolution", _resolution);
-    this.setUniform("mousePos", _mousePos);
-  }
+		this.setUniform('time', _time);
+		this.setUniform('cellSize', _cellSize);
+		this.setUniform('invert', _invert);
+		this.setUniform('colorMode', _colorMode);
+		this.setUniform('asciiStyle', _asciiStyle);
+		this.setUniform('resolution', _resolution);
+		this.setUniform('mousePos', _mousePos);
+	}
 }
 
 export const AsciiEffect = forwardRef<Effect, AsciiEffectProps>(
-  (props, ref) => {
-    const {
-      style = "standard",
-      cellSize = 10,
-      invert = false,
-      color = true,
-      postfx = {},
-      resolution = new Vector2(1920, 1080),
-      mousePos = new Vector2(0, 0),
-    } = props;
+	(props, ref) => {
+		const {
+			style = 'standard',
+			cellSize = 10,
+			invert = false,
+			color = true,
+			postfx = {},
+			resolution = new Vector2(1920, 1080),
+			mousePos = new Vector2(0, 0),
+		} = props;
 
-    const styleMap: Record<string, number> = {
-      standard: 0,
-      dense: 1,
-      minimal: 2,
-      blocks: 3,
-    };
-    const styleNum = styleMap[style] || 0;
+		const styleMap: Record<string, number> = {
+			standard: 0,
+			dense: 1,
+			minimal: 2,
+			blocks: 3,
+		};
+		const styleNum = styleMap[style] || 0;
 
-    _cellSize = cellSize;
-    _invert = invert;
-    _colorMode = color;
-    _asciiStyle = styleNum;
-    _resolution = resolution;
-    _mousePos = mousePos;
+		_cellSize = cellSize;
+		_invert = invert;
+		_colorMode = color;
+		_asciiStyle = styleNum;
+		_resolution = resolution;
+		_mousePos = mousePos;
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // biome-ignore lint/correctness/useExhaustiveDependencies: effect is created once; props are synced via module-level vars
-    const effect = useMemo(
-      () =>
-        new AsciiEffectImpl({
-          cellSize,
-          invert,
-          color,
-          style: styleNum,
-          postfx,
-          resolution,
-          mousePos,
-        }),
-      [],
-    );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// biome-ignore lint/correctness/useExhaustiveDependencies: effect is created once; props are synced via module-level vars
+		const effect = useMemo(
+			() =>
+				new AsciiEffectImpl({
+					cellSize,
+					invert,
+					color,
+					style: styleNum,
+					postfx,
+					resolution,
+					mousePos,
+				}),
+			[],
+		);
 
-    return <primitive ref={ref} object={effect} dispose={null} />;
-  },
+		return <primitive ref={ref} object={effect} dispose={null} />;
+	},
 );
 
-AsciiEffect.displayName = "AsciiEffect";
+AsciiEffect.displayName = 'AsciiEffect';

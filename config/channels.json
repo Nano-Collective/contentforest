@@ -1,25 +1,25 @@
 [
-  {
-    "slug": "linkedin",
-    "kind": "social",
-    "min_words": 150,
-    "max_words": 500
-  },
-  {
-    "slug": "x",
-    "kind": "social",
-    "max_chars": 280
-  },
-  {
-    "slug": "github-discussion",
-    "kind": "long-form",
-    "min_words": 300,
-    "max_words": 3000
-  },
-  {
-    "slug": "reddit",
-    "kind": "social",
-    "min_words": 150,
-    "max_words": 1500
-  }
+	{
+		"slug": "linkedin",
+		"kind": "social",
+		"min_words": 150,
+		"max_words": 500
+	},
+	{
+		"slug": "x",
+		"kind": "social",
+		"max_chars": 280
+	},
+	{
+		"slug": "github-discussion",
+		"kind": "long-form",
+		"min_words": 300,
+		"max_words": 3000
+	},
+	{
+		"slug": "reddit",
+		"kind": "social",
+		"min_words": 150,
+		"max_words": 1500
+	}
 ]

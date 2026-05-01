@@ -14,8 +14,7 @@ What this PR changes and why. One or two sentences is usually enough.
 
 ## Testing
 
-- [ ] `pnpm types` — clean
-- [ ] `pnpm lint` — clean (biome check, no auto-fix)
+- [ ] `pnpm test:all` — clean (format, types, lint, AVA, knip, audit, Semgrep)
 - [ ] `pnpm build` — clean (static export)
 - [ ] For UI changes: `pnpm dev` and manually exercised the affected route
 - [ ] For generation changes: `pnpm generate --product <slug> --version <v> --test` produced a sensible pack
@@ -23,7 +22,7 @@ What this PR changes and why. One or two sentences is usually enough.
 
 ## Checklist
 
-- [ ] If this changes load-bearing design or behaviour, the relevant doc was updated (`docs/planning.md`, `docs/implementation.md` decision log, or `docs/handoff.md`).
+- [ ] If this changes operator-facing behaviour, the relevant doc was updated (`docs/runbook.md`, `docs/local-development.md`, or `docs/adding-a-product.md`).
 - [ ] If this changes the generation pipeline, `prompts/agents/*.md` and the orchestrator (`scripts/generate-content.ts`) are still in sync.
 - [ ] No secrets in the diff (`.env`, API keys, tokens).
 - [ ] No new dependencies without a one-line justification in the PR description.

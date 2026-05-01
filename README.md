@@ -11,7 +11,7 @@ This is an **internal tool**. The site is private, and there is no install path 
 ### For team members
 
 1. Sign in at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org) with your GitHub account (you must be a member of [`Nano-Collective`](https://github.com/Nano-Collective)).
-2. Browse the latest packs from the homepage. Copy the channel posts you need and paste them into your social tool of choice — there is no automated posting (by design — see [`docs/planning.md`](./docs/planning.md) §14).
+2. Browse the latest packs from the homepage. Copy the channel posts you need and paste them into your social tool of choice — there is no automated posting (by design).
 
 ### For maintainers
 
@@ -29,9 +29,7 @@ For a real CI-driven generation, dispatch [`.github/workflows/daily-content.yaml
 
 ## Documentation
 
-- **[`docs/planning.md`](./docs/planning.md)** — design, decisions, and rationale.
-- **[`docs/implementation.md`](./docs/implementation.md)** — what's built, decision log, and reference URLs.
-- **[`docs/handoff.md`](./docs/handoff.md)** — read this first if you're picking the project up mid-flight.
+- **[`CONTRIBUTING.md`](./CONTRIBUTING.md)** — dev setup, test gate, coding standards, and the divergences from the [Nano Collective playbook](https://docs.nanocollective.org/collective/projects/creating-a-new-project) this repo takes.
 - **[`docs/runbook.md`](./docs/runbook.md)** — dispatching runs, reading failed-validation PRs, recovering from broken state.
 - **[`docs/local-development.md`](./docs/local-development.md)** — local generation workflow for prompt tuning.
 - **[`docs/adding-a-product.md`](./docs/adding-a-product.md)** — onboarding a new NC product.
@@ -39,9 +37,10 @@ For a real CI-driven generation, dispatch [`.github/workflows/daily-content.yaml
 
 ## Community
 
-- **[Discord](https://discord.gg/ktPDV6rekE)** — real-time chat with the collective.
+- **[Nano Collective](https://nanocollective.org)** — the collective behind this and every other NC project.
 - **[Nano Collective docs](https://docs.nanocollective.org)** — the collective's shared operational reference (conventions, brand, project setup).
 - **[GitHub organisation](https://github.com/Nano-Collective)** — every NC project, including this one.
+- **[Discord](https://discord.gg/ktPDV6rekE)** — real-time chat with the collective.
 
 ## License
 

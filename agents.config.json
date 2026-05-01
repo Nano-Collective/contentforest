@@ -1,14 +1,14 @@
 {
-  "nanocoder": {
-    "disabledTools": ["agent"],
-    "providers": [
-      {
-        "name": "MiniMax Coding",
-        "sdkProvider": "anthropic",
-        "baseUrl": "https://api.minimax.io/anthropic/v1",
-        "apiKey": "${MINIMAX_API_KEY}",
-        "models": ["minimax-m2.7"]
-      }
-    ]
-  }
+	"nanocoder": {
+		"disabledTools": ["agent"],
+		"providers": [
+			{
+				"name": "MiniMax Coding",
+				"sdkProvider": "anthropic",
+				"baseUrl": "https://api.minimax.io/anthropic/v1",
+				"apiKey": "${MINIMAX_API_KEY}",
+				"models": ["minimax-m2.7"]
+			}
+		]
+	}
 }

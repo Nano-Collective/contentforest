@@ -1,6 +1,6 @@
 [
-  { "slug": "nanocoder", "repo": "Nano-Collective/nanocoder" },
-  { "slug": "nanotune", "repo": "Nano-Collective/nanotune" },
-  { "slug": "get-md", "repo": "Nano-Collective/get-md" },
-  { "slug": "json-up", "repo": "Nano-Collective/json-up" }
+	{ "slug": "nanocoder", "repo": "Nano-Collective/nanocoder" },
+	{ "slug": "nanotune", "repo": "Nano-Collective/nanotune" },
+	{ "slug": "get-md", "repo": "Nano-Collective/get-md" },
+	{ "slug": "json-up", "repo": "Nano-Collective/json-up" }
 ]
