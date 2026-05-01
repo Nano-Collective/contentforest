@@ -1,0 +1,79 @@
+name: Gate Issues
+
+# ContentForest is a public repo, but issues are restricted to Nano Collective
+# org members. GitHub has no permanent native toggle for this on public repos
+# (only interaction limits, which expire after at most 6 months), so this
+# workflow runs on every newly-opened issue, checks public org membership,
+# and closes anything from non-members with a comment explaining where to
+# go instead.
+#
+# Membership check uses the `public_members` endpoint because the default
+# GITHUB_TOKEN doesn't carry org-read scope. Org members whose membership is
+# set to private must toggle it to public at
+# https://github.com/orgs/Nano-Collective/people for the gate to recognise
+# them — the auto-close comment below tells them how.
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  check-membership:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Check public org membership and close if not a member
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          # Bots that we open issues with ourselves never need gating.
+          case "$AUTHOR" in
+            github-actions\[bot\]|dependabot\[bot\]|nanocollective-bot)
+              echo "skipping gate for trusted bot: $AUTHOR"
+              exit 0
+              ;;
+          esac
+
+          # `gh api -i` prints headers — first line is `HTTP/2.0 <status> <text>`.
+          # 204 = public org member, 404 = not a public member.
+          STATUS=$(gh api -i "orgs/Nano-Collective/public_members/${AUTHOR}" 2>&1 \
+            | awk 'NR==1 {print $2}' || echo "404")
+
+          if [ "${STATUS:-404}" = "204" ]; then
+            echo "$AUTHOR is a public NC org member — issue allowed"
+            exit 0
+          fi
+
+          echo "$AUTHOR is not a public NC org member (status=$STATUS) — closing issue #$ISSUE"
+
+          BODY=$(cat <<'BODY_EOF'
+          Thanks for the interest! ContentForest is an **internal Nano Collective tool** — issues here are restricted to public members of the [Nano-Collective](https://github.com/Nano-Collective) organisation.
+
+          ### If you're an NC member
+
+          Your org membership is set to private, which is why this gate didn't recognise you. Toggle it to public:
+
+          1. Go to [github.com/orgs/Nano-Collective/people](https://github.com/orgs/Nano-Collective/people).
+          2. Find yourself in the list, click the **Private** badge next to your name, switch to **Public**.
+          3. Reopen this issue.
+
+          ### If you're not an NC member
+
+          - **A problem with one of our products?** Open an issue against the product's own repo:
+            - [Nanocoder](https://github.com/Nano-Collective/nanocoder/issues)
+            - [Nanotune](https://github.com/Nano-Collective/nanotune/issues)
+            - [get-md](https://github.com/Nano-Collective/get-md/issues)
+            - [json-up](https://github.com/Nano-Collective/json-up/issues)
+          - **General discussion?** Join us on [Discord](https://discord.gg/ktPDV6rekE).
+
+          This issue has been closed automatically. No notification was sent to anyone other than you.
+          BODY_EOF
+          )
+
+          gh issue comment "$ISSUE" --body "$BODY"
+          gh issue close "$ISSUE" --reason "not planned"

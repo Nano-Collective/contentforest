@@ -93,8 +93,8 @@ Listed in priority order; tackle top-down.
 2. - [x] **Refactor `scripts/generate-content.ts`** (2026-04-30): `runNanocoder` extracted; `runAgentPipeline(job)` loops the agents with per-agent retry (default bumped to **5 retries** at Will's call — `--max-retries 6` = 1 initial + 5 retries; cost ceiling **2 × 6 = 12 spawns** per pack after the personal-agent removal). Per-agent failure writes `final_status: "failed-validation"` + `failed_agent: "<slug>"` in meta and aborts subsequent agents — earlier agents' output preserved on disk.
 3. - [x] **Add `--phase` to `scripts/validate-content.ts`** (2026-04-30; simplified 2026-05-01): phases now `channels`, `articles` plus `full` (default, used by Layer 2 PR check + seed-fixtures). Per-file rules apply uniformly to whatever .md files exist; legacy `personal/<member>/<channel>.md` files in older committed packs still parse cleanly but no longer appear in any expected-files list.
 4. - [x] **In-spawn self-validation** added to both agent prompts (2026-05-01). Each agent runs `pnpm validate --pack <id> --root <root> --phase <its-phase> --report /tmp/cf-self-check.json --quiet` before declaring done, fixes flagged files, re-validates — capped at 3 in-spawn cycles. Halves typical-case spawn count since the model converges in one spawn instead of needing the orchestrator to fire a fresh retry.
-5. - [ ] **Test locally end-to-end** with `pnpm generate --product nanocoder --version 1.25.2 --test`. Output should be at least as good as v1 single-shot. **← Will's verification step (needs API key).** A partial 1.25.0 test run exists at `content/_test/nanocoder/1.25.0/` from an earlier four-agent attempt; if you want a clean A/B, delete that and re-run.
-6. - [ ] **Delete `prompts/release-pack.md` and the v1 code path** once v2 is verified. Keep `prompts/auto-fix.md` (still used per-agent for outer retries — the `{{ORIGINAL_PROMPT}}` embed varies per agent). v1 prompt sits next to `prompts/agents/` as reference; nothing in the orchestrator wires it. Note: the v1 prompt references `config/team.json`, which has been deleted — A/B'ing v1 cleanly would require putting it back temporarily.
+5. - [x] **Test locally end-to-end** with `pnpm generate --product nanocoder --version 1.25.2 --test`. Output should be at least as good as v1 single-shot. **← Will's verification step (needs API key).** A partial 1.25.0 test run exists at `content/_test/nanocoder/1.25.0/` from an earlier four-agent attempt; if you want a clean A/B, delete that and re-run.
+6. - [x] **Delete `prompts/release-pack.md` and the v1 code path** once v2 is verified. Keep `prompts/auto-fix.md` (still used per-agent for outer retries — the `{{ORIGINAL_PROMPT}}` embed varies per agent). v1 prompt sits next to `prompts/agents/` as reference; nothing in the orchestrator wires it. Note: the v1 prompt references `config/team.json`, which has been deleted — A/B'ing v1 cleanly would require putting it back temporarily.
 7. - [ ] **Update planning §6.4 / §6.4.3** to mark v2 as live, v1 as historical, and reflect the two-agent shape (currently the planning doc still describes the four-agent design).
 
 The v1 prompt stays in place; the orchestrator runs v2 only. A `git revert` is the rollback if A/B regresses.
@@ -116,6 +116,7 @@ These are GitHub-level toggles or one-time fills that someone with admin rights 
   - `json-up`
   Each opens its own PR. Review and merge.
 - [x] **Decide whether to keep the cron enabled.** It's currently on at 08:00 UTC daily. Comment out `schedule:` in `daily-content.yaml` if you want manual-only for now.
+- [x] **Restrict issue creation to NC org members** (the repo is public). Landed 2026-05-01 as `.github/workflows/gate-issues.yaml`. GitHub has no permanent native toggle for this — the workflow auto-closes any newly-opened issue from a non-public-NC-member with a comment pointing them at the right per-product issue trackers + Discord. **One operational requirement:** the gate uses the `public_members` API endpoint because the default `GITHUB_TOKEN` doesn't carry org-read scope, so org members must have their NC membership set to **public** at [github.com/orgs/Nano-Collective/people](https://github.com/orgs/Nano-Collective/people). The auto-close comment tells members how to flip it. Once the `nanocollective-bot` GH App lands (see §6), swap to using its token + the regular `members` endpoint and this constraint goes away.
 
 ### 3. Homepage redesign (the visible front-end story) — DONE 2026-04-30
 
@@ -200,40 +201,21 @@ Then `Navbar.tsx` renders avatar (Octocat + `github_login`) when present, falls 
 
 These are legitimately deferrable; revisit when the conditions trigger.
 
-- [ ] **GitHub-issue-driven "Request a change" — prompted edits to existing packs.** Today the only path to a tweak is "open the PR locally, hand-edit, push." That's friction the team hits constantly between merge and post — small word changes, register tweaks, picking different angles. The ergonomic answer: drive it through GitHub Issues with a structured template, an `issues: opened` workflow that runs Nanocoder against the request, and a PR that auto-closes the issue on merge. No Cloudflare Worker, no Access JWT plumbing, no UI work — every NC org member already has Issues access, every request is auditable in the issue thread, and `Closes #N` in the PR body handles lifecycle for free.
+- [x] **GitHub-issue-driven "Request a change" — prompted edits to existing packs.** Landed 2026-05-01. The team can open a `Request a content change` issue (template at `.github/ISSUE_TEMPLATE/change-request.yml`), the `change-request.yaml` workflow parses the issue body into a job spec, runs the change-request agent against the existing pack, opens a PR with `Closes #<N>` in the body, and comments on the issue with the PR link. `/retry` issue comments re-run the workflow with the same fields.
 
-  **Architecture sketch (the right shape, not a finalised design):**
+  **What landed:**
+  - `prompts/change-request.md` — change-request agent prompt (brand voice + channel rules + frontmatter contract duplicated from the v2 release prompts; scope discipline + self-check at `--phase full` capped at 3 cycles).
+  - `scripts/parse-change-request.ts` — issue-form-body → job-spec JSON parser (stdin → stdout). Cross-field validation (e.g. scope=file requires file_path) fails the workflow before spawning Nanocoder. Smoke-tested manually with happy + missing-field + bogus-scope bodies.
+  - `scripts/change-request.ts` — orchestrator. Resolves the pack (must exist), clones the product repo at the version for grounding, builds the prompt, runs Nanocoder with the auto-fix retry loop (default `--max-retries 3`), validates at `--phase full`, writes a `change-request.json` sidecar capturing requester / scope / request / outcome for audit on the PR diff.
+  - `.github/ISSUE_TEMPLATE/change-request.yml` — issue form (product dropdown, version, scope, article_slug, file_path, request, context).
+  - `.github/workflows/change-request.yaml` — triggers on `issues: opened, labeled` and `/retry` issue comments, filtered to the `change-request` label. Lifecycle labels: `processing` while running, `failed-change` if the agent exhausts retries (PR still opens). Concurrency group is per-issue so a `/retry` queues behind the in-flight run.
+  - `pnpm change-request` and `pnpm parse-change-request` script entries.
 
-  - **Issue template** (`.github/ISSUE_TEMPLATE/change-request.yml`, new — issue form with structured fields):
-    - `product` — dropdown enumerating `config/products.json` slugs (forms can't read JSON at runtime; list them by hand and bump when a new product is onboarded — already a documented step in `adding-a-product.md`).
-    - `version` — text input, required (e.g. `1.25.2`).
-    - `scope` — dropdown: `whole pack` / `headline channel` / `article` / `specific file`.
-    - `article_slug` — text input, optional (only relevant if scope = article or specific file).
-    - `file_path` — text input, optional (e.g. `articles/mcp-support/channels/linkedin.md`); when present, the agent only edits this file.
-    - `request` — textarea, required ("make the LinkedIn post more technical", "tighten the reddit post by a third", "add a paragraph about MCP support").
-    - `context` — textarea, optional (background / reasoning / examples).
-    - Auto-applies a `change-request` label so the workflow filter is precise.
-
-  - **Workflow** (`.github/workflows/change-request.yaml`, new):
-    - **Trigger:** `issues: types: [opened, labeled]` filtered to label `change-request`. Plus `issue_comment: types: [created]` filtered to comments matching `^/retry` (cheap re-run when the first attempt missed).
-    - **Steps:** parse the issue body (issue-forms produce predictable markdown — `## Product` etc.); resolve the pack on disk; install Nanocoder, fetch refs (same skeleton as `daily-content.yaml`); build a prompt from `prompts/change-request.md` with `{{REQUEST}}`, `{{PACK_CONTENT}}` (the in-scope files inlined), `{{SCOPE}}`, `{{REQUESTER}}` substituted; spawn Nanocoder; run the validator at `--phase full`; open a PR with `Closes #<issue>` in the body so merge auto-closes the issue.
-    - **Lifecycle labels on the issue:** `processing` (workflow started) → removed when the PR opens; `failed-change` if validation hard-fails after retries (PR still opens with the failures, same pattern as the daily flow). Comment on the issue with the PR link either way.
-    - **Permissions:** default `GITHUB_TOKEN` is enough to open the PR, comment on the issue, and apply labels — the org "Allow Actions to create PRs" toggle is already on (per §2). No new secrets.
-
-  - **Prompt** (`prompts/change-request.md`, new): same brand voice + channel rules + frontmatter contract as the v2 pipeline agents (duplicate, don't DRY). Embeds the user's request verbatim and the current pack contents. Hard rule: **edit only what's in scope, don't rewrite passing files.** Same `nanocoder.disabledTools: ["agent"]` config applies (no subagent spawning). Same in-spawn self-check pattern: `pnpm validate --pack <id> --root content --phase full --report /tmp/cf-self-check.json --quiet` before exit, capped at 3 cycles.
-
-  - **PR ergonomics:** branch `change/<product>-<version>-issue-<N>`, label `change-request`, body opens with `Closes #<N>` then `Requested by @<gh-login>` and the original request. Falls into the existing review queue alongside release packs. The release content stays under `content/<product>/<version>/`; a change request is just an edit to that tree, so the deploy pipeline picks it up on merge with no special handling.
-
-  **Risks / open questions:**
-  - **Scope creep into posting.** Out of scope by planning §14 / "Don'ts" below — explicitly *don't* let an issue also schedule a post. Editing only.
-  - **Spam.** Org-gated (only `Nano-Collective` members can open issues). If volume gets noisy, gate the workflow on the issue author being an org member via the GH API in step 1 (`gh api orgs/Nano-Collective/members/<user>`).
-  - **Issue edits.** Default to *not* re-running on `issues: edited` — let humans converse in the thread without firing the agent each time. `/retry` comment is the explicit re-run signal.
-  - **Concurrent edits to the same pack.** If two issues request changes to the same `<product>/<version>` simultaneously, the second PR will hit merge conflicts. Acceptable cost; humans rebase or close the loser.
-  - **`Closes #N` only fires on PR merge to the default branch.** If the PR is rejected and closed, the issue stays open — that's correct behaviour (request unfulfilled).
-
-  **Trigger to build it:** demand from the team. If after the first month of v2 PRs the team is consistently hand-editing post-merge or asking for re-runs of specific channels, this is the next item. Otherwise it's a nice-to-have.
-
-  **Pre-reqs that other items already cover:** none beyond what's already in place — the org PR-creation toggle is on, the Nanocoder pipeline + validator + auto-fix prompt patterns all exist.
+  **Open questions / things to watch on first real use:**
+  - Does the issue-form markdown shape match the parser's regex (`### <Field>` headings)? The parser is tolerant but GitHub may evolve the format.
+  - Does Nanocoder reliably honour scope discipline? The prompt says "files outside scope must not change," but the agent could still touch them in yolo mode. The PR review is the safety net; if drift is common, gate the orchestrator on a per-scope file allow-list before pushing.
+  - The `change-request.json` sidecar lands inside the pack directory and gets deployed with the rest of the static export. It's tiny (a few hundred bytes) and useful for audit; if it shows up unwanted in the file viewer, hide it in `lib/content.ts`.
+  - Spam: org-gated by GitHub already. If a member opens many junk issues, gate the workflow on org membership via `gh api orgs/Nano-Collective/members/<user>` in the first step.
 
 - [ ] **`auto-fix.yml` workflow (Layer 3 of the auto-fix loop).** Trigger condition: >20% of release-pack PRs land with `failed-validation` over the first month of operation. If we hit that, build it. Pair with the `nanocollective-bot` GitHub App so we never introduce a PAT. Design specifics in `planning.md` §6.7.
 - [ ] **`nanocollective-bot` GitHub App.** When (a) we ship Layer 3, or (b) `github-actions[bot]` becomes a real attribution problem, replace with a dedicated App. Currently bot commits and PRs are attributed to `github-actions[bot]` which is fine for now.
@@ -244,7 +226,7 @@ These are legitimately deferrable; revisit when the conditions trigger.
 
 ### 7. Polish (low-priority, do as you encounter them)
 
-- [ ] **Tests for `validate-content.ts`.** It's pure logic with no integration; a few fixture-based unit tests would lock the rules in. Suggest `vitest` for consistency with most TS projects.
+- [x] **Tests for `validate-content.ts`** — landed 2026-05-01. 26 ava tests at `scripts/validate-content.spec.ts` covering the happy paths for each phase, one test per failure rule the validator emits, the two soft-rule warnings, the `final_status: "sample"` skip, and the legacy `personal/<member>/<channel>.md` back-compat. Fixtures are built programmatically in `tmpdir` per-test (no on-disk fixture files committed). Refactored the validator to expose a programmatic `runValidate({ contentRoot, packFilter, phase, config })` entry alongside the CLI; `main()` only fires when the script is the process entry point. Test step wired into `validate-content.yaml` ahead of the existing pack-validation step.
 - [ ] **Article view UX.** Currently each article gets its own section under the file tree with `meta.title` as heading and `meta.focus` as subtitle. If articles get heavy use, consider per-article pages (`/p/<product>/<version>/articles/<slug>`) with their own URLs for shareability.
 - [ ] **Latest-versions cache.** `pages/index.tsx` reads the filesystem at build time, which is fine. If product count grows past ~20 we may want incremental-static-regeneration or a manifest file. Not yet.
 

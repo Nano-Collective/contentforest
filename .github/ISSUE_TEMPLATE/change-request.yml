@@ -1,0 +1,86 @@
+name: Request a content change
+description: Ask an agent to apply a targeted edit to an existing release pack and open a PR.
+title: "[change]: "
+labels: ["change-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit this issue and an agent will read your request, make the edit, and open a PR. The PR auto-closes this issue on merge.
+
+        **Scope** is the most important field — pick the narrowest scope that fits the request. The agent will refuse to touch files outside the scope you choose.
+
+        If the first attempt doesn't land cleanly, comment `/retry` to re-run with the same fields. Edit the issue body if you want to refine the request first; only `/retry` triggers the agent.
+
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product
+      description: Which product's pack to edit. Slugs match `config/products.json`.
+      options:
+        - nanocoder
+        - nanotune
+        - get-md
+        - json-up
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Version of the pack to edit, without the `v` prefix.
+      placeholder: "1.25.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: |
+        - **Whole pack** — anything in the pack. Use sparingly.
+        - **Headline channels (channels/*.md)** — only the four headline channel posts.
+        - **Specific article** — one article's full channel set. Requires Article slug.
+        - **Specific file** — one file only. Requires File path.
+      options:
+        - Whole pack
+        - Headline channels (channels/*.md)
+        - Specific article
+        - Specific file
+    validations:
+      required: true
+
+  - type: input
+    id: article_slug
+    attributes:
+      label: Article slug
+      description: Required if scope = "Specific article". The kebab-case directory name under `articles/`.
+      placeholder: "mcp-support"
+
+  - type: input
+    id: file_path
+    attributes:
+      label: File path
+      description: Required if scope = "Specific file". Path relative to the pack root.
+      placeholder: "channels/linkedin.md  or  articles/mcp-support/channels/x.md"
+
+  - type: textarea
+    id: request
+    attributes:
+      label: Request
+      description: What should the agent change? Be specific about what to do, not just what's wrong.
+      placeholder: |
+        e.g. "Tighten the LinkedIn post by ~30% — it's too long. Keep the lede and the closing CTA."
+        e.g. "Add a paragraph to the GitHub Discussion explaining how MCP support works in practice. Link to docs.nanocollective.org/nanocoder/configuration/mcp-configuration."
+        e.g. "Rephrase any sentence that reads like marketing — keep the engineering register."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional. Background, examples, or anything else the agent should know.
+      placeholder: |
+        Optional. e.g. "We posted the original to LinkedIn last week and got feedback that it read as too promotional."

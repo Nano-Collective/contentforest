@@ -43,6 +43,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import matter from "gray-matter";
 
@@ -123,6 +124,11 @@ function loadConfig() {
   const channels = readJson<ChannelRule[]>(join(ROOT, "config/channels.json"));
   return { products, channels };
 }
+
+export type ValidatorConfig = {
+  products: Product[];
+  channels: ChannelRule[];
+};
 
 function findChannel(channels: ChannelRule[], slug: string) {
   return channels.find((c) => c.slug === slug);
@@ -480,28 +486,26 @@ function validatePack(args: {
   return { failures, warnings, skipped: false };
 }
 
-function main() {
-  const { values } = parseArgs({
-    allowPositionals: true,
-    options: {
-      pack: { type: "string" },
-      root: { type: "string", default: "content" },
-      report: { type: "string", default: "validation-report.json" },
-      phase: { type: "string", default: "full" },
-      quiet: { type: "boolean", default: false },
-    },
-  });
-
-  const phase = values.phase as Phase;
+/**
+ * Programmatic entry point — used by the CLI `main()` and by `*.spec.ts`
+ * tests. Returns the structured Report; never prints, never exits, never
+ * writes files. The CLI wraps this with arg parsing, output formatting,
+ * report writing, and exit codes.
+ */
+export function runValidate(options: {
+  contentRoot: string;
+  packFilter?: string;
+  phase?: Phase;
+  config?: ValidatorConfig;
+}): Report {
+  const phase = options.phase ?? "full";
   if (!PHASES.includes(phase)) {
-    console.error(
-      `Unknown --phase ${phase}; expected one of ${PHASES.join(", ")}`,
+    throw new Error(
+      `Unknown phase ${phase}; expected one of ${PHASES.join(", ")}`,
     );
-    process.exit(2);
   }
 
-  const contentRoot = join(ROOT, values.root as string);
-  const cfg = loadConfig();
+  const cfg = options.config ?? loadConfig();
   const productsBySlug = new Map(cfg.products.map((p) => [p.slug, p]));
 
   const report: Report = {
@@ -512,17 +516,16 @@ function main() {
   };
 
   const packsToScan: { product: Product; version: string }[] = [];
-  if (values.pack) {
-    const [productSlug, version] = (values.pack as string).split("/");
+  if (options.packFilter) {
+    const [productSlug, version] = options.packFilter.split("/");
     const product = productsBySlug.get(productSlug);
     if (!product) {
-      console.error(`Unknown product: ${productSlug}`);
-      process.exit(2);
+      throw new Error(`Unknown product: ${productSlug}`);
     }
     packsToScan.push({ product, version });
   } else {
     for (const product of cfg.products) {
-      const productDir = join(contentRoot, product.slug);
+      const productDir = join(options.contentRoot, product.slug);
       for (const version of listDirs(productDir)) {
         packsToScan.push({ product, version });
       }
@@ -530,7 +533,7 @@ function main() {
   }
 
   for (const { product, version } of packsToScan) {
-    const packRoot = join(contentRoot, product.slug, version);
+    const packRoot = join(options.contentRoot, product.slug, version);
     if (!existsSync(packRoot)) {
       report.failures.push({
         file: relative(ROOT, packRoot),
@@ -596,6 +599,41 @@ function main() {
     }
   }
 
+  return report;
+}
+
+function main() {
+  const { values } = parseArgs({
+    allowPositionals: true,
+    options: {
+      pack: { type: "string" },
+      root: { type: "string", default: "content" },
+      report: { type: "string", default: "validation-report.json" },
+      phase: { type: "string", default: "full" },
+      quiet: { type: "boolean", default: false },
+    },
+  });
+
+  const phase = values.phase as Phase;
+  if (!PHASES.includes(phase)) {
+    console.error(
+      `Unknown --phase ${phase}; expected one of ${PHASES.join(", ")}`,
+    );
+    process.exit(2);
+  }
+
+  let report: Report;
+  try {
+    report = runValidate({
+      contentRoot: join(ROOT, values.root as string),
+      packFilter: values.pack as string | undefined,
+      phase,
+    });
+  } catch (e) {
+    console.error((e as Error).message);
+    process.exit(2);
+  }
+
   const reportPath = values.report as string;
   writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
@@ -630,4 +668,9 @@ function main() {
   process.exit(report.failures.length > 0 ? 1 : 0);
 }
 
-main();
+// Only run the CLI when this file is the entry point. When imported from a
+// spec, the file's other exports (`runValidate`, `ValidatorConfig`) are used
+// without firing the CLI's top-level side effects.
+if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}

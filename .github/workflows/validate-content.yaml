@@ -6,8 +6,8 @@ on:
       - "content/**"
       - "config/channels.json"
       - "config/products.json"
-      - "config/team.json"
       - "scripts/validate-content.ts"
+      - "scripts/validate-content.spec.ts"
   workflow_dispatch:
 
 concurrency:
@@ -35,6 +35,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+
+      - name: Run validator unit tests
+        run: pnpm test
 
       - name: Validate all committed content
         run: pnpm validate
