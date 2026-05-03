@@ -44,6 +44,9 @@ next-env.d.ts.bak
 /content/_test/
 /validation-report.json
 
+# Local-only planning / scratch agent docs
+/agents/
+
 # Nanocoder runtime state (local sessions, task list, checkpoints).
 # We don't ship any project-level Nanocoder agents/commands/schedules in this
 # repo — generation uses templated prompts under prompts/ instead — so the
