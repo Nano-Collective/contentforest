@@ -66,7 +66,7 @@ export default function FileTree({sections, selected, onSelect}: Props) {
 																className={cn(
 																	'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors',
 																	isSelected
-																		? 'bg-accent text-foreground font-medium'
+																		? 'bg-accent text-accent-foreground font-medium'
 																		: 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
 																)}
 															>

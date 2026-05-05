@@ -1,6 +1,6 @@
-name: Request collective content
+name: Request Collective Content Change
 description: Ask an agent to create or edit a collective-level content pack (not tied to a product release).
-title: "[collective]: "
+title: "[collective-change]: "
 labels: ["collective-request"]
 body:
   - type: markdown
@@ -8,7 +8,9 @@ body:
       value: |
         Submit this issue and an agent will write (or edit) a collective-level content pack — channel posts about the Nano Collective itself, independent of any product release. The agent opens a PR which auto-closes this issue on merge.
 
-        Use this for things like a community update, an economics-charter explainer, a brand-voice post, a governance-model writeup. For per-release product packs, use the **release** auto-pipeline; for edits to an existing release pack, use **Request a content change**.
+        Use this for things like a community update, an economics-charter explainer, a brand-voice post, a governance-model writeup. For per-release product packs, use the **release** auto-pipeline; for edits to an existing release pack, use **Request Product Content Change**.
+
+        New pack or change to an existing pack: enter the slug below — if a pack already exists at that slug, the agent edits in place; otherwise it creates a new pack.
 
         If the first attempt doesn't land cleanly, comment `/retry` to re-run with the same fields. Edit the issue body if you want to refine the request first; only `/retry` triggers the agent.
 

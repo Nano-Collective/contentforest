@@ -48,7 +48,7 @@ export default function MarkdownPane({filename, raw, body}: Props) {
 						className={cn(
 							'flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium transition-colors',
 							mode === 'preview'
-								? 'bg-accent text-foreground'
+								? 'bg-accent text-accent-foreground'
 								: 'text-muted-foreground hover:text-foreground',
 						)}
 					>
@@ -61,7 +61,7 @@ export default function MarkdownPane({filename, raw, body}: Props) {
 						className={cn(
 							'flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium transition-colors',
 							mode === 'raw'
-								? 'bg-accent text-foreground'
+								? 'bg-accent text-accent-foreground'
 								: 'text-muted-foreground hover:text-foreground',
 						)}
 					>

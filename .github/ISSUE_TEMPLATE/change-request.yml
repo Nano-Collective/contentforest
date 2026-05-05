@@ -1,6 +1,6 @@
-name: Request a content change
-description: Ask an agent to apply a targeted edit to an existing release pack and open a PR.
-title: "[change]: "
+name: Request Product Content Change
+description: Ask an agent to apply a targeted edit to an existing product release pack and open a PR.
+title: "[product-change]: "
 labels: ["change-request"]
 body:
   - type: markdown
