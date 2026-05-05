@@ -119,6 +119,7 @@ Every `.md` file in this pack uses this frontmatter shape:
 kind: collective
 slug: {{SLUG}}
 channel: <channel-slug>
+title: <string>          # required ONLY when channel is github-discussion — becomes the Discussion title
 generated_at: "{{GENERATED_AT}}"
 model: "{{MODEL}}"
 char_count: <integer>
@@ -128,9 +129,10 @@ char_count: <integer>
 - `kind` is always literally `collective` — this is what the validator uses to apply the collective rules instead of the product rules.
 - `slug` is `{{SLUG}}` on every file in this pack — it identifies the pack, mirroring how `version` identifies a release pack.
 - `channel` is the channel slug from `config/channels.json` (`linkedin`, `x`, `github-discussion`, `reddit`).
+- `title` is required only on the `github-discussion` file — it becomes the Discussion title when the post is published. Keep it ≤ 80 chars and headline-shaped. Omit on the other channels.
 - `char_count` is the body length excluding frontmatter, in characters. Compute it after you write each body.
 
-In `edit` mode, do **not** change `kind`, `slug`, `channel`, `generated_at`, or `model` on existing files — those record when the pack was first generated. Only update `char_count` when the body changes.
+In `edit` mode, do **not** change `kind`, `slug`, `channel`, `generated_at`, or `model` on existing files — those record when the pack was first generated. Only update `char_count` when the body changes, and `title` when the github-discussion angle changes.
 
 # meta.json
 

@@ -100,7 +100,7 @@ Same per-channel rules as the announcement. Each article gets a full channel set
 | --- | --- | --- |
 | LinkedIn | `articles/<slug>/channels/linkedin.md` | One CTA, no hashtag soup. Operational, plain. |
 | X | `articles/<slug>/channels/x.md` | ≤ 280 chars including the link. One link, max two hashtags. |
-| GitHub Discussion | `articles/<slug>/channels/github-discussion.md` | Long-form deep dive on the article angle. Engineering-doc register. |
+| GitHub Discussion | `articles/<slug>/channels/github-discussion.md` | Long-form deep dive on the article angle. Engineering-doc register. **Set a `title` in the frontmatter** — becomes the Discussion title when posted. Reuse the article `meta.json.title` or a closely-shaped variant; keep it ≤ 80 chars. |
 | Reddit | `articles/<slug>/channels/reddit.md` | Conversational, "here's a thing we built / decided / learned." |
 
 **Link policy (hard rule):** every body must link to **{{PRODUCT_REPO_URL}}** (the repo root) — never to a release-specific URL like `/releases/tag/...`.
@@ -112,6 +112,7 @@ Same per-channel rules as the announcement. Each article gets a full channel set
 product: {{PRODUCT_SLUG}}
 version: "{{VERSION}}"
 channel: <slug>          # one of "linkedin", "x", "github-discussion", "reddit"
+title: <string>          # required ONLY for channel: github-discussion — becomes the Discussion title
 generated_at: "{{GENERATED_AT}}"
 model: "{{MODEL}}"
 char_count: <integer count of body chars excluding frontmatter>

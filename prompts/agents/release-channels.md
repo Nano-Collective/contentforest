@@ -87,7 +87,7 @@ Use `config/channels.json` (below) for length/char rules. The `max_*` values are
 | --- | --- | --- |
 | LinkedIn | `channels/linkedin.md` | One CTA, no hashtag soup. Operational, plain. |
 | X | `channels/x.md` | ≤ 280 chars including the link. One link, max two hashtags. Punchy but not marketing-y. |
-| GitHub Discussion | `channels/github-discussion.md` | **Canonical long-form release post.** Engineering-doc register. This is what gets pasted into a Discussion on `Nano-Collective/website`, which becomes the public blog post. Include the canonical tagline somewhere natural. Cover what changed and why. Code examples where useful. |
+| GitHub Discussion | `channels/github-discussion.md` | **Canonical long-form release post.** Engineering-doc register. This is what gets pasted into a Discussion on `Nano-Collective/website`, which becomes the public blog post. Include the canonical tagline somewhere natural. Cover what changed and why. Code examples where useful. **Set a `title` in the frontmatter** — this becomes the Discussion title when posted. Keep it concise (≤ 80 chars) and headline-shaped, e.g. `Nanocoder v{{VERSION}} — <one-line angle>`. |
 | Reddit | `channels/reddit.md` | Conversational, "we built this, here's what changed." First-person plural. |
 
 **Link policy (hard rule):** every post must link to **{{PRODUCT_REPO_URL}}** (the repo root) — never to a release-specific URL like `/releases/tag/...`. The GitHub release URL `{{RELEASE_TAG_URL}}` is for your reference only; do not include it in any output.
@@ -99,6 +99,7 @@ Use `config/channels.json` (below) for length/char rules. The `max_*` values are
 product: {{PRODUCT_SLUG}}
 version: "{{VERSION}}"
 channel: <slug>          # one of "linkedin", "x", "github-discussion", "reddit"
+title: <string>          # required ONLY for channel: github-discussion — becomes the Discussion title
 generated_at: "{{GENERATED_AT}}"
 model: "{{MODEL}}"
 char_count: <integer count of body chars excluding frontmatter>
