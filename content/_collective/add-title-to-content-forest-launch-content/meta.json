@@ -1,0 +1,9 @@
+{
+  "kind": "collective",
+  "slug": "add-title-to-content-forest-launch-content",
+  "issue_number": 8,
+  "requester": "will-lamerton",
+  "request": "Currently the GitHub Discussion for the content forest launch pack does not have a title. Add above the body of the article. It must be a catchy blog title - good for SEO.",
+  "generated_at": "2026-05-05T11:24:08.271Z",
+  "model": "minimax-m2.7"
+}
