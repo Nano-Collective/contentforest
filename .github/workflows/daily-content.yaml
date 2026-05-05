@@ -195,7 +195,7 @@ jobs:
               LABELS="auto-release,failed-validation"
             fi
 
-            BODY=$(printf 'Automated release pack for **%s** v%s.\n\n- Final status: `%s`\n- Generation attempts: `%s`\n- Auto-fix attempts: `%s`\n\nThe validator runs on this PR via `validate-content.yaml`. If hard rules failed, see the validation-report artifact on the workflow run.' \
+            BODY=$(printf 'Automated release pack for **%s** v%s.\n\n- Final status: `%s`\n- Generation attempts: `%s`\n- Auto-fix attempts: `%s`\n\nValidation ran during generation; the `meta.json` in the pack has the report. A reviewer should sanity-check the content before merging.' \
               "$PRODUCT" "$VERSION" "$FINAL_STATUS" "$GEN_ATTEMPTS" "$FIX_ATTEMPTS")
 
             # Try to open the PR. If creation fails (auth, transient API

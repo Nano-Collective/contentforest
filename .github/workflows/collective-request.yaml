@@ -2,7 +2,7 @@ name: Collective Request
 
 on:
   issues:
-    types: [opened, labeled]
+    types: [labeled]
   issue_comment:
     types: [created]
 
@@ -14,13 +14,20 @@ concurrency:
 
 jobs:
   apply:
-    # Only run when the issue carries the `collective-request` label, AND
-    # either this is an issue-open / issue-labeled event OR a `/retry` comment.
+    # We listen on `labeled` only (not `opened`) because GitHub fires both
+    # when an issue is created with the label already applied, and the dual
+    # firing previously caused the second run to nuke the first run's branch.
+    # `labeled` fires for every label add — gate on the specific label name
+    # so other labels (e.g. `processing`) don't kick off another run.
     if: |
-      contains(github.event.issue.labels.*.name, 'collective-request')
-      && (
+      (
         github.event_name == 'issues'
-        || (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/retry'))
+        && github.event.label.name == 'collective-request'
+      )
+      || (
+        github.event_name == 'issue_comment'
+        && startsWith(github.event.comment.body, '/retry')
+        && contains(github.event.issue.labels.*.name, 'collective-request')
       )
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -142,15 +149,22 @@ jobs:
         run: |
           set -euo pipefail
           BRANCH="collective/${SLUG}-issue-${ISSUE}"
-          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
-          # If the branch already exists from a previous attempt, reset it to
-          # main so this run starts from a clean state. /retry intentionally
-          # discards the previous attempt rather than amending it.
+          # Defensive guard against duplicate runs racing on the same issue.
+          # /retry intentionally discards the previous attempt; any other
+          # event sees an existing branch as a sibling run that's already
+          # handling this issue, and exits cleanly without touching it.
           if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-            echo "branch $BRANCH already exists on origin — deleting for clean retry"
-            git push origin --delete "$BRANCH" || true
+            if [ "${{ github.event_name }}" = "issue_comment" ]; then
+              echo "branch $BRANCH already exists on origin — /retry deleting for clean retry"
+              git push origin --delete "$BRANCH" || true
+            else
+              echo "branch $BRANCH already exists on origin — another run is handling this issue, exiting"
+              exit 0
+            fi
           fi
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           git checkout -B "$BRANCH" origin/main
 
           set +e
@@ -189,7 +203,7 @@ jobs:
             LABELS="collective-request,failed-change"
           fi
 
-          BODY=$(printf 'Closes #%s\n\nCollective-request from @%s — see issue for the request body.\n\n- Agent status: `%s`\n- Pack: `_collective/%s`\n\nThe validator runs on this PR via `validate-content.yaml`. If hard rules failed, see the validation-report artifact on the workflow run, plus the `collective-request.json` sidecar in the diff.' \
+          BODY=$(printf 'Closes #%s\n\nCollective-request from @%s — see issue for the request body.\n\n- Agent status: `%s`\n- Pack: `_collective/%s`\n\nValidation ran during generation; the `collective-request.json` sidecar in the diff has the report. A reviewer should sanity-check the content before merging.' \
             "$ISSUE" "$REQUESTER" "$([ "${AGENT_STATUS:-1}" -eq 0 ] && echo passed || echo failed-validation)" "$SLUG")
 
           set +e
