@@ -1,0 +1,341 @@
+name: PR Change
+
+# Reviewer-driven iteration on an open content PR. A `/change <request>`
+# comment on a content PR re-runs the agent in edit mode against the PR's
+# branch and pushes the result back as a new commit on the same branch.
+#
+# Failure semantics: the runner only `git push`es when the agent succeeds
+# AND validation passes AND there is a non-empty diff. On any failure the
+# runner exits without pushing — the PR branch is never touched — and a
+# comment with the failure summary is posted instead.
+#
+# Forks are not supported: the workflow's GITHUB_TOKEN can't push to a fork.
+# A `/change` on a fork PR posts an explanatory comment and exits.
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  # One concurrent /change run per PR. A second /change posted while the
+  # first is in flight queues behind it (cancelling mid-run could leave a
+  # half-finished commit on the PR).
+  group: pr-change-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: |
+      github.event.issue.pull_request != null
+      && startsWith(github.event.comment.body, '/change ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Verify commenter is a public NC org member
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.event.comment.user.login }}
+          PR: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          STATUS=$(gh api -i "orgs/Nano-Collective/public_members/${AUTHOR}" 2>&1 \
+            | awk 'NR==1 {print $2}' || echo "404")
+          if [ "${STATUS:-404}" = "204" ]; then
+            echo "$AUTHOR verified as public NC org member"
+            echo "member=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::$AUTHOR is not a public NC org member; rejecting /change"
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` is restricted to public Nano Collective org members. If you're a member, set your org membership to public at https://github.com/orgs/Nano-Collective/people."
+            echo "member=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve PR head and gate forks
+        id: pr
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          DATA=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json headRefName,headRepositoryOwner,headRefOid,state)
+          HEAD_BRANCH=$(jq -r '.headRefName' <<<"$DATA")
+          HEAD_OWNER=$(jq -r '.headRepositoryOwner.login' <<<"$DATA")
+          HEAD_SHA=$(jq -r '.headRefOid' <<<"$DATA")
+          STATE=$(jq -r '.state' <<<"$DATA")
+
+          if [ "$STATE" != "OPEN" ]; then
+            echo "::warning::PR is $STATE; skipping /change"
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` only works on open PRs (this one is \`$STATE\`)."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$HEAD_OWNER" != "Nano-Collective" ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` isn't supported on PRs from forks. Push the branch to \`$GITHUB_REPOSITORY\` if you want to iterate this way."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "branch=$HEAD_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Extract request from comment
+        id: request
+        if: steps.pr.outputs.ok == 'true'
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          PR: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Strip the leading "/change " token. The trigger filter already
+          # guarantees the prefix is present.
+          REQUEST="${COMMENT_BODY#/change }"
+          if [ -z "${REQUEST// /}" ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` needs a description, e.g. \`/change Tighten the LinkedIn post — drop the closing CTA.\`"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Persist via env-file so multi-line content survives the step
+          # boundary. Random delimiter so a comment body that happens to
+          # contain our marker on its own line can't break out of the heredoc.
+          DELIM="REQUEST_$(openssl rand -hex 16)"
+          {
+            echo "request<<$DELIM"
+            printf '%s' "$REQUEST"
+            echo
+            echo "$DELIM"
+          } >> "$GITHUB_OUTPUT"
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR branch
+        if: steps.request.outputs.ok == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.sha }}
+          fetch-depth: 0
+
+      - name: Set up PNPM
+        if: steps.request.outputs.ok == 'true'
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        if: steps.request.outputs.ok == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: steps.request.outputs.ok == 'true'
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build and install Nanocoder from main
+        if: steps.request.outputs.ok == 'true'
+        run: |
+          git clone --depth 1 https://github.com/Nano-Collective/nanocoder.git /tmp/nanocoder
+          cd /tmp/nanocoder
+          npm install
+          npm run build
+          npm link
+          which nanocoder
+          nanocoder --version || true
+
+      - name: Configure git
+        if: steps.request.outputs.ok == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Identify pack from branch
+        id: pack
+        if: steps.request.outputs.ok == 'true'
+        env:
+          BRANCH: ${{ steps.pr.outputs.branch }}
+          PR: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Branch shapes the rest of the pipeline produces:
+          #   collective/<slug>-issue-<n>           → collective pack
+          #   change/<product>-<version>-issue-<n>  → product release edit pack
+          #   auto/release-<product>-<version>      → product release auto pack
+          #
+          # Both `<product>` and `<version>` may contain hyphens (e.g. `get-md`,
+          # `1.25.0-beta.1`), so we disambiguate by trying each known product
+          # slug as a prefix rather than naive splitting.
+
+          if [[ "$BRANCH" =~ ^collective/(.+)-issue-([0-9]+)$ ]]; then
+            SLUG="${BASH_REMATCH[1]}"
+            ISSUE="${BASH_REMATCH[2]}"
+            PACK_DIR="content/_collective/${SLUG}"
+            if [ ! -d "$PACK_DIR" ]; then
+              gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` could not find the collective pack at \`$PACK_DIR\` on this branch."
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "kind=collective" >> "$GITHUB_OUTPUT"
+            echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
+            echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+            echo "pack_dir=$PACK_DIR" >> "$GITHUB_OUTPUT"
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          PRODUCT=""
+          VERSION=""
+          ISSUE=""
+          while read -r P; do
+            [ -z "$P" ] && continue
+            if [[ "$BRANCH" == "auto/release-${P}-"* ]]; then
+              PRODUCT="$P"
+              VERSION="${BRANCH#auto/release-${P}-}"
+              break
+            fi
+            if [[ "$BRANCH" == "change/${P}-"*"-issue-"* ]]; then
+              PRODUCT="$P"
+              REST="${BRANCH#change/${P}-}"
+              VERSION="${REST%-issue-*}"
+              ISSUE="${REST##*-issue-}"
+              break
+            fi
+          done < <(jq -r '.[].slug' config/products.json)
+
+          if [ -z "$PRODUCT" ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` couldn't identify a content pack from branch \`$BRANCH\`. Expected one of: \`collective/<slug>-issue-<n>\`, \`change/<product>-<version>-issue-<n>\`, \`auto/release-<product>-<version>\`."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          PACK_DIR="content/${PRODUCT}/${VERSION}"
+          if [ ! -d "$PACK_DIR" ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` could not find the product pack at \`$PACK_DIR\` on this branch."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "kind=product" >> "$GITHUB_OUTPUT"
+          echo "product=$PRODUCT" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+          echo "pack_dir=$PACK_DIR" >> "$GITHUB_OUTPUT"
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Apply change
+        id: apply
+        if: steps.pack.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          NANOCODER_CONTEXT_LIMIT: "128000"
+          KIND: ${{ steps.pack.outputs.kind }}
+          SLUG: ${{ steps.pack.outputs.slug }}
+          PRODUCT: ${{ steps.pack.outputs.product }}
+          VERSION: ${{ steps.pack.outputs.version }}
+          PACK_ISSUE: ${{ steps.pack.outputs.issue }}
+          REQUEST_TEXT: ${{ steps.request.outputs.request }}
+          REQUESTER: ${{ github.event.comment.user.login }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          # Reuse the original issue number when we have one (so the sidecar
+          # links back to it); otherwise fall back to the PR number.
+          ISSUE_NUMBER="${PACK_ISSUE:-$PR_NUMBER}"
+
+          # Default scope is whole-pack — the agent's prompt instructs it to
+          # make minimal edits regardless. Reviewers wanting tighter scoping
+          # can say so in the request text.
+          if [ "$KIND" = "collective" ]; then
+            SPEC=$(jq -nc \
+              --arg slug "$SLUG" \
+              --arg request "$REQUEST_TEXT" \
+              --arg requester "$REQUESTER" \
+              --argjson issue_number "$ISSUE_NUMBER" \
+              '{slug:$slug, scope:"whole-pack", filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}')
+            set +e
+            pnpm collective-request --job-spec "$SPEC"
+            STATUS=$?
+            set -e
+          else
+            SPEC=$(jq -nc \
+              --arg product "$PRODUCT" \
+              --arg version "$VERSION" \
+              --arg request "$REQUEST_TEXT" \
+              --arg requester "$REQUESTER" \
+              --argjson issue_number "$ISSUE_NUMBER" \
+              '{product:$product, version:$version, scope:"whole-pack", articleSlug:null, filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}')
+            set +e
+            pnpm change-request --job-spec "$SPEC"
+            STATUS=$?
+            set -e
+          fi
+
+          echo "agent_status=$STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push (success path) or post failure comment
+        if: always() && steps.pack.outputs.ok == 'true' && steps.apply.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AGENT_STATUS: ${{ steps.apply.outputs.agent_status }}
+          BRANCH: ${{ steps.pr.outputs.branch }}
+          PR: ${{ github.event.issue.number }}
+          PACK_DIR: ${{ steps.pack.outputs.pack_dir }}
+          REQUESTER: ${{ github.event.comment.user.login }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          REQUEST_TEXT: ${{ steps.request.outputs.request }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          if [ "${AGENT_STATUS:-1}" -ne 0 ]; then
+            # Pull the failure summary out of the sidecar the script writes.
+            # If for some reason the sidecar isn't there (e.g. nanocoder
+            # crashed before validation), fall back to a generic message.
+            SIDECAR=""
+            if [ -f "$PACK_DIR/collective-request.json" ]; then
+              SIDECAR="$PACK_DIR/collective-request.json"
+            elif [ -f "$PACK_DIR/change-request.json" ]; then
+              SIDECAR="$PACK_DIR/change-request.json"
+            fi
+
+            FAILURE_BLOCK=""
+            if [ -n "$SIDECAR" ]; then
+              FAILURES=$(jq -r '.failures[]? | "- `\(.file)` — \(.rule): expected \(.expected), got \(.actual)"' "$SIDECAR" 2>/dev/null || true)
+              if [ -n "$FAILURES" ]; then
+                FAILURE_BLOCK=$(printf '\n\n<details><summary>Validator failures</summary>\n\n%s\n\n</details>' "$FAILURES")
+              fi
+            fi
+
+            BODY=$(printf '❌ \`/change\` from @%s did not land cleanly — no commit was added to this PR.\n\n[Workflow run](%s)%s\n\nReply with another \`/change ...\` to retry, or apply the change manually.' \
+              "$REQUESTER" "$RUN_URL" "$FAILURE_BLOCK")
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+            exit 0
+          fi
+
+          # Agent reports success. Stage only content/ — never sneak in stray
+          # _repos/, node_modules/, or tmp artefacts the agent might have
+          # written elsewhere.
+          git add content/
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "ℹ️ \`/change\` from @${REQUESTER} ran cleanly but produced no changes — the agent decided no edit was needed. [Workflow run](${RUN_URL})"
+            exit 0
+          fi
+
+          REQUEST_FIRST_LINE=$(printf '%s' "$REQUEST_TEXT" | head -n1)
+          git commit -m "$(printf 'pr-change: %s\n\nRequested by @%s on PR #%s\nComment: %s' "$REQUEST_FIRST_LINE" "$REQUESTER" "$PR" "$COMMENT_URL")"
+          git push origin "HEAD:$BRANCH"
+
+          PUSHED_SHA=$(git rev-parse HEAD)
+          BODY=$(printf '✅ \`/change\` from @%s applied as %s. [Workflow run](%s)' \
+            "$REQUESTER" "$PUSHED_SHA" "$RUN_URL")
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$BODY"

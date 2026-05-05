@@ -1,16 +1,16 @@
 name: Request Collective Content Change
-description: Ask an agent to create or edit a collective-level content pack (not tied to a product release).
+description: Ask an agent to apply a targeted edit to an existing collective-level content pack and open a PR.
 title: "[collective-change]: "
 labels: ["collective-request"]
 body:
   - type: markdown
     attributes:
       value: |
-        Submit this issue and an agent will write (or edit) a collective-level content pack — channel posts about the Nano Collective itself, independent of any product release. The agent opens a PR which auto-closes this issue on merge.
+        Submit this issue and an agent will edit an existing collective-level content pack — channel posts about the Nano Collective itself, independent of any product release. The agent opens a PR which auto-closes this issue on merge.
 
-        Use this for things like a community update, an economics-charter explainer, a brand-voice post, a governance-model writeup. For per-release product packs, use the **release** auto-pipeline; for edits to an existing release pack, use **Request Product Content Change**.
+        **Scope** is the most important field — pick the narrowest scope that fits the change. The agent will refuse to touch files outside the scope you choose.
 
-        New pack or change to an existing pack: enter the slug below — if a pack already exists at that slug, the agent edits in place; otherwise it creates a new pack.
+        Need a brand-new collective pack instead? Use **Request Collective Content**. For changes to a product release pack, use **Request Product Content Change**.
 
         If the first attempt doesn't land cleanly, comment `/retry` to re-run with the same fields. Edit the issue body if you want to refine the request first; only `/retry` triggers the agent.
 
@@ -18,7 +18,7 @@ body:
     id: slug
     attributes:
       label: Slug
-      description: Kebab-case identifier for this content pack. Becomes the directory name at `content/_collective/<slug>/`. If a pack already exists at that slug, the agent edits in place; otherwise it creates a new pack.
+      description: Kebab-case identifier of the existing pack to edit. Must match a directory under `content/_collective/`.
       placeholder: "economics-charter-explainer"
     validations:
       required: true
@@ -28,13 +28,13 @@ body:
     attributes:
       label: Scope
       description: |
-        - **Whole pack** — anything in the pack. Default for new packs.
+        - **Whole pack** — anything in the pack. Use sparingly.
         - **Headline channels (channels/*.md)** — only the channel posts.
         - **Specific file** — one file only. Requires File path.
       options:
-        - Whole pack
         - Headline channels (channels/*.md)
         - Specific file
+        - Whole pack
     validations:
       required: true
 
@@ -49,10 +49,10 @@ body:
     id: request
     attributes:
       label: Request
-      description: What should the agent write or change? Be specific about angle, audience, and what point you want made.
+      description: What should the agent change? Be specific about what to do, not just what's wrong.
       placeholder: |
-        e.g. "Write a LinkedIn post explaining why we built the economics charter — the angle is that revenue-sharing inside a small collective is a coordination problem, not a fairness problem. Audience: founder-engineers thinking about side projects."
         e.g. "Tighten the GitHub Discussion piece on governance — drop the abstract framing and lead with the concrete decision-making cadence."
+        e.g. "Rephrase any sentence in the LinkedIn post that reads as marketing — keep the engineering register."
     validations:
       required: true
 
@@ -60,6 +60,6 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Optional. Background, examples, links the agent should read, or anything else that should shape the piece.
+      description: Optional. Background, examples, links the agent should read, or anything else that should shape the change.
       placeholder: |
-        Optional. e.g. "We just published _refs/collective/organisation/economics-charter.md — that's the source of truth, ground claims there. The audience is the same one we wrote to for the brand-voice post last month."
+        Optional. e.g. "We posted the original to LinkedIn last week and got feedback that it read as too promotional."
