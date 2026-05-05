@@ -1,0 +1,66 @@
+name: Sync Collective Slugs
+
+# Keeps the slug dropdown in the "Request Collective Content Change" issue
+# template aligned with the actual set of collective packs on `main`. Runs
+# whenever a push to main changes anything under `content/_collective/`,
+# regenerates the marker-bracketed slug block in the template, and commits
+# the result back if it changed.
+#
+# Pushes from the default GITHUB_TOKEN do not recursively trigger workflows,
+# so this can't loop on its own commit.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/_collective/**'
+      - 'scripts/sync-collective-slugs.ts'
+      - '.github/workflows/sync-collective-slugs.yaml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-collective-slugs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Regenerate slug dropdown
+        run: pnpm sync-collective-slugs
+
+      - name: Commit if changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .github/ISSUE_TEMPLATE/collective-request.yml; then
+            echo "no changes — slug dropdown already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/ISSUE_TEMPLATE/collective-request.yml
+          git commit -m "chore: sync collective slugs dropdown [skip ci]"
+          git push

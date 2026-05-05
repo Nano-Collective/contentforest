@@ -27,7 +27,8 @@
 		"change-request": "tsx scripts/change-request.ts",
 		"parse-change-request": "tsx scripts/parse-change-request.ts",
 		"collective-request": "tsx scripts/collective-request.ts",
-		"parse-collective-request": "tsx scripts/parse-collective-request.ts"
+		"parse-collective-request": "tsx scripts/parse-collective-request.ts",
+		"sync-collective-slugs": "tsx scripts/sync-collective-slugs.ts"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",

@@ -137,9 +137,42 @@ jobs:
           SLUG=$(jq -r '.slug' /tmp/spec.json)
           echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
 
+      - name: Guard change-mode requests against unknown slugs
+        id: guard
+        # Issues opened from the "Request Collective Content Change" template
+        # (title prefix `[collective-change]:`) are intended to edit an existing
+        # pack. If the slug doesn't match a real pack directory, the agent would
+        # silently fall back to `create` mode and produce a brand-new pack at a
+        # made-up slug — almost never what the requester meant. Catch that here
+        # and tell them which slugs are valid instead.
+        if: |
+          steps.gate.outputs.member == 'true'
+          && startsWith(github.event.issue.title, '[collective-change]:')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLUG: ${{ steps.parse.outputs.slug }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          if [ -d "content/_collective/$SLUG" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          AVAILABLE=$(find content/_collective -mindepth 1 -maxdepth 1 -type d -printf '- `%f`\n' 2>/dev/null | sort)
+          if [ -z "$AVAILABLE" ]; then
+            AVAILABLE="_(none yet — there are no collective packs to change)_"
+          fi
+          BODY=$(printf '❌ This is a **collective content change** request, but no pack exists at `content/_collective/%s/`.\n\nThe slug must match an existing pack directory exactly. Available packs:\n\n%s\n\nFix the **Slug** field in this issue and comment `/retry` to re-run. If you actually want a brand-new pack, close this issue and use the **Request Collective Content** template instead.' "$SLUG" "$AVAILABLE")
+          gh issue comment "$ISSUE" --body "$BODY"
+          gh issue edit "$ISSUE" --add-label failed-change --remove-label processing || true
+          echo "ok=false" >> "$GITHUB_OUTPUT"
+
       - name: Apply request
         id: apply
-        if: steps.gate.outputs.member == 'true'
+        if: |
+          steps.gate.outputs.member == 'true'
+          && steps.guard.outputs.ok != 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
