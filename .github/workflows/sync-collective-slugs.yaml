@@ -71,7 +71,11 @@ jobs:
           git checkout -B "$BRANCH"
           git add "$FILE"
           git commit -m "chore: sync collective slugs dropdown"
-          git push --force-with-lease --set-upstream origin "$BRANCH"
+          # --force (not --force-with-lease) because the runner's clone only
+          # has main; it doesn't know what's on origin/$BRANCH. The chore
+          # branch is mechanically owned by this workflow (concurrency block
+          # serialises runs) so the lease check is meaningless here.
+          git push --force --set-upstream origin "$BRANCH"
           # Open a PR if one isn't already open for this branch.
           EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
           if [ -z "$EXISTING" ]; then

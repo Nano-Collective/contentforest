@@ -67,7 +67,7 @@ jobs:
           git checkout -B "$BRANCH"
           git add "$FILE"
           git commit -m "chore: sync change-request target dropdown"
-          git push --force-with-lease --set-upstream origin "$BRANCH"
+          git push --force --set-upstream origin "$BRANCH"
           EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
           if [ -z "$EXISTING" ]; then
             gh pr create \
