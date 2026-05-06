@@ -68,5 +68,116 @@
 				]
 			}
 		]
+	},
+	{
+		"slug": "ben-parry",
+		"name": "Ben Parry",
+		"github": "followbenparry",
+		"role": "Co-Founder, Ava Technologies & Nano Collective",
+		"voice": {
+			"tone": "Philosophical and architectural — argues from structure and incentives, not features or announcements. Plain, direct language that makes complex ideas feel accessible without dumbing them down. First-person throughout. Short sentences land harder than long ones. Calm and systemic — not alarmist, not conspiratorial. Writes like someone building in the middle of it, not commenting from the sidelines. Opens with a structural observation or an external reference point, builds the argument from first principles, lands on a principle that generalises beyond the specific thing being discussed. The product or release, if it appears at all, arrives as proof — not as the subject.",
+			"do": [
+				"Open with a structural observation or an external reference point — something that reveals how systems behave, not what just shipped.",
+				"Argue from incentives and architecture, not from features or announcements.",
+				"Use short, declarative sentences for the key points. Let them land.",
+				"Name the principle behind the thing — 'the answer isn't better founders, it's better architecture' — not just the thing itself.",
+				"Make the product feel like proof of the idea, not the point of the post.",
+				"Use a single CTA at the end — one link, no list of options.",
+				"Be transparent and self-referential where it's honest and relevant.",
+				"Lead with what this reveals about how systems work, not what we built.",
+				"Use external events, news, industry situations, and real-world conversations as structural illustrations — not as opinion pieces.",
+				"Write for two audiences simultaneously — someone who has never thought about this technically, and someone who has.",
+				"Ground abstract principles in real-world examples from non-technical industries — healthcare, law, finance, journalism, therapy, HR — so anyone can see how it applies to them."
+			],
+			"dont": [
+				"Lead with a product announcement or 'excited to share'.",
+				"Use hashtags on LinkedIn — they read as noise in this register.",
+				"Include implementation detail in standalone posts — GitHub Actions, pipeline descriptions, agent counts belong in the newsletter or GitHub Discussion.",
+				"Compare directly to named competitors — argue from architecture, not from 'we're better than X'.",
+				"Promise future capabilities. If it isn't shipped, don't claim it.",
+				"Use corporate jargon, marketing speak, or filler phrases.",
+				"Be conspiratorial or alarmist — systemic critique, not shadowy villain narratives.",
+				"Moralize or lecture — state the structural reality, let the reader draw the conclusion.",
+				"Use more than one link or CTA per post.",
+				"Use the phrase 'Sovereign AI' as a marketing label — it's a principle, not a product descriptor.",
+				"Make posts too technical for a general professional audience — philosophical and real-world angles should always be accessible to a non-technical reader."
+			],
+			"samples": [
+				"Most people think AI guardrails are about what the AI is told not to do. They're not. Or they shouldn't be. The question isn't 'do you trust the AI?' It's 'does the system make trust unnecessary?'",
+				"A non-profit built to develop AI for humanity, quietly converted into a for-profit machine. The mission language stayed the same. The architecture changed completely. This is what happens when AI infrastructure is owned by a single entity. Systems behave according to their incentives — and incentives change. The answer isn't better founders. It's better architecture.",
+				"Most AI content tools help marketing teams write faster. ContentForest makes content a consequence of shipping — not a separate workflow that someone has to remember to do.",
+				"Privacy, if it is to mean anything, must be enforced by the system itself — not by the goodwill of the organisation running it. If trust is required, privacy has already failed."
+			]
+		},
+		"channels": [
+			{
+				"slug": "linkedin",
+				"kind": "social",
+				"handle": "in/benparry",
+				"min_words": 150,
+				"max_words": 350,
+				"rules": [
+					"No hashtags.",
+					"No implementation detail — technical depth belongs in the newsletter or GitHub Discussion.",
+					"Lead with a philosophical angle, a structural argument, or a real-world example from a non-technical industry (healthcare, law, finance, journalism, therapy, HR) — not with a product announcement.",
+					"The goal is accessibility — a professional with no AI background should finish the post understanding why this matters to them specifically.",
+					"One link at the end — always to the LinkedIn newsletter. No link stack.",
+					"The product or release appears as proof of the idea, never as the subject of the opening.",
+					"Short paragraphs — one to three sentences. LinkedIn readers scan before they read.",
+					"End on the principle, not the product.",
+					"This post exists to drive newsletter subscriptions — the CTA should always reference Mind & Machine."
+				]
+			},
+			{
+				"slug": "linkedin-newsletter",
+				"kind": "long-form",
+				"handle": "Mind & Machine — linkedin.com/build-relation/newsletter-follow?entityUrn=7222242466664521728",
+				"min_words": 600,
+				"max_words": 1000,
+				"rules": [
+					"Builder's log register — what shipped, how it works, why the architecture decision matters.",
+					"Technical detail is appropriate here — this is where implementation depth belongs.",
+					"Structure: structural argument or problem → what it is and how it works → why the architecture looks the way it does → broader principle → what's next → single closing link.",
+					"Always connect technical decisions back to the principle behind them.",
+					"Directional on roadmap — frame as architectural inevitability, not a feature list or a promise.",
+					"No hashtags.",
+					"Close with nanocollective.org or the relevant resource — one link.",
+					"Generate a companion LinkedIn standalone post alongside every newsletter issue — apply the linkedin channel rules to that companion post."
+				]
+			},
+			{
+				"slug": "x",
+				"kind": "social",
+				"handle": "FollowBenParry",
+				"max_chars": 280,
+				"rules": [
+					"Generate 14 posts per release cycle — intended as 2 posts per day across a 7-day window.",
+					"Vary the angle across the 14 posts — do not repeat the same framing. Required mix: 3 technical (for developers and builders), 3 non-technical (accessible to anyone), 3 philosophical (structural arguments about AI, sovereignty, incentives), 3 thought leadership (patterns, predictions, broader implications), 2 danger-of-centralisation (what happens when AI infrastructure is controlled by a single entity).",
+					"Each post stands alone — do not assume the reader has seen the previous one.",
+					"No hashtags.",
+					"No link in the main post body — if driving to content, add the link as a pinned reply.",
+					"Developer early adopter register on technical posts — assumes familiarity with the space. Plain language on all others.",
+					"280 characters hard limit including any link in a reply.",
+					"Short and punchy — one observation per post, one sentence if possible, never more than three."
+				]
+			},
+			{
+				"slug": "substack",
+				"kind": "long-form",
+				"handle": "substack.com/@followbenparry",
+				"min_words": 1200,
+				"max_words": 4000,
+				"rules": [
+					"Philosophy and ideas only — not product updates, not release announcements. This is the 'mind' channel. The build lives in Mind & Machine.",
+					"Do not generate a Substack essay without a supplied title, at least 3 key points from Ben, and a target word count. Do not infer these — flag that they are required before generating.",
+					"Essay format: cold-open hook → founder thesis → core argument sections → dual argument (idealism and limitations) → evolution arc → founder stance (personal and direct) → closing argument.",
+					"Required opening blocks: summary (3-4 sentences, narrative overview), executive summary (3 bullets — 'if you only read 10 seconds'), key points (8-12 bullets, scan-friendly outline).",
+					"Whisper AI and NC products can appear as structural proof points — never as the subject of the essay.",
+					"Slow-burning essay format — write for the reader who will return to it, not the reader who is scrolling.",
+					"Never use Substack for product updates or weekly release content.",
+					"The tone here runs deeper and more personal than any other channel — Ben's founder perspective and genuine concern about AI's direction should come through directly."
+				]
+			}
+		]
 	}
 ]

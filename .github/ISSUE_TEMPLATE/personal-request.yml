@@ -19,6 +19,7 @@ body:
       label: Member
       description: Pick the team member to generate a personal pack for. The list is auto-generated from `config/team.json` on `main`.
       options:
+        - ben-parry
         - will
     validations:
       required: true
