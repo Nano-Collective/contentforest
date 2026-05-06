@@ -21,7 +21,6 @@ body:
       label: Slug
       description: Pick the existing collective pack you want to change. The list is auto-generated from `content/_collective/` on `main`.
       options:
-        - ben-parry-variation-of-content-forest-launch
         - contentforest-launch
     validations:
       required: true
