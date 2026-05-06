@@ -218,32 +218,38 @@ jobs:
               exit 0
             fi
 
-            # REMAINDER is now `<pack-id-flat>`. Resolve it to a real pack dir.
+            # REMAINDER is now `<pack-id-flat>`. personal-request.yaml flattens
+            # the basePackId via `tr '/' '-'`, and parse-personal-request strips
+            # the `_collective/` prefix before the orchestrator sees it — so for
+            # a collective base pack the REMAINDER is just the slug, with no
+            # `_collective-` marker. We resolve by trying both shapes against
+            # the filesystem and taking the one that exists. Product matches
+            # are tried first (more specific shape: `<product>-<version>`);
+            # collective is the fallthrough for anything that doesn't match a
+            # known product prefix.
             BASE_PACK_DIR=""
             BASE_PACK_KIND=""
             BASE_PACK_ID=""
-            if [[ "$REMAINDER" == _collective-* ]]; then
-              SLUG="${REMAINDER#_collective-}"
-              CANDIDATE="content/_collective/${SLUG}"
+            while read -r P; do
+              [ -z "$P" ] && continue
+              if [[ "$REMAINDER" == "${P}-"* ]]; then
+                VERSION="${REMAINDER#${P}-}"
+                CANDIDATE="content/${P}/${VERSION}"
+                if [ -d "$CANDIDATE" ]; then
+                  BASE_PACK_DIR="$CANDIDATE"
+                  BASE_PACK_KIND="product"
+                  BASE_PACK_ID="${P}/${VERSION}"
+                  break
+                fi
+              fi
+            done < <(jq -r '.[].slug' config/products.json)
+            if [ -z "$BASE_PACK_DIR" ]; then
+              CANDIDATE="content/_collective/${REMAINDER}"
               if [ -d "$CANDIDATE" ]; then
                 BASE_PACK_DIR="$CANDIDATE"
                 BASE_PACK_KIND="collective"
-                BASE_PACK_ID="$SLUG"
+                BASE_PACK_ID="$REMAINDER"
               fi
-            else
-              while read -r P; do
-                [ -z "$P" ] && continue
-                if [[ "$REMAINDER" == "${P}-"* ]]; then
-                  VERSION="${REMAINDER#${P}-}"
-                  CANDIDATE="content/${P}/${VERSION}"
-                  if [ -d "$CANDIDATE" ]; then
-                    BASE_PACK_DIR="$CANDIDATE"
-                    BASE_PACK_KIND="product"
-                    BASE_PACK_ID="${P}/${VERSION}"
-                    break
-                  fi
-                fi
-              done < <(jq -r '.[].slug' config/products.json)
             fi
 
             if [ -z "$BASE_PACK_DIR" ]; then
