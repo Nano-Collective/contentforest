@@ -166,13 +166,15 @@ jobs:
           set -euo pipefail
 
           # Branch shapes the rest of the pipeline produces:
-          #   collective/<slug>-issue-<n>           → collective pack
-          #   change/<product>-<version>-issue-<n>  → product release edit pack
-          #   auto/release-<product>-<version>      → product release auto pack
+          #   collective/<slug>-issue-<n>                              → collective pack
+          #   change/<product>-<version>-issue-<n>                     → product release edit pack
+          #   auto/release-<product>-<version>                         → product release auto pack
+          #   personal/<member>-<pack-id-flat>-issue-<n>               → personal pack
           #
-          # Both `<product>` and `<version>` may contain hyphens (e.g. `get-md`,
-          # `1.25.0-beta.1`), so we disambiguate by trying each known product
-          # slug as a prefix rather than naive splitting.
+          # `<product>`, `<version>`, and `<member>` may contain hyphens (e.g.
+          # `get-md`, `1.25.0-beta.1`, multi-word member slugs), so we
+          # disambiguate by iterating known slugs as prefixes rather than
+          # naive splitting.
 
           if [[ "$BRANCH" =~ ^collective/(.+)-issue-([0-9]+)$ ]]; then
             SLUG="${BASH_REMATCH[1]}"
@@ -187,6 +189,76 @@ jobs:
             echo "slug=$SLUG" >> "$GITHUB_OUTPUT"
             echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
             echo "pack_dir=$PACK_DIR" >> "$GITHUB_OUTPUT"
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Personal pack: personal/<member>-<pack-id-flat>-issue-<n>.
+          # <pack-id-flat> is `<product>-<version>` for product packs, or
+          # `_collective-<slug>` for collective packs. Member slugs are
+          # known from config/team.json; products from config/products.json.
+          if [[ "$BRANCH" =~ ^personal/(.+)-issue-([0-9]+)$ ]]; then
+            MIDDLE="${BASH_REMATCH[1]}"
+            ISSUE="${BASH_REMATCH[2]}"
+            MEMBER=""
+            REMAINDER=""
+            if [ -f config/team.json ]; then
+              while read -r M; do
+                [ -z "$M" ] && continue
+                if [[ "$MIDDLE" == "${M}-"* ]]; then
+                  MEMBER="$M"
+                  REMAINDER="${MIDDLE#${M}-}"
+                  break
+                fi
+              done < <(jq -r '.[].slug' config/team.json)
+            fi
+            if [ -z "$MEMBER" ]; then
+              gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` couldn't find a known team-member slug at the start of branch \`$BRANCH\`. Add the member to \`config/team.json\` or rename the branch."
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # REMAINDER is now `<pack-id-flat>`. Resolve it to a real pack dir.
+            BASE_PACK_DIR=""
+            BASE_PACK_KIND=""
+            BASE_PACK_ID=""
+            if [[ "$REMAINDER" == _collective-* ]]; then
+              SLUG="${REMAINDER#_collective-}"
+              CANDIDATE="content/_collective/${SLUG}"
+              if [ -d "$CANDIDATE" ]; then
+                BASE_PACK_DIR="$CANDIDATE"
+                BASE_PACK_KIND="collective"
+                BASE_PACK_ID="$SLUG"
+              fi
+            else
+              while read -r P; do
+                [ -z "$P" ] && continue
+                if [[ "$REMAINDER" == "${P}-"* ]]; then
+                  VERSION="${REMAINDER#${P}-}"
+                  CANDIDATE="content/${P}/${VERSION}"
+                  if [ -d "$CANDIDATE" ]; then
+                    BASE_PACK_DIR="$CANDIDATE"
+                    BASE_PACK_KIND="product"
+                    BASE_PACK_ID="${P}/${VERSION}"
+                    break
+                  fi
+                fi
+              done < <(jq -r '.[].slug' config/products.json)
+            fi
+
+            if [ -z "$BASE_PACK_DIR" ]; then
+              gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` couldn't resolve a pack directory from branch remainder \`$REMAINDER\`. The base pack may have been removed from \`main\`."
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            PERSONAL_DIR="${BASE_PACK_DIR}/personal/${MEMBER}"
+            echo "kind=personal" >> "$GITHUB_OUTPUT"
+            echo "member=$MEMBER" >> "$GITHUB_OUTPUT"
+            echo "base_pack_kind=$BASE_PACK_KIND" >> "$GITHUB_OUTPUT"
+            echo "base_pack_id=$BASE_PACK_ID" >> "$GITHUB_OUTPUT"
+            echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+            echo "pack_dir=$PERSONAL_DIR" >> "$GITHUB_OUTPUT"
             echo "ok=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -241,6 +313,9 @@ jobs:
           SLUG: ${{ steps.pack.outputs.slug }}
           PRODUCT: ${{ steps.pack.outputs.product }}
           VERSION: ${{ steps.pack.outputs.version }}
+          MEMBER: ${{ steps.pack.outputs.member }}
+          BASE_PACK_KIND: ${{ steps.pack.outputs.base_pack_kind }}
+          BASE_PACK_ID: ${{ steps.pack.outputs.base_pack_id }}
           PACK_ISSUE: ${{ steps.pack.outputs.issue }}
           REQUEST_TEXT: ${{ steps.request.outputs.request }}
           REQUESTER: ${{ github.event.comment.user.login }}
@@ -252,9 +327,11 @@ jobs:
           # links back to it); otherwise fall back to the PR number.
           ISSUE_NUMBER="${PACK_ISSUE:-$PR_NUMBER}"
 
-          # Default scope is whole-pack — the agent's prompt instructs it to
-          # make minimal edits regardless. Reviewers wanting tighter scoping
-          # can say so in the request text.
+          # Default scope (collective/product paths) is whole-pack — the
+          # agent's prompt instructs it to make minimal edits regardless.
+          # Personal pack uses its own orchestrator and threads REQUEST_TEXT
+          # via the `context` field, which the agent reads as a change request
+          # when files at the target dir already exist (edit mode).
           if [ "$KIND" = "collective" ]; then
             SPEC=$(jq -nc \
               --arg slug "$SLUG" \
@@ -264,6 +341,19 @@ jobs:
               '{slug:$slug, scope:"whole-pack", filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}')
             set +e
             pnpm collective-request --job-spec "$SPEC"
+            STATUS=$?
+            set -e
+          elif [ "$KIND" = "personal" ]; then
+            SPEC=$(jq -nc \
+              --arg memberSlug "$MEMBER" \
+              --arg basePackKind "$BASE_PACK_KIND" \
+              --arg basePackId "$BASE_PACK_ID" \
+              --arg context "$REQUEST_TEXT" \
+              --arg requester "$REQUESTER" \
+              --argjson issue_number "$ISSUE_NUMBER" \
+              '{memberSlug:$memberSlug, basePackKind:$basePackKind, basePackId:$basePackId, context:$context, requester:$requester, issueNumber:$issue_number}')
+            set +e
+            pnpm personal-request --job-spec "$SPEC"
             STATUS=$?
             set -e
           else
@@ -306,11 +396,16 @@ jobs:
               SIDECAR="$PACK_DIR/collective-request.json"
             elif [ -f "$PACK_DIR/change-request.json" ]; then
               SIDECAR="$PACK_DIR/change-request.json"
+            elif [ -f "$PACK_DIR/personal-request.json" ]; then
+              SIDECAR="$PACK_DIR/personal-request.json"
             fi
 
             FAILURE_BLOCK=""
             if [ -n "$SIDECAR" ]; then
-              FAILURES=$(jq -r '.failures[]? | "- `\(.file)` — \(.rule): expected \(.expected), got \(.actual)"' "$SIDECAR" 2>/dev/null || true)
+              # collective-request.json + change-request.json have `.failures[]`;
+              # personal-request.json has `.phases[].failures[]`. Both `?` ops
+              # are silent on missing paths, so this works across shapes.
+              FAILURES=$(jq -r '(.failures[]?, .phases[]?.failures[]?) | "- `\(.file)` — \(.rule): expected \(.expected), got \(.actual)"' "$SIDECAR" 2>/dev/null || true)
               if [ -n "$FAILURES" ]; then
                 FAILURE_BLOCK=$(printf '\n\n<details><summary>Validator failures</summary>\n\n%s\n\n</details>' "$FAILURES")
               fi

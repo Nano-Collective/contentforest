@@ -28,6 +28,7 @@
     {{COLLECTIVE_SLUG}}            collective slug (collective packs only) or "(n/a)"
     {{REQUESTER}}                  GitHub login of the issue author
     {{ISSUE_NUMBER}}               the issue number (for context only)
+    {{CONTEXT}}                    additional context / change-request text, or "(none)"
     {{GENERATED_AT}}               ISO-8601 timestamp the orchestrator started
     {{MODEL}}                      model identifier
 -->
@@ -51,6 +52,23 @@ This pack is a **personal companion** to the base pack, not a replacement. It ne
 **Channels to mirror (1:1 from base pack):** {{MIRRORED_CHANNEL_SLUGS}}
 
 **Channels to add (member-only, not in base pack):** {{ADDITIONAL_CHANNEL_SLUGS}}
+
+**Additional context / change request:**
+
+> {{CONTEXT}}
+
+If the additional context above is `(none)`, treat this as a fresh generation: write each channel from the base pack into the member's voice. If it has actual content, treat it as **either** an angle to lean into (when files at `{{TARGET_DIR}}` don't yet exist), **or** a change request (when files at `{{TARGET_DIR}}` already exist on disk — see "Edit mode" below).
+
+# Edit mode
+
+Before writing anything, list `{{TARGET_DIR}}`. If channel files already exist there:
+
+- You're in **edit mode**. Read every existing file. Treat the additional context above as a change request against those files.
+- Make the **smallest edit** that satisfies the change request. Don't rewrite passing content. Update `char_count` on every body you touch.
+- If the change request points at a single channel ("tighten the LinkedIn post"), only touch that file. Don't drift into others.
+- If the additional context is `(none)` and files already exist, leave them alone — there's nothing to do. The orchestrator will detect the no-op and surface that to the requester.
+
+If `{{TARGET_DIR}}` is empty or missing channel files, you're in **create mode** — proceed with the normal flow below.
 
 # Inputs you can read
 

@@ -166,6 +166,58 @@ test('buildChannelsPrompt: collective pack substitutes slug-based frontmatter hi
 	t.notRegex(prompt, /product:/);
 });
 
+test('buildChannelsPrompt: substitutes CONTEXT when present', t => {
+	const prompt = buildChannelsPrompt({
+		job: {
+			...PRODUCT_JOB,
+			context: 'Tighten the LinkedIn post — drop the closing CTA.',
+		},
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		mirrored: [MEMBER.channels[0]],
+		additional: [],
+		generatedAt: '2026-05-05T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	t.regex(prompt, /Tighten the LinkedIn post — drop the closing CTA\./);
+	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
+});
+
+test('buildChannelsPrompt: defaults CONTEXT to "(none)" when null', t => {
+	const prompt = buildChannelsPrompt({
+		job: PRODUCT_JOB,
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		mirrored: [MEMBER.channels[0]],
+		additional: [],
+		generatedAt: '2026-05-05T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	// "(none)" appears at least in the change-request block.
+	t.regex(prompt, /Additional context \/ change request:[\s\S]*\(none\)/);
+	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
+});
+
+test('buildArticlesPrompt: substitutes CONTEXT when present', t => {
+	const prompt = buildArticlesPrompt({
+		job: {
+			...PRODUCT_JOB,
+			context: 'Lean harder into the architecture angle.',
+		},
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		articleSlugs: ['registry-redesign'],
+		mirroredAndAdditional: [MEMBER.channels[0]],
+		generatedAt: '2026-05-05T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	t.regex(prompt, /Lean harder into the architecture angle\./);
+	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
+});
+
 test('buildChannelsPrompt: empty additional list renders "(none)"', t => {
 	const prompt = buildChannelsPrompt({
 		job: PRODUCT_JOB,

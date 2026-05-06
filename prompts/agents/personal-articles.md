@@ -25,6 +25,7 @@
     {{VERSION}}                    version string
     {{REQUESTER}}                  GitHub login
     {{ISSUE_NUMBER}}               issue number (context)
+    {{CONTEXT}}                    additional context / change-request text, or "(none)"
     {{GENERATED_AT}}               ISO-8601 timestamp
     {{MODEL}}                      model identifier
 -->
@@ -48,6 +49,22 @@ For each article slug in **{{ARTICLE_SLUGS}}**, write the member-voiced channel 
 **Member channels to mirror per article:** {{MIRRORED_CHANNEL_SLUGS}}
 
 **Requested by:** @{{REQUESTER}} (issue #{{ISSUE_NUMBER}})
+
+**Additional context / change request:**
+
+> {{CONTEXT}}
+
+If the additional context is `(none)`, fresh generation. Otherwise treat it as an angle to lean into (create mode) or a change request (edit mode — see below).
+
+# Edit mode
+
+For each article slug in `{{ARTICLE_SLUGS}}`, list `{{BASE_PACK_DIR}}/articles/<slug>/personal/{{MEMBER_SLUG}}/`. If channel files already exist there:
+
+- **Edit mode** for that article. Read existing files. Apply the additional context as a change request. Smallest edit that satisfies the request — don't rewrite passing files.
+- If the request only mentions one article or one channel, only touch that subset. Don't drift.
+- If the additional context is `(none)` and files exist, leave them alone — no-op for that article.
+
+If a personal directory for an article is empty or missing, you're in **create mode** for that article — proceed with the normal flow.
 
 # Inputs you can read
 

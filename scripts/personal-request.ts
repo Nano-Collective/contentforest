@@ -211,6 +211,7 @@ export function buildChannelsPrompt(args: {
 		COLLECTIVE_SLUG: collectiveSlug,
 		REQUESTER: args.job.requester,
 		ISSUE_NUMBER: String(args.job.issueNumber),
+		CONTEXT: args.job.context ?? '(none)',
 		BASE_FRONTMATTER_HINTS: baseFmHints,
 		GENERATED_AT: args.generatedAt,
 		MODEL: args.model,
@@ -252,6 +253,7 @@ export function buildArticlesPrompt(args: {
 		VERSION: version,
 		REQUESTER: args.job.requester,
 		ISSUE_NUMBER: String(args.job.issueNumber),
+		CONTEXT: args.job.context ?? '(none)',
 		GENERATED_AT: args.generatedAt,
 		MODEL: args.model,
 	});
