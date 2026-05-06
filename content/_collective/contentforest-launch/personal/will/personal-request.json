@@ -1,0 +1,32 @@
+{
+  "issue_number": 16,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "contentforest-launch",
+  "context": "I'm going to re-post the Collective pack on the various channels and add my own custom thoughts to it. These posts will be thoughts.",
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "article_slugs": [],
+  "generated_at": "2026-05-06T10:37:12.921Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "articles",
+      "attempts": 0,
+      "final_status": "skipped",
+      "failures": []
+    }
+  ]
+}
