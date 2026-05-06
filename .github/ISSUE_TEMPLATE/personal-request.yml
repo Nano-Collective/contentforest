@@ -33,7 +33,6 @@ body:
       description: |
         Pick the existing pack to ground the personal-pack in. List is auto-generated from `content/` on `main`, sorted newest-first. `<product>/<version>` for release packs; `_collective/<slug>` for collective packs.
       options:
-        - _collective/ben-parry-variation-of-content-forest-launch
         - _collective/contentforest-launch
         - nanocoder/1.25.0
     validations:
