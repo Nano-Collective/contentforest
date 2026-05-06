@@ -1,0 +1,32 @@
+{
+  "issue_number": 16,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "contentforest-launch",
+  "context": "Why write it yourself when your agents can handle it? Reword this in the LinkedIn post. It's a terrible way of wording it. The reason we want to automate this is to save more time focusing on the mission instead of administration. It also aligns brand voice across all communications.",
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "article_slugs": [],
+  "generated_at": "2026-05-06T12:05:28.250Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "articles",
+      "attempts": 0,
+      "final_status": "skipped",
+      "failures": []
+    }
+  ]
+}
