@@ -6,8 +6,10 @@ import type {TeamMember} from '../lib/team.js';
 import {
 	basePackDir,
 	basePackId,
+	buildArticlesEditPrompt,
 	buildArticlesPrompt,
 	buildAutoFixPrompt,
+	buildChannelsEditPrompt,
 	buildChannelsPrompt,
 	type JobSpec,
 	listArticleSlugs,
@@ -249,6 +251,54 @@ test('buildArticlesPrompt: includes article slugs and product/version', t => {
 	t.regex(prompt, /1\.25\.0/);
 	t.notRegex(prompt, /\{\{ARTICLE_SLUGS\}\}/);
 	t.notRegex(prompt, /\{\{PRODUCT_SLUG\}\}/);
+});
+
+test('buildChannelsEditPrompt: leads with the change request as a directive', t => {
+	const prompt = buildChannelsEditPrompt({
+		job: {
+			...PRODUCT_JOB,
+			context:
+				'Reword the opening line "Why write it yourself when your agents can handle it?" — too lazy.',
+		},
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		generatedAt: '2026-05-06T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	// Change request is present and prominent (in the "non-negotiable" section).
+	t.regex(prompt, /Why write it yourself when your agents can handle it\?/);
+	t.regex(prompt, /non-negotiable/i);
+	// Member voice is present as calibration.
+	t.regex(prompt, /Will Lamerton/);
+	// Drops create-mode framing — no "produce personal-voice channel posts based on".
+	t.notRegex(prompt, /Channels to mirror/);
+	t.notRegex(prompt, /Channels to add/);
+	// Placeholders all consumed.
+	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
+	t.notRegex(prompt, /\{\{MEMBER_NAME\}\}/);
+	t.notRegex(prompt, /\{\{TARGET_DIR\}\}/);
+});
+
+test('buildArticlesEditPrompt: leads with the change request and lists article slugs', t => {
+	const prompt = buildArticlesEditPrompt({
+		job: {
+			...PRODUCT_JOB,
+			context: 'Tighten the LinkedIn post in the registry-redesign article.',
+		},
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		articleSlugs: ['registry-redesign', 'auto-compact'],
+		generatedAt: '2026-05-06T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	t.regex(prompt, /Tighten the LinkedIn post/);
+	t.regex(prompt, /registry-redesign/);
+	t.regex(prompt, /auto-compact/);
+	t.regex(prompt, /non-negotiable/i);
+	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
+	t.notRegex(prompt, /\{\{ARTICLE_SLUGS\}\}/);
 });
 
 test('buildAutoFixPrompt: substitutes attempt counters and error report', t => {

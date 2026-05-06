@@ -259,6 +259,75 @@ export function buildArticlesPrompt(args: {
 	});
 }
 
+/**
+ * Edit-mode prompt for the channels phase. Used when the orchestrator was
+ * called with a non-empty `context` field (typically a /change PR comment).
+ * Drops the create-mode "produce personal-voice posts" framing entirely;
+ * leads with the change request as a non-negotiable directive. The agent
+ * reads existing files at TARGET_DIR, applies the change with the smallest
+ * possible diff, and stops.
+ */
+export function buildChannelsEditPrompt(args: {
+	job: JobSpec;
+	member: TeamMember;
+	packDir: string;
+	packId: string;
+	generatedAt: string;
+	model: string;
+}): string {
+	const template = readFile(
+		join(PROMPTS_DIR, 'agents/personal-channels-edit.md'),
+	);
+	return substitute(template, {
+		MEMBER_SLUG: args.member.slug,
+		MEMBER_NAME: args.member.name,
+		MEMBER_VOICE_TONE: args.member.voice.tone,
+		MEMBER_VOICE_DO: bullets(args.member.voice.do),
+		MEMBER_VOICE_DONT: bullets(args.member.voice.dont),
+		TARGET_DIR: `${join(args.packDir, 'personal', args.member.slug)}/`,
+		BASE_PACK_DIR: args.packDir,
+		BASE_PACK_ID: args.packId,
+		VALIDATOR_ROOT: 'content',
+		REQUESTER: args.job.requester,
+		CONTEXT: args.job.context ?? '',
+		GENERATED_AT: args.generatedAt,
+		MODEL: args.model,
+	});
+}
+
+/**
+ * Edit-mode prompt for the articles phase. Same shape as the channels-edit
+ * prompt, parameterised over article slugs from the base pack.
+ */
+export function buildArticlesEditPrompt(args: {
+	job: JobSpec;
+	member: TeamMember;
+	packDir: string;
+	packId: string;
+	articleSlugs: string[];
+	generatedAt: string;
+	model: string;
+}): string {
+	const template = readFile(
+		join(PROMPTS_DIR, 'agents/personal-articles-edit.md'),
+	);
+	return substitute(template, {
+		MEMBER_SLUG: args.member.slug,
+		MEMBER_NAME: args.member.name,
+		MEMBER_VOICE_TONE: args.member.voice.tone,
+		MEMBER_VOICE_DO: bullets(args.member.voice.do),
+		MEMBER_VOICE_DONT: bullets(args.member.voice.dont),
+		ARTICLE_SLUGS: commaList(args.articleSlugs),
+		BASE_PACK_DIR: args.packDir,
+		BASE_PACK_ID: args.packId,
+		VALIDATOR_ROOT: 'content',
+		REQUESTER: args.job.requester,
+		CONTEXT: args.job.context ?? '',
+		GENERATED_AT: args.generatedAt,
+		MODEL: args.model,
+	});
+}
+
 export function buildAutoFixPrompt(args: {
 	originalPrompt: string;
 	errorReport: string;
@@ -470,35 +539,66 @@ async function main() {
 		process.exit(0);
 	}
 
-	const channelsPrompt = buildChannelsPrompt({
-		job,
-		member,
-		packDir,
-		packId,
-		mirrored,
-		additional,
-		generatedAt,
-		model,
-	});
+	// Edit mode fires when context is non-empty (typically a /change PR
+	// comment routed via pr-change.yaml). The edit-mode prompt is much
+	// tighter and leads with the change request as a non-negotiable
+	// directive — necessary because the create-mode prompt's "produce
+	// personal-voice posts" framing dilutes targeted edits.
+	const isEdit =
+		typeof job.context === 'string' && job.context.trim().length > 0;
+
+	const channelsPrompt = isEdit
+		? buildChannelsEditPrompt({
+				job,
+				member,
+				packDir,
+				packId,
+				generatedAt,
+				model,
+			})
+		: buildChannelsPrompt({
+				job,
+				member,
+				packDir,
+				packId,
+				mirrored,
+				additional,
+				generatedAt,
+				model,
+			});
 
 	if (args.dryRun) {
 		console.log(
 			'\n--- DRY RUN: substituted prompts below, nanocoder NOT invoked ---\n',
 		);
-		console.log('### personal-channels prompt:\n');
+		console.log(
+			`### personal-channels prompt (mode: ${isEdit ? 'edit' : 'create'}):\n`,
+		);
 		console.log(channelsPrompt);
 		if (job.basePackKind === 'product' && articleSlugs.length > 0) {
-			const articlesPrompt = buildArticlesPrompt({
-				job,
-				member,
-				packDir,
-				packId,
-				articleSlugs,
-				mirroredAndAdditional: [...mirrored, ...additional],
-				generatedAt,
-				model,
-			});
-			console.log('\n### personal-articles prompt:\n');
+			const articlesPrompt = isEdit
+				? buildArticlesEditPrompt({
+						job,
+						member,
+						packDir,
+						packId,
+						articleSlugs,
+						generatedAt,
+						model,
+					})
+				: buildArticlesPrompt({
+						job,
+						member,
+						packDir,
+						packId,
+						articleSlugs,
+						mirroredAndAdditional: [...mirrored, ...additional],
+						generatedAt,
+						model,
+					});
+			console.log(
+				`\n### personal-articles prompt (mode: ${isEdit ? 'edit' : 'create'}):\n`,
+			);
 			console.log(articlesPrompt);
 		}
 		process.exit(0);
@@ -527,16 +627,27 @@ async function main() {
 	if (job.basePackKind === 'product' && articleSlugs.length > 0) {
 		// Mirror the same channel rules across articles — the agent filters per
 		// article based on whatever's actually under <article>/channels/.
-		const articlesPrompt = buildArticlesPrompt({
-			job,
-			member,
-			packDir,
-			packId,
-			articleSlugs,
-			mirroredAndAdditional: [...mirrored, ...additional],
-			generatedAt,
-			model,
-		});
+		// In edit mode, route to the focused edit prompt instead.
+		const articlesPrompt = isEdit
+			? buildArticlesEditPrompt({
+					job,
+					member,
+					packDir,
+					packId,
+					articleSlugs,
+					generatedAt,
+					model,
+				})
+			: buildArticlesPrompt({
+					job,
+					member,
+					packDir,
+					packId,
+					articleSlugs,
+					mirroredAndAdditional: [...mirrored, ...additional],
+					generatedAt,
+					model,
+				});
 		const articlesResult = runAgentPhase({
 			phase: 'articles',
 			initialPrompt: articlesPrompt,
