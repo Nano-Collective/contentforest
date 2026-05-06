@@ -3,13 +3,11 @@ kind: personal
 member: will
 channel: x
 slug: contentforest-launch
-generated_at: "2026-05-06T11:50:24.897Z"
+generated_at: "2026-05-06T12:05:28.250Z"
 model: "minimax-m2.7"
-char_count: 188
+char_count: 197
 ---
 
-Agents do the work. Software hands humans the outputs.
-
-That's ContentForest. 🔥
+We built ContentForest to stop release announcements eating into mission time. Automate the channels, keep the brand consistent, stay focused on building. First of many. 🔥
 
 https://nanocollective.org
