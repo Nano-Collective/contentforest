@@ -1,0 +1,33 @@
+{
+  "issue_number": 18,
+  "requester": "followbenparry",
+  "member": "ben-parry",
+  "base_pack_kind": "collective",
+  "base_pack_id": "contentforest-launch",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "linkedin-newsletter",
+    "substack"
+  ],
+  "article_slugs": [],
+  "generated_at": "2026-05-06T12:49:51.335Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "articles",
+      "attempts": 0,
+      "final_status": "skipped",
+      "failures": []
+    }
+  ]
+}
