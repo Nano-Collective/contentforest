@@ -31,7 +31,9 @@
 		"sync-collective-slugs": "tsx scripts/sync-collective-slugs.ts",
 		"personal-request": "tsx scripts/personal-request.ts",
 		"parse-personal-request": "tsx scripts/parse-personal-request.ts",
-		"sync-team-members": "tsx scripts/sync-team-members.ts"
+		"sync-team-members": "tsx scripts/sync-team-members.ts",
+		"sync-pack-options": "tsx scripts/sync-pack-options.ts",
+		"sync-change-targets": "tsx scripts/sync-change-targets.ts"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",

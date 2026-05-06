@@ -9,11 +9,7 @@ const ISSUE_BODY = `### Member
 
 will
 
-### Base pack kind
-
-Product release
-
-### Base pack id
+### Base pack
 
 nanocoder/1.25.0
 
@@ -25,8 +21,7 @@ _No response_
 test('extractFields: parses every known field from a well-formed body', t => {
 	const fields = extractFields(ISSUE_BODY);
 	t.is(fields.get('Member'), 'will');
-	t.is(fields.get('Base pack kind'), 'Product release');
-	t.is(fields.get('Base pack id'), 'nanocoder/1.25.0');
+	t.is(fields.get('Base pack'), 'nanocoder/1.25.0');
 	t.is(fields.get('Additional context'), null);
 });
 
@@ -49,13 +44,14 @@ test('buildJobSpec: builds spec for a product release request', t => {
 });
 
 test('buildJobSpec: builds spec for a collective pack request', t => {
-	const body = ISSUE_BODY.replace('Product release', 'Collective pack').replace(
+	const body = ISSUE_BODY.replace(
 		'nanocoder/1.25.0',
-		'contentforest-launch',
+		'_collective/contentforest-launch',
 	);
 	const fields = extractFields(body);
 	const spec = buildJobSpec({fields, requester: 'w', issueNumber: 1});
 	t.is(spec.basePackKind, 'collective');
+	// `_collective/` prefix stripped — orchestrator gets the bare slug.
 	t.is(spec.basePackId, 'contentforest-launch');
 });
 
@@ -74,16 +70,7 @@ test('buildJobSpec: rejects non-kebab member slug', t => {
 	t.regex(err.message, /kebab-case/);
 });
 
-test('buildJobSpec: rejects unknown base pack kind', t => {
-	const fields = extractFields(ISSUE_BODY.replace('Product release', 'Bogus'));
-	const err = t.throws(
-		() => buildJobSpec({fields, requester: 'w', issueNumber: 1}),
-		{instanceOf: ParseError},
-	);
-	t.regex(err.message, /base pack kind/);
-});
-
-test('buildJobSpec: rejects malformed product pack id', t => {
+test('buildJobSpec: rejects malformed product pack', t => {
 	const fields = extractFields(
 		ISSUE_BODY.replace('nanocoder/1.25.0', 'no-slash'),
 	);
@@ -94,12 +81,10 @@ test('buildJobSpec: rejects malformed product pack id', t => {
 	t.regex(err.message, /<product>\/<version>/);
 });
 
-test('buildJobSpec: rejects malformed collective pack id', t => {
-	const body = ISSUE_BODY.replace('Product release', 'Collective pack').replace(
-		'nanocoder/1.25.0',
-		'Has Space!',
+test('buildJobSpec: rejects malformed collective slug after the prefix', t => {
+	const fields = extractFields(
+		ISSUE_BODY.replace('nanocoder/1.25.0', '_collective/Has Space!'),
 	);
-	const fields = extractFields(body);
 	const err = t.throws(
 		() => buildJobSpec({fields, requester: 'w', issueNumber: 1}),
 		{instanceOf: ParseError},

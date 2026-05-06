@@ -3,10 +3,12 @@
  * job spec consumable by `scripts/personal-request.ts`.
  *
  * Sister script to `parse-collective-request.ts` and `parse-change-request.ts`;
- * shares the heading-driven extraction mechanics. The personal-request fields
- * differ: instead of a slug + scope, the requester picks a member (synced
- * dropdown of team.json slugs) and a base pack (kind + id), and the agent
- * mirrors that pack 1:1 into `personal/<member>/`.
+ * shares the heading-driven extraction mechanics. The personal-request shape
+ * differs: a single "Base pack" dropdown carries both the pack kind and the
+ * id — `<product>/<version>` for release packs, `_collective/<slug>` for
+ * collective. Kind is derived from the `_collective/` prefix; the orchestrator
+ * sees `basePackKind` + a kind-stripped `basePackId` so the rest of the
+ * pipeline doesn't have to care about the encoding.
  *
  *   echo "$ISSUE_BODY" | pnpm --silent parse-personal-request \
  *     --requester willlamerton --issue-number 123
@@ -30,23 +32,18 @@ export type JobSpec = {
 	issueNumber: number;
 };
 
-const KIND_MAP: Record<string, BasePackKind> = {
-	'product release': 'product',
-	'collective pack': 'collective',
-};
-
 const FIELDS = {
 	Member: 'memberSlug',
-	'Base pack kind': 'basePackKind',
-	'Base pack id': 'basePackId',
+	'Base pack': 'basePack',
 	'Additional context': 'context',
 } as const;
 
+const COLLECTIVE_PREFIX = '_collective/';
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 // product/version  e.g.  nanocoder/1.25.0
 const PRODUCT_PACK_RE = /^[a-z0-9]+(-[a-z0-9]+)*\/[A-Za-z0-9._-]+$/;
 // collective slug  e.g.  contentforest-launch
-const COLLECTIVE_PACK_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const COLLECTIVE_SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /* c8 ignore start */
 function readStdin(): Promise<string> {
@@ -114,24 +111,25 @@ export function buildJobSpec(args: {
 		);
 	}
 
-	const kindLabel = required('Base pack kind');
-	const basePackKind = KIND_MAP[kindLabel.toLowerCase()];
-	if (!basePackKind) {
-		throw new ParseError(
-			`unknown base pack kind "${kindLabel}"; expected one of: ${Object.keys(KIND_MAP).join(', ')}`,
-		);
-	}
-
-	const basePackId = required('Base pack id').trim();
-	if (basePackKind === 'product' && !PRODUCT_PACK_RE.test(basePackId)) {
-		throw new ParseError(
-			`Base pack id for a product release must be "<product>/<version>"; got "${basePackId}"`,
-		);
-	}
-	if (basePackKind === 'collective' && !COLLECTIVE_PACK_RE.test(basePackId)) {
-		throw new ParseError(
-			`Base pack id for a collective pack must be a kebab-case slug; got "${basePackId}"`,
-		);
+	const basePack = required('Base pack').trim();
+	let basePackKind: BasePackKind;
+	let basePackId: string;
+	if (basePack.startsWith(COLLECTIVE_PREFIX)) {
+		basePackKind = 'collective';
+		basePackId = basePack.slice(COLLECTIVE_PREFIX.length);
+		if (!COLLECTIVE_SLUG_RE.test(basePackId)) {
+			throw new ParseError(
+				`Base pack collective slug must be kebab-case; got "${basePack}"`,
+			);
+		}
+	} else {
+		basePackKind = 'product';
+		basePackId = basePack;
+		if (!PRODUCT_PACK_RE.test(basePackId)) {
+			throw new ParseError(
+				`Base pack must be "<product>/<version>" or "_collective/<slug>"; got "${basePack}"`,
+			);
+		}
 	}
 
 	const context = fields.get('Additional context') ?? null;

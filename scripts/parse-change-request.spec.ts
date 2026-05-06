@@ -5,21 +5,13 @@ import {
 	ParseError,
 } from './parse-change-request.js';
 
-const ISSUE_BODY = `### Product
+const ISSUE_BODY = `### Target
 
-nanocoder
-
-### Version
-
-1.25.2
+nanocoder/1.25.2
 
 ### Scope
 
 Headline channels (channels/*.md)
-
-### Article slug
-
-_No response_
 
 ### File path
 
@@ -36,49 +28,43 @@ _No response_
 
 test('extractFields: parses every known field from a well-formed body', t => {
 	const fields = extractFields(ISSUE_BODY);
-	t.is(fields.get('Product'), 'nanocoder');
-	t.is(fields.get('Version'), '1.25.2');
+	t.is(fields.get('Target'), 'nanocoder/1.25.2');
 	t.is(fields.get('Scope'), 'Headline channels (channels/*.md)');
-	t.is(fields.get('Article slug'), null);
 	t.is(fields.get('File path'), null);
 	t.is(fields.get('Request'), 'Tighten the LinkedIn post — keep the lede.');
 	t.is(fields.get('Additional context'), null);
 });
 
 test('extractFields: maps "_No response_" sentinel to null', t => {
-	const fields = extractFields('### Product\n\n_No response_\n');
-	t.is(fields.get('Product'), null);
-});
-
-test('extractFields: maps empty body to null', t => {
-	const fields = extractFields('### Product\n\n\n### Version\n\n1.0.0\n');
-	t.is(fields.get('Product'), null);
-	t.is(fields.get('Version'), '1.0.0');
+	const fields = extractFields('### Target\n\n_No response_\n');
+	t.is(fields.get('Target'), null);
 });
 
 test('extractFields: tolerates fields in any order', t => {
-	const body = '### Version\n\n2.0.0\n\n### Product\n\nnanotune\n';
+	const body =
+		'### Scope\n\nHeadline channels (channels/*.md)\n\n### Target\n\nnanocoder/1.25.0\n\n### Request\n\ndo a thing\n';
 	const fields = extractFields(body);
-	t.is(fields.get('Product'), 'nanotune');
-	t.is(fields.get('Version'), '2.0.0');
+	t.is(fields.get('Target'), 'nanocoder/1.25.0');
+	t.is(fields.get('Scope'), 'Headline channels (channels/*.md)');
+	t.is(fields.get('Request'), 'do a thing');
 });
 
 test('extractFields: ignores unknown headings', t => {
 	const body =
-		'### Product\n\nnanocoder\n\n### Random Heading\n\nignored\n\n### Version\n\n1.0.0\n';
+		'### Target\n\nnanocoder/1.0.0\n\n### Random Heading\n\nignored\n\n### Scope\n\nWhole pack / article\n\n### Request\n\nx\n';
 	const fields = extractFields(body);
-	t.is(fields.get('Product'), 'nanocoder');
-	t.is(fields.get('Version'), '1.0.0');
+	t.is(fields.get('Target'), 'nanocoder/1.0.0');
+	t.is(fields.get('Scope'), 'Whole pack / article');
 	t.false(fields.has('Random Heading'));
 });
 
 test('extractFields: matches headings case-insensitively', t => {
-	const body = '### product\n\nnanocoder\n';
+	const body = '### target\n\nnanocoder/1.25.0\n';
 	const fields = extractFields(body);
-	t.is(fields.get('Product'), 'nanocoder');
+	t.is(fields.get('Target'), 'nanocoder/1.25.0');
 });
 
-test('buildJobSpec: builds a complete spec from a channels-scope request', t => {
+test('buildJobSpec: builds a complete spec from a pack-target channels request', t => {
 	const fields = extractFields(ISSUE_BODY);
 	const spec = buildJobSpec({fields, requester: 'will', issueNumber: 42});
 	t.deepEqual(spec, {
@@ -94,49 +80,87 @@ test('buildJobSpec: builds a complete spec from a channels-scope request', t => 
 	});
 });
 
-test('buildJobSpec: lowercases product slug', t => {
-	const fields = extractFields(ISSUE_BODY.replace('nanocoder', 'NanoCoder'));
+test('buildJobSpec: derives articleSlug from an article-target Target', t => {
+	const fields = extractFields(
+		ISSUE_BODY.replace(
+			'nanocoder/1.25.2',
+			'nanocoder/1.25.2/articles/mcp-support',
+		),
+	);
 	const spec = buildJobSpec({fields, requester: 'w', issueNumber: 1});
 	t.is(spec.product, 'nanocoder');
+	t.is(spec.version, '1.25.2');
+	t.is(spec.articleSlug, 'mcp-support');
+});
+
+test('buildJobSpec: scope=Whole+article-target maps to scope=article', t => {
+	const fields = extractFields(
+		ISSUE_BODY.replace(
+			'nanocoder/1.25.2',
+			'nanocoder/1.25.2/articles/mcp-support',
+		).replace('Headline channels (channels/*.md)', 'Whole pack / article'),
+	);
+	const spec = buildJobSpec({fields, requester: 'w', issueNumber: 1});
+	t.is(spec.scope, 'article');
+	t.is(spec.articleSlug, 'mcp-support');
+});
+
+test('buildJobSpec: scope=Whole+pack-target stays scope=whole-pack', t => {
+	const fields = extractFields(
+		ISSUE_BODY.replace(
+			'Headline channels (channels/*.md)',
+			'Whole pack / article',
+		),
+	);
+	const spec = buildJobSpec({fields, requester: 'w', issueNumber: 1});
+	t.is(spec.scope, 'whole-pack');
+	t.is(spec.articleSlug, null);
 });
 
 test('buildJobSpec: maps each scope label to the enum', t => {
 	const cases = [
-		['Whole pack', 'whole-pack'],
+		['Whole pack / article', 'whole-pack'],
 		['Headline channels (channels/*.md)', 'channels'],
-		['Specific article', 'article'],
-		['Specific file', 'file'],
 	] as const;
 	for (const [label, expected] of cases) {
-		const body = ISSUE_BODY.replace(
-			'Headline channels (channels/*.md)',
-			label,
-		).replace(
-			'_No response_\n\n### File path',
-			label === 'Specific article'
-				? 'mcp-support\n\n### File path'
-				: '_No response_\n\n### File path',
-		);
-		const withFile =
-			label === 'Specific file'
-				? body.replace(
-						'### File path\n\n_No response_',
-						'### File path\n\nchannels/x.md',
-					)
-				: body;
-		const fields = extractFields(withFile);
+		const body = ISSUE_BODY.replace('Headline channels (channels/*.md)', label);
+		const fields = extractFields(body);
 		const spec = buildJobSpec({fields, requester: 'w', issueNumber: 1});
 		t.is(spec.scope, expected, `scope for ${label}`);
 	}
 });
 
-test('buildJobSpec: throws ParseError on missing required field', t => {
-	const fields = extractFields(ISSUE_BODY.replace('1.25.2', '_No response_'));
+test('buildJobSpec: scope=Specific file resolves correctly with file path', t => {
+	const body = ISSUE_BODY.replace(
+		'Headline channels (channels/*.md)',
+		'Specific file',
+	).replace('### File path\n\n_No response_', '### File path\n\nchannels/x.md');
+	const fields = extractFields(body);
+	const spec = buildJobSpec({fields, requester: 'w', issueNumber: 1});
+	t.is(spec.scope, 'file');
+	t.is(spec.filePath, 'channels/x.md');
+});
+
+test('buildJobSpec: rejects malformed Target', t => {
+	const fields = extractFields(
+		ISSUE_BODY.replace('nanocoder/1.25.2', 'no-slash'),
+	);
 	const err = t.throws(
 		() => buildJobSpec({fields, requester: 'w', issueNumber: 1}),
 		{instanceOf: ParseError},
 	);
-	t.regex(err.message, /Version/);
+	t.regex(err.message, /<product>\/<version>/);
+});
+
+test('buildJobSpec: throws ParseError on missing Target', t => {
+	const fields = extractFields(
+		ISSUE_BODY.replace('nanocoder/1.25.2', '_No response_'),
+	);
+	const err = t.throws(
+		() => buildJobSpec({fields, requester: 'w', issueNumber: 1}),
+		{instanceOf: ParseError},
+	);
+	t.regex(err.message, /Target/);
 });
 
 test('buildJobSpec: throws ParseError on unknown scope', t => {
@@ -148,17 +172,6 @@ test('buildJobSpec: throws ParseError on unknown scope', t => {
 		{instanceOf: ParseError},
 	);
 	t.regex(err.message, /unknown scope/i);
-});
-
-test('buildJobSpec: requires Article slug when scope = article', t => {
-	const fields = extractFields(
-		ISSUE_BODY.replace('Headline channels (channels/*.md)', 'Specific article'),
-	);
-	const err = t.throws(
-		() => buildJobSpec({fields, requester: 'w', issueNumber: 1}),
-		{instanceOf: ParseError},
-	);
-	t.regex(err.message, /Article slug/);
 });
 
 test('buildJobSpec: requires File path when scope = file', t => {

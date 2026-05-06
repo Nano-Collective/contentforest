@@ -13,6 +13,12 @@
  *
  * Exits non-zero on missing required fields with a human-readable error
  * on stderr — the workflow surfaces that as a step failure.
+ *
+ * Target shape: `<product>/<version>` for a pack target, or
+ * `<product>/<version>/articles/<slug>` for an article target. The parser
+ * derives `product`, `version`, and (when present) `articleSlug` from the
+ * picked target — kept on the JobSpec so downstream code reads them
+ * directly without reparsing the path.
  */
 
 import {parseArgs} from 'node:util';
@@ -31,25 +37,28 @@ export type JobSpec = {
 	issueNumber: number;
 };
 
-// Scope dropdown labels in the issue form → enum values used by the orchestrator.
+// Scope dropdown labels in the issue form → enum values used by the
+// orchestrator. The "whole" label covers both pack and article targets;
+// scope=article is derived from the Target shape, not picked separately.
 const SCOPE_MAP: Record<string, Scope> = {
-	'whole pack': 'whole-pack',
+	'whole pack / article': 'whole-pack',
 	'headline channels (channels/*.md)': 'channels',
-	'specific article': 'article',
 	'specific file': 'file',
 };
 
 // Issue-form field labels → JobSpec keys. Order is the section order in the
 // rendered markdown; the parser tolerates any order in practice.
 const FIELDS = {
-	Product: 'product',
-	Version: 'version',
+	Target: 'target',
 	Scope: 'scope',
-	'Article slug': 'articleSlug',
 	'File path': 'filePath',
 	Request: 'request',
 	'Additional context': 'context',
 } as const;
+
+const TARGET_PACK_RE = /^([a-z0-9]+(?:-[a-z0-9]+)*)\/([A-Za-z0-9._-]+)$/;
+const TARGET_ARTICLE_RE =
+	/^([a-z0-9]+(?:-[a-z0-9]+)*)\/([A-Za-z0-9._-]+)\/articles\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 /* c8 ignore start */
 function readStdin(): Promise<string> {
@@ -100,6 +109,34 @@ export function extractFields(body: string): Map<string, string | null> {
 
 export class ParseError extends Error {}
 
+type ParsedTarget = {
+	product: string;
+	version: string;
+	articleSlug: string | null;
+};
+
+function parseTarget(raw: string): ParsedTarget {
+	const articleMatch = raw.match(TARGET_ARTICLE_RE);
+	if (articleMatch) {
+		return {
+			product: articleMatch[1],
+			version: articleMatch[2],
+			articleSlug: articleMatch[3],
+		};
+	}
+	const packMatch = raw.match(TARGET_PACK_RE);
+	if (packMatch) {
+		return {
+			product: packMatch[1],
+			version: packMatch[2],
+			articleSlug: null,
+		};
+	}
+	throw new ParseError(
+		`Target must be "<product>/<version>" or "<product>/<version>/articles/<slug>"; got "${raw}"`,
+	);
+}
+
 export function buildJobSpec(args: {
 	fields: Map<string, string | null>;
 	requester: string;
@@ -115,34 +152,37 @@ export function buildJobSpec(args: {
 		return value;
 	};
 
-	const product = required('Product').toLowerCase();
-	const version = required('Version').trim();
+	const targetRaw = required('Target').trim();
+	const target = parseTarget(targetRaw);
+
 	const scopeLabel = required('Scope');
-	const scope = SCOPE_MAP[scopeLabel.toLowerCase()];
+	let scope = SCOPE_MAP[scopeLabel.toLowerCase()];
 	if (!scope) {
 		throw new ParseError(
 			`unknown scope "${scopeLabel}"; expected one of: ${Object.keys(SCOPE_MAP).join(', ')}`,
 		);
 	}
 
-	const articleSlug = fields.get('Article slug') ?? null;
+	// "Whole" against an article target maps to the article scope downstream;
+	// against a pack target, it stays whole-pack. The orchestrator scopes
+	// agent file access accordingly.
+	if (scope === 'whole-pack' && target.articleSlug) {
+		scope = 'article';
+	}
+
 	const filePath = fields.get('File path') ?? null;
 	const request = required('Request');
 	const context = fields.get('Additional context') ?? null;
 
-	// Cross-field validation that the orchestrator would otherwise hit later.
-	if (scope === 'article' && !articleSlug) {
-		throw new ParseError('scope = "Specific article" requires an Article slug');
-	}
 	if (scope === 'file' && !filePath) {
 		throw new ParseError('scope = "Specific file" requires a File path');
 	}
 
 	return {
-		product,
-		version,
+		product: target.product,
+		version: target.version,
 		scope,
-		articleSlug,
+		articleSlug: target.articleSlug,
 		filePath,
 		request,
 		context,
