@@ -3,7 +3,7 @@ kind: personal
 member: will
 channel: instagram
 slug: contentforest-launch
-generated_at: "2026-05-06T10:37:12.921Z"
+generated_at: "2026-05-06T11:50:24.897Z"
 model: "minimax-m2.7"
 char_count: 451
 ---

@@ -4,7 +4,7 @@
   "member": "will",
   "base_pack_kind": "collective",
   "base_pack_id": "contentforest-launch",
-  "context": "This line is awful - \"why write it yourself when your agents can handle it?\" - it's actually more about saving time so we can focus on the greater mission. This line seems lazy and that we don't want to do the work.",
+  "context": "Why write it yourself when your agents can handle it? Reword this in the LinkedIn post. It's a terrible way of wording it. The reason we want to automate this is to save more time focusing on the mission instead of administration. It also aligns brand voice across all communications.",
   "mirrored_channels": [
     "linkedin",
     "x"
@@ -13,7 +13,7 @@
     "instagram"
   ],
   "article_slugs": [],
-  "generated_at": "2026-05-06T11:22:42.811Z",
+  "generated_at": "2026-05-06T11:50:24.897Z",
   "model": "minimax-m2.7",
   "phases": [
     {
