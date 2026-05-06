@@ -1,0 +1,293 @@
+name: Personal Request
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  # One concurrent run per issue. A `/retry` comment that fires while the
+  # previous attempt is still running queues behind it.
+  group: personal-request-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    # Listen on `labeled` (not `opened`) — GitHub fires both when an issue is
+    # created with the label already applied, and the dual firing previously
+    # caused races on collective-request. Gate on the specific label name so
+    # other labels (e.g. `processing`) don't kick off another run.
+    if: |
+      (
+        github.event_name == 'issues'
+        && github.event.label.name == 'personal-request'
+      )
+      || (
+        github.event_name == 'issue_comment'
+        && startsWith(github.event.comment.body, '/retry')
+        && contains(github.event.issue.labels.*.name, 'personal-request')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Verify requester is a public NC org member
+        id: gate
+        # Belt-and-braces with .github/workflows/gate-issues.yaml. Same gate
+        # used by collective-request — only public org members may trigger
+        # the agent (Nanocoder spawns aren't free). Anyone-on-anyone is fine
+        # within that gate: the picked Member need not equal the requester.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          set -euo pipefail
+          STATUS=$(gh api -i "orgs/Nano-Collective/public_members/${AUTHOR}" 2>&1 \
+            | awk 'NR==1 {print $2}' || echo "404")
+          if [ "${STATUS:-404}" = "204" ]; then
+            echo "$AUTHOR verified as public NC org member"
+            echo "member=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::skipping personal-request — $AUTHOR is not a public NC org member (status=$STATUS); gate-issues.yaml will close the issue"
+            echo "member=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.gate.outputs.member == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up PNPM
+        if: steps.gate.outputs.member == 'true'
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        if: steps.gate.outputs.member == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: steps.gate.outputs.member == 'true'
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build and install Nanocoder from main
+        if: steps.gate.outputs.member == 'true'
+        run: |
+          git clone --depth 1 https://github.com/Nano-Collective/nanocoder.git /tmp/nanocoder
+          cd /tmp/nanocoder
+          npm install
+          npm run build
+          npm link
+          which nanocoder
+          nanocoder --version || true
+
+      - name: Configure git
+        if: steps.gate.outputs.member == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Ensure PR / issue labels exist
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create personal-request --color "1f6feb" --description "Issue requesting a personal-pack" --force
+          gh label create processing --color "fbca04" --description "Content-request agent is currently running" --force
+          gh label create failed-change --color "d93f0b" --description "Content-request agent could not produce a clean result" --force
+
+      - name: Mark issue as processing
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          gh issue edit "$ISSUE" --add-label processing --remove-label failed-change || true
+
+      - name: Fetch reference docs
+        if: steps.gate.outputs.member == 'true'
+        run: pnpm fetch-refs
+
+      - name: Parse issue body into job spec
+        id: parse
+        if: steps.gate.outputs.member == 'true'
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          REQUESTER: ${{ github.event.issue.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          SPEC=$(printf '%s' "$ISSUE_BODY" | pnpm --silent parse-personal-request --requester "$REQUESTER" --issue-number "$ISSUE_NUMBER")
+          echo "$SPEC" > /tmp/spec.json
+          echo "Parsed spec:"
+          jq . /tmp/spec.json
+          MEMBER=$(jq -r '.memberSlug' /tmp/spec.json)
+          KIND=$(jq -r '.basePackKind' /tmp/spec.json)
+          PACK_ID=$(jq -r '.basePackId' /tmp/spec.json)
+          echo "member=$MEMBER" >> "$GITHUB_OUTPUT"
+          echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+          echo "pack_id=$PACK_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Guard against unknown member or missing base pack
+        id: guard
+        # Two pre-flight checks the orchestrator also runs, surfaced here so a
+        # misconfigured request fails fast with a friendly issue comment
+        # rather than a 25-minute Nanocoder timeout. Mirrors the slug-existence
+        # guard in collective-request.yaml.
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMBER: ${{ steps.parse.outputs.member }}
+          KIND: ${{ steps.parse.outputs.kind }}
+          PACK_ID: ${{ steps.parse.outputs.pack_id }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          # Member must exist in team.json.
+          MEMBER_SLUGS=$(jq -r '.[].slug' config/team.json 2>/dev/null || echo "")
+          if ! grep -Fxq "$MEMBER" <<<"$MEMBER_SLUGS"; then
+            AVAILABLE=$(printf '%s\n' "$MEMBER_SLUGS" | sed 's/^/- `/; s/$/`/' | sort)
+            BODY=$(printf '❌ The picked member `%s` is not in `config/team.json`. Available members:\n\n%s\n\nFix the **Member** field in this issue and comment `/retry` to re-run.' "$MEMBER" "$AVAILABLE")
+            gh issue comment "$ISSUE" --body "$BODY"
+            gh issue edit "$ISSUE" --add-label failed-change --remove-label processing || true
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Base pack must exist on disk.
+          if [ "$KIND" = "product" ]; then
+            PACK_DIR="content/$PACK_ID"
+          else
+            PACK_DIR="content/_collective/$PACK_ID"
+          fi
+          if [ ! -d "$PACK_DIR" ]; then
+            BODY=$(printf '❌ Base pack `%s` (kind=`%s`) does not exist at `%s` on `main`. Personal packs ground in an existing pack — generate or merge the base pack first, then comment `/retry`.' "$PACK_ID" "$KIND" "$PACK_DIR")
+            gh issue comment "$ISSUE" --body "$BODY"
+            gh issue edit "$ISSUE" --add-label failed-change --remove-label processing || true
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Apply request
+        id: apply
+        if: |
+          steps.gate.outputs.member == 'true'
+          && steps.guard.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          NANOCODER_CONTEXT_LIMIT: "128000"
+          MEMBER: ${{ steps.parse.outputs.member }}
+          PACK_ID: ${{ steps.parse.outputs.pack_id }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          # Flatten "<product>/<version>" → "<product>-<version>" for the
+          # branch name; collective slugs already contain no slashes.
+          PACK_ID_FLAT=$(printf '%s' "$PACK_ID" | tr '/' '-')
+          BRANCH="personal/${MEMBER}-${PACK_ID_FLAT}-issue-${ISSUE}"
+
+          # Defensive guard against duplicate runs racing on the same issue.
+          # /retry intentionally discards the previous attempt; any other
+          # event sees an existing branch as a sibling run that's already
+          # handling this issue, and exits cleanly without touching it.
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            if [ "${{ github.event_name }}" = "issue_comment" ]; then
+              echo "branch $BRANCH already exists on origin — /retry deleting for clean retry"
+              git push origin --delete "$BRANCH" || true
+            else
+              echo "branch $BRANCH already exists on origin — another run is handling this issue, exiting"
+              exit 0
+            fi
+          fi
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          git checkout -B "$BRANCH" origin/main
+
+          set +e
+          pnpm personal-request --job-spec "$(cat /tmp/spec.json)"
+          AGENT_STATUS=$?
+          set -e
+          echo "agent_status=$AGENT_STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Push branch and open PR
+        id: pr
+        if: always() && steps.apply.outputs.branch != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.apply.outputs.branch }}
+          AGENT_STATUS: ${{ steps.apply.outputs.agent_status }}
+          MEMBER: ${{ steps.parse.outputs.member }}
+          PACK_ID: ${{ steps.parse.outputs.pack_id }}
+          ISSUE: ${{ github.event.issue.number }}
+          REQUESTER: ${{ github.event.issue.user.login }}
+        run: |
+          set -euo pipefail
+
+          # If the agent didn't actually change any tracked files, there's
+          # nothing to PR. Comment on the issue and exit cleanly. This is
+          # legitimate when the picked member doesn't publish on any of the
+          # base pack's channels and has no additional channels.
+          git add content/
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "agent produced no diff — nothing to PR"
+            gh issue comment "$ISSUE" --body "The agent ran but did not write any files. Most likely the picked member doesn't publish on any of the base pack's channels and has no additional channels of their own. Update \`config/team.json\` for the member if that's wrong, then \`/retry\`."
+            exit 0
+          fi
+
+          git commit -m "personal-request: ${MEMBER} on ${PACK_ID} (issue #${ISSUE})"
+          git push --set-upstream origin "$BRANCH"
+
+          LABELS="personal-request"
+          if [ "${AGENT_STATUS:-1}" -ne 0 ]; then
+            LABELS="personal-request,failed-change"
+          fi
+
+          BODY=$(printf 'Closes #%s\n\nPersonal-pack from @%s for member `%s` based on `%s`.\n\n- Agent status: `%s`\n\nValidation ran during generation; the `personal-request.json` sidecar in the diff has the report. A reviewer should sanity-check the content before merging.' \
+            "$ISSUE" "$REQUESTER" "$MEMBER" "$PACK_ID" "$([ "${AGENT_STATUS:-1}" -eq 0 ] && echo passed || echo failed-validation)")
+
+          set +e
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Personal pack: ${MEMBER} on ${PACK_ID} (issue #${ISSUE})" \
+            --body "$BODY" \
+            --label "$LABELS")
+          PR_STATUS=$?
+          set -e
+
+          if [ "$PR_STATUS" -ne 0 ]; then
+            echo "::error::pr creation failed — deleting orphan remote branch"
+            git push origin --delete "$BRANCH" 2>/dev/null || true
+            gh issue comment "$ISSUE" --body "The agent produced an edit but PR creation failed. Check the workflow logs and re-run with \`/retry\`."
+            exit 1
+          fi
+
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          gh issue comment "$ISSUE" --body "Personal-pack PR opened: $PR_URL"
+
+      - name: Clear processing label
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          AGENT_STATUS: ${{ steps.apply.outputs.agent_status }}
+        run: |
+          gh issue edit "$ISSUE" --remove-label processing || true
+          if [ "${AGENT_STATUS:-1}" -ne 0 ]; then
+            gh issue edit "$ISSUE" --add-label failed-change || true
+          fi

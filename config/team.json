@@ -1,0 +1,72 @@
+[
+	{
+		"slug": "will",
+		"name": "Will Lamerton",
+		"github": "willlamerton",
+		"role": "Founder, Nano Collective",
+		"voice": {
+			"tone": "Energetic, conversational, optimistic. First-person — switches between 'I' (personal opinion / reflection) and 'we' (the team / collective shipped this) naturally. Comfortable with emojis (🔥 especially on a release), exclamation points, and looking forward (\"More soon\", \"Very excited for 2026\"). Credits teammates by name when they shipped something. Closer to a startup founder posting on LinkedIn than to engineering documentation — energetic, not dry.",
+			"do": [
+				"Open with energy or framing — a hook (\"So many people think...\"), a contrast (\"Despite the holidays...\"), or a meta-line (\"A more 'techie' post!\").",
+				"Credit teammates by name when they contributed — Will calls out Brijesh, Deniz, Nassim, Matthew, Alexandru by name on releases.",
+				"Mix 'I' and 'we' deliberately: 'I' for personal reflection, 'we' for what the team / collective shipped.",
+				"Use emojis sparingly but pointedly — 🔥 on a release, no emoji-spam.",
+				"Acknowledge nuance before pivoting — 'to a degree, they're right' before making the counter-point.",
+				"Close with a forward-looking line ('More soon', 'Very excited for...'), a CTA link, or a thank-you to a contributor.",
+				"Reference projects by name — Nanocoder, Nano Collective, ContentForest. Concrete over abstract."
+			],
+			"dont": [
+				"Don't write in dry engineering-doc register on LinkedIn — that's the canonical pack's job. The personal voice has more energy.",
+				"Don't lead with 'excited to announce' or 'thrilled to share' — too generic. Open with the actual thing.",
+				"Don't use prefab corporate phrases ('next-gen', 'world-class', 'leverage', 'cutting-edge'). The validator warns on these anyway.",
+				"Don't hashtag-spam. One or two tactical lowercase hashtags at the end of a LinkedIn post is fine; X stays hashtag-light; Instagram follows the channel's norms.",
+				"Don't promise capabilities that haven't shipped. Forward-looking is fine ('More soon'); specific future promises aren't.",
+				"Don't bury the project name. Mention Nanocoder / Nano Collective / ContentForest explicitly — readers shouldn't have to guess what the post is about."
+			],
+			"samples": [
+				"Despite the Christmas holidays, we put in a huge effort and released Nanocoder 1.20.0 🔥\n\nThis update contains some massive improvements, features and fixes.\n\nNanocoder has truly become a strong contender when it comes to AI-driven software development. We're very proud to prioritise local models as well as support all your usual cloud providers whilst keeping everything open source and community-centred!\n\nVery excited for 2026.\n\nBig credit to the team as we continue to push this every week:\n\nBrijesh K R, Deniz Okcu, Nassim Amar, Matthew Spence, Alexandru Spînu",
+				"So many people think that AI is about to take their job... and to a degree, they're right. My job as a developer has changed massively to what it was 2-3 years ago thanks to AI overhauling what it means to write software.\n\nFor me though, it's given me more satisfaction than ever. The truth is, I love creating and building and AI has allowed me to put together far more complex, deep ideas in code than I ever would have been able to orchestrate 2-3 years ago.\n\nPlayed right, AI can and will be a Renaissance.\n\n#ai #softwaredevelopment",
+				"A more \"techie\" post!\n\nI've been working on a new open-source initiative called Nano Collective — here, we're focusing on the research and development of open-source, local-first AI tools that are built with privacy and self-custody in mind.\n\nThe first tool we have built is Nanocoder, a coding agent running in your terminal. It allows you to set up with whatever AI provider you want to use, or your own local model, and use it to work on your software projects. It's early days, but is very cool and is garnering a lot of interest and support on GitHub.\n\nOne of the best things is that it's being built and contributed to by the community. This isn't another traditionally corporate product. It's being set up in a way that anyone can come in and play a role in building Nanocoder as well as the wider collective meaningfully and directly.\n\nMore soon."
+			]
+		},
+		"channels": [
+			{
+				"slug": "linkedin",
+				"kind": "social",
+				"handle": "in/will-lamerton-b16ab915b",
+				"min_words": 80,
+				"max_words": 350,
+				"rules": [
+					"Open with energy — a hook, contrast, or meta-framing line.",
+					"Credit teammates by name when they contributed; full names, no @-mentions unless you know the LinkedIn URL slug.",
+					"Mention the project by name (Nanocoder / Nano Collective / ContentForest) explicitly.",
+					"Close with a forward-looking line or a CTA link.",
+					"0–2 lowercase hashtags at the end only if they fit naturally; never hashtag-spam."
+				]
+			},
+			{
+				"slug": "x",
+				"kind": "social",
+				"handle": "willlamerton",
+				"max_chars": 280,
+				"rules": [
+					"≤ 280 chars including the link. One link, no thread.",
+					"Tighter than LinkedIn — lead with the punchline, drop the framing.",
+					"Hashtag-light — one only if it earns its place."
+				]
+			},
+			{
+				"slug": "instagram",
+				"kind": "social",
+				"handle": "willlamerton",
+				"min_words": 30,
+				"max_words": 200,
+				"rules": [
+					"Caption-style — shorter and more visual-led than LinkedIn.",
+					"Emojis fine; lean on the visual rather than long prose.",
+					"Don't put raw URLs in the caption — Instagram doesn't link them. Reference 'link in bio' or the project name and let readers find it."
+				]
+			}
+		]
+	}
+]

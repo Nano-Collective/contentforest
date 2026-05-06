@@ -1,0 +1,66 @@
+name: Sync Team Members
+
+# Keeps the member dropdown in the "Request Personal Pack" issue template
+# aligned with the slugs in config/team.json. Runs whenever a push to main
+# changes config/team.json (or the sync script / workflow itself),
+# regenerates the marker-bracketed member block in the template, and commits
+# the result back if it changed.
+#
+# Pushes from the default GITHUB_TOKEN do not recursively trigger workflows,
+# so this can't loop on its own commit. Sister to sync-collective-slugs.yaml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'config/team.json'
+      - 'scripts/sync-team-members.ts'
+      - '.github/workflows/sync-team-members.yaml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-team-members
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Regenerate member dropdown
+        run: pnpm sync-team-members
+
+      - name: Commit if changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .github/ISSUE_TEMPLATE/personal-request.yml; then
+            echo "no changes — member dropdown already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/ISSUE_TEMPLATE/personal-request.yml
+          git commit -m "chore: sync team-members dropdown [skip ci]"
+          git push

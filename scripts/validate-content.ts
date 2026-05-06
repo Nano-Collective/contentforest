@@ -46,6 +46,7 @@ import {join, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import matter from 'gray-matter';
+import {loadTeam, type TeamChannel, type TeamMember} from '../lib/team.js';
 
 type ChannelKind = 'long-form' | 'social';
 
@@ -122,12 +123,14 @@ function readJson<T>(path: string): T {
 function loadConfig() {
 	const products = readJson<Product[]>(join(ROOT, 'config/products.json'));
 	const channels = readJson<ChannelRule[]>(join(ROOT, 'config/channels.json'));
-	return {products, channels};
+	const team = loadTeam(join(ROOT, 'config/team.json'));
+	return {products, channels, team};
 }
 
 export type ValidatorConfig = {
 	products: Product[];
 	channels: ChannelRule[];
+	team?: TeamMember[];
 };
 
 function findChannel(channels: ChannelRule[], slug: string) {
@@ -172,12 +175,16 @@ const COLLECTIVE_URL = 'https://nanocollective.org';
 
 type PackKind = 'release' | 'article';
 
-type Phase = 'channels' | 'articles' | 'full';
+type Phase = 'channels' | 'articles' | 'full' | 'personal';
 
-const PHASES: Phase[] = ['channels', 'articles', 'full'];
+const PHASES: Phase[] = ['channels', 'articles', 'full', 'personal'];
 
 function phaseIncludesArticles(phase: Phase): boolean {
-	return phase === 'articles' || phase === 'full';
+	return phase === 'articles' || phase === 'full' || phase === 'personal';
+}
+
+function phaseIncludesNonPersonal(phase: Phase): boolean {
+	return phase !== 'personal';
 }
 
 /**
@@ -216,6 +223,221 @@ function channelRuleFor(
 	return findChannel(channels, channelSlug);
 }
 
+/**
+ * Extracts (member, channel) from a path of shape
+ *   <pack-root>/personal/<member>/<channel>.md
+ * Returns null if the file isn't under personal/. Does not handle the legacy
+ * flat layout (`personal/<member>-<channel>.md`); new `kind: personal` files
+ * always use the nested layout.
+ */
+function personalContextFromPath(
+	packRoot: string,
+	file: string,
+): {member: string; channel: string} | null {
+	const rel = relative(packRoot, file).replaceAll('\\', '/');
+	const m = rel.match(/^personal\/([^/]+)\/([^/]+)\.md$/);
+	if (!m) return null;
+	return {member: m[1], channel: m[2]};
+}
+
+/**
+ * Validates a single `kind: personal` file. Member rules from team.json are
+ * the source of truth — channels.json is not consulted. Link policy is
+ * permissive: personal posts may link wherever the member chooses.
+ *
+ * Returns failures/warnings; never throws. The caller iterates files; this
+ * function is per-file.
+ */
+function validatePersonalFile(args: {
+	file: string;
+	body: string;
+	fm: Record<string, unknown>;
+	pathContext: {member: string; channel: string};
+	team: TeamMember[];
+	requireProductVersion?: {product: string; version: string};
+	requireCollectiveSlug?: string;
+}): {failures: Failure[]; warnings: Warning[]} {
+	const failures: Failure[] = [];
+	const warnings: Warning[] = [];
+	const fileRel = relative(ROOT, args.file);
+
+	const baseFields = [
+		'kind',
+		'member',
+		'channel',
+		'generated_at',
+		'model',
+		'char_count',
+	];
+	const requiredFields = [...baseFields];
+	if (args.requireProductVersion) requiredFields.push('product', 'version');
+	if (args.requireCollectiveSlug) requiredFields.push('slug');
+	for (const field of requiredFields) {
+		if (args.fm[field] === undefined || args.fm[field] === null) {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-shape',
+				expected: `field "${field}" present`,
+				actual: 'missing',
+			});
+		}
+	}
+
+	if (args.fm.kind !== undefined && args.fm.kind !== 'personal') {
+		failures.push({
+			file: fileRel,
+			rule: 'frontmatter-kind',
+			expected: 'personal',
+			actual: String(args.fm.kind),
+		});
+	}
+
+	if (
+		args.fm.member !== undefined &&
+		args.fm.member !== args.pathContext.member
+	) {
+		failures.push({
+			file: fileRel,
+			rule: 'frontmatter-member',
+			expected: args.pathContext.member,
+			actual: String(args.fm.member),
+		});
+	}
+
+	if (args.requireProductVersion) {
+		if (
+			args.fm.product !== undefined &&
+			args.fm.product !== args.requireProductVersion.product
+		) {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-product',
+				expected: args.requireProductVersion.product,
+				actual: String(args.fm.product),
+			});
+		}
+		if (
+			args.fm.version !== undefined &&
+			String(args.fm.version) !== args.requireProductVersion.version
+		) {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-version',
+				expected: args.requireProductVersion.version,
+				actual: String(args.fm.version),
+			});
+		}
+	}
+	if (args.requireCollectiveSlug && args.fm.slug !== undefined) {
+		if (args.fm.slug !== args.requireCollectiveSlug) {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-slug',
+				expected: args.requireCollectiveSlug,
+				actual: String(args.fm.slug),
+			});
+		}
+	}
+
+	const member = args.team.find(m => m.slug === args.pathContext.member);
+	if (!member) {
+		failures.push({
+			file: fileRel,
+			rule: 'team-member-known',
+			expected: `member "${args.pathContext.member}" present in config/team.json`,
+			actual: 'missing',
+		});
+	}
+
+	const channelSlug =
+		typeof args.fm.channel === 'string'
+			? args.fm.channel
+			: args.pathContext.channel;
+	let memberChannel: TeamChannel | undefined;
+	if (member) {
+		memberChannel = member.channels.find(c => c.slug === channelSlug);
+		if (!memberChannel) {
+			failures.push({
+				file: fileRel,
+				rule: 'team-channel-known',
+				expected: `channel "${channelSlug}" listed in team.json for "${member.slug}"`,
+				actual: 'missing',
+			});
+		}
+	}
+
+	if (memberChannel) {
+		const charCount = args.body.trim().length;
+		const wordCount = countWords(args.body);
+		if (
+			memberChannel.max_chars !== undefined &&
+			charCount > memberChannel.max_chars
+		) {
+			failures.push({
+				file: fileRel,
+				rule: 'max-chars',
+				expected: `≤${memberChannel.max_chars}`,
+				actual: String(charCount),
+			});
+		}
+		if (
+			memberChannel.min_words !== undefined &&
+			wordCount < memberChannel.min_words
+		) {
+			warnings.push({
+				file: fileRel,
+				rule: 'min-words',
+				message: `${wordCount} words; soft target ≥${memberChannel.min_words}`,
+			});
+		}
+		if (
+			memberChannel.max_words !== undefined &&
+			wordCount > memberChannel.max_words
+		) {
+			failures.push({
+				file: fileRel,
+				rule: 'max-words',
+				expected: `≤${memberChannel.max_words}`,
+				actual: String(wordCount),
+			});
+		}
+	}
+
+	for (const term of FORBIDDEN_HARD) {
+		const re = new RegExp(`\\b${term}\\b`, 'i');
+		if (re.test(args.body)) {
+			failures.push({
+				file: fileRel,
+				rule: 'forbidden-term',
+				expected: `no "${term}"`,
+				actual: 'present',
+			});
+		}
+	}
+	for (const term of FORBIDDEN_SOFT) {
+		const re = new RegExp(`\\b${term}\\b`, 'i');
+		if (re.test(args.body)) {
+			warnings.push({
+				file: fileRel,
+				rule: 'marketing-register',
+				message: `"${term}" — consider replacing with a plainer phrasing`,
+			});
+		}
+	}
+	for (const pattern of PLACEHOLDER_PATTERNS) {
+		if (pattern.test(args.body)) {
+			failures.push({
+				file: fileRel,
+				rule: 'no-placeholder',
+				expected: `no ${pattern.source}`,
+				actual: 'present',
+			});
+		}
+	}
+
+	return {failures, warnings};
+}
+
 function expectedFiles(args: {
 	product: string;
 	version: string;
@@ -247,6 +469,8 @@ function validatePack(args: {
 	version: string;
 	packRoot: string;
 	channels: ChannelRule[];
+	team: TeamMember[];
+	phase: Phase;
 	kind?: PackKind;
 	articleSlug?: string;
 }): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
@@ -314,19 +538,23 @@ function validatePack(args: {
 		}
 	}
 
-	// Expected files
-	for (const exp of expectedFiles({
-		product: args.product.slug,
-		version: args.version,
-		channels: args.channels,
-	})) {
-		if (!fileExistsAny(args.packRoot, exp.rel)) {
-			failures.push({
-				file: relative(ROOT, join(args.packRoot, exp.rel)),
-				rule: 'file-exists',
-				expected: exp.rel,
-				actual: 'missing',
-			});
+	// Expected files — only checked when validating non-personal phases.
+	// `--phase personal` validates only the personal/ subtree of an existing
+	// pack; we trust the base pack already passed its own validation.
+	if (phaseIncludesNonPersonal(args.phase)) {
+		for (const exp of expectedFiles({
+			product: args.product.slug,
+			version: args.version,
+			channels: args.channels,
+		})) {
+			if (!fileExistsAny(args.packRoot, exp.rel)) {
+				failures.push({
+					file: relative(ROOT, join(args.packRoot, exp.rel)),
+					rule: 'file-exists',
+					expected: exp.rel,
+					actual: 'missing',
+				});
+			}
 		}
 	}
 
@@ -347,6 +575,42 @@ function validatePack(args: {
 		const parsed = matter(raw);
 		const fm = parsed.data as Record<string, unknown>;
 		const body = parsed.content;
+
+		// Personal route: kind: personal files use team.json rules and a
+		// permissive link policy. Routed before any of the standard
+		// release/article checks fire (which would demand product/version
+		// frontmatter the personal file doesn't carry).
+		if (fm.kind === 'personal') {
+			const ctx = personalContextFromPath(args.packRoot, file);
+			if (!ctx) {
+				failures.push({
+					file: fileRel,
+					rule: 'personal-path-shape',
+					expected: 'personal/<member>/<channel>.md',
+					actual: 'unrecognised path shape for kind: personal file',
+				});
+				continue;
+			}
+			const result = validatePersonalFile({
+				file,
+				body,
+				fm,
+				pathContext: ctx,
+				team: args.team,
+				requireProductVersion: {
+					product: args.product.slug,
+					version: args.version,
+				},
+			});
+			failures.push(...result.failures);
+			warnings.push(...result.warnings);
+			continue;
+		}
+
+		// Skip non-personal files when only validating personal — saves
+		// re-running the (already-passed) base-pack rules during the
+		// personal-pack agent's self-check.
+		if (args.phase === 'personal') continue;
 
 		// Frontmatter shape
 		const requiredFields = [
@@ -503,6 +767,8 @@ function validateCollectivePack(args: {
 	slug: string;
 	packRoot: string;
 	channels: ChannelRule[];
+	team: TeamMember[];
+	phase: Phase;
 }): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
 	const failures: Failure[] = [];
 	const warnings: Warning[] = [];
@@ -537,22 +803,25 @@ function validateCollectivePack(args: {
 		return {failures: [], warnings: [], skipped: true};
 	}
 
-	// Expected files: meta.json + one .md per channel.
-	const expected: {rel: string; reason: string}[] = [
-		{rel: 'meta.json', reason: 'meta.json missing'},
-		...args.channels.map(c => ({
-			rel: `channels/${c.slug}.md`,
-			reason: `channels/${c.slug}.md missing`,
-		})),
-	];
-	for (const exp of expected) {
-		if (!existsSync(join(args.packRoot, exp.rel))) {
-			failures.push({
-				file: relative(ROOT, join(args.packRoot, exp.rel)),
-				rule: 'file-exists',
-				expected: exp.rel,
-				actual: 'missing',
-			});
+	// Expected files: meta.json + one .md per channel — only when not running
+	// the personal-only phase (the base pack has already passed validation).
+	if (phaseIncludesNonPersonal(args.phase)) {
+		const expected: {rel: string; reason: string}[] = [
+			{rel: 'meta.json', reason: 'meta.json missing'},
+			...args.channels.map(c => ({
+				rel: `channels/${c.slug}.md`,
+				reason: `channels/${c.slug}.md missing`,
+			})),
+		];
+		for (const exp of expected) {
+			if (!existsSync(join(args.packRoot, exp.rel))) {
+				failures.push({
+					file: relative(ROOT, join(args.packRoot, exp.rel)),
+					rule: 'file-exists',
+					expected: exp.rel,
+					actual: 'missing',
+				});
+			}
 		}
 	}
 
@@ -562,6 +831,35 @@ function validateCollectivePack(args: {
 		const parsed = matter(raw);
 		const fm = parsed.data as Record<string, unknown>;
 		const body = parsed.content;
+
+		// Personal route: collective personal files reuse the same shape as
+		// product personal files but with a `slug` instead of product/version.
+		if (fm.kind === 'personal') {
+			const ctx = personalContextFromPath(args.packRoot, file);
+			if (!ctx) {
+				failures.push({
+					file: fileRel,
+					rule: 'personal-path-shape',
+					expected: 'personal/<member>/<channel>.md',
+					actual: 'unrecognised path shape for kind: personal file',
+				});
+				continue;
+			}
+			const result = validatePersonalFile({
+				file,
+				body,
+				fm,
+				pathContext: ctx,
+				team: args.team,
+				requireCollectiveSlug: args.slug,
+			});
+			failures.push(...result.failures);
+			warnings.push(...result.warnings);
+			continue;
+		}
+
+		// Skip non-personal files when only validating personal.
+		if (args.phase === 'personal') continue;
 
 		const requiredFields = [
 			'kind',
@@ -761,6 +1059,8 @@ export function runValidate(options: {
 			version,
 			packRoot,
 			channels: cfg.channels,
+			team: cfg.team ?? [],
+			phase,
 			kind: 'release',
 		});
 		const id = `${product.slug}/${version}`;
@@ -802,6 +1102,8 @@ export function runValidate(options: {
 					version,
 					packRoot: join(articlesDir, slug),
 					channels: cfg.channels,
+					team: cfg.team ?? [],
+					phase,
 					kind: 'article',
 					articleSlug: slug,
 				});
@@ -837,6 +1139,8 @@ export function runValidate(options: {
 			slug,
 			packRoot,
 			channels: cfg.channels,
+			team: cfg.team ?? [],
+			phase,
 		});
 		if (result.skipped) {
 			report.skippedPacks.push(id);
