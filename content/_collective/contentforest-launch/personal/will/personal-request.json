@@ -4,7 +4,7 @@
   "member": "will",
   "base_pack_kind": "collective",
   "base_pack_id": "contentforest-launch",
-  "context": "I'm going to re-post the Collective pack on the various channels and add my own custom thoughts to it. These posts will be thoughts.",
+  "context": "This line is awful - \"why write it yourself when your agents can handle it?\" - it's actually more about saving time so we can focus on the greater mission. This line seems lazy and that we don't want to do the work.",
   "mirrored_channels": [
     "linkedin",
     "x"
@@ -13,7 +13,7 @@
     "instagram"
   ],
   "article_slugs": [],
-  "generated_at": "2026-05-06T10:37:12.921Z",
+  "generated_at": "2026-05-06T11:22:42.811Z",
   "model": "minimax-m2.7",
   "phases": [
     {
