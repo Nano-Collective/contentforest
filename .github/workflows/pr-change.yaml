@@ -338,40 +338,47 @@ jobs:
           # Personal pack uses its own orchestrator and threads REQUEST_TEXT
           # via the `context` field, which the agent reads as a change request
           # when files at the target dir already exist (edit mode).
+          # Specs are written to disk and passed by file path, not by argv.
+          # See collective-request.yaml for the longer rationale — backslash-
+          # heavy payloads (REQUEST_TEXT can contain quoted markdown) have
+          # tripped pnpm's argv round-tripping in CI.
           if [ "$KIND" = "collective" ]; then
-            SPEC=$(jq -nc \
+            jq -nc \
               --arg slug "$SLUG" \
               --arg request "$REQUEST_TEXT" \
               --arg requester "$REQUESTER" \
               --argjson issue_number "$ISSUE_NUMBER" \
-              '{slug:$slug, scope:"whole-pack", filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}')
+              '{slug:$slug, scope:"whole-pack", filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}' \
+              > /tmp/spec.json
             set +e
-            pnpm collective-request --job-spec "$SPEC"
+            pnpm collective-request --job-spec-file /tmp/spec.json
             STATUS=$?
             set -e
           elif [ "$KIND" = "personal" ]; then
-            SPEC=$(jq -nc \
+            jq -nc \
               --arg memberSlug "$MEMBER" \
               --arg basePackKind "$BASE_PACK_KIND" \
               --arg basePackId "$BASE_PACK_ID" \
               --arg context "$REQUEST_TEXT" \
               --arg requester "$REQUESTER" \
               --argjson issue_number "$ISSUE_NUMBER" \
-              '{memberSlug:$memberSlug, basePackKind:$basePackKind, basePackId:$basePackId, context:$context, requester:$requester, issueNumber:$issue_number}')
+              '{memberSlug:$memberSlug, basePackKind:$basePackKind, basePackId:$basePackId, context:$context, requester:$requester, issueNumber:$issue_number}' \
+              > /tmp/spec.json
             set +e
-            pnpm personal-request --job-spec "$SPEC"
+            pnpm personal-request --job-spec-file /tmp/spec.json
             STATUS=$?
             set -e
           else
-            SPEC=$(jq -nc \
+            jq -nc \
               --arg product "$PRODUCT" \
               --arg version "$VERSION" \
               --arg request "$REQUEST_TEXT" \
               --arg requester "$REQUESTER" \
               --argjson issue_number "$ISSUE_NUMBER" \
-              '{product:$product, version:$version, scope:"whole-pack", articleSlug:null, filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}')
+              '{product:$product, version:$version, scope:"whole-pack", articleSlug:null, filePath:null, request:$request, context:null, requester:$requester, issueNumber:$issue_number}' \
+              > /tmp/spec.json
             set +e
-            pnpm change-request --job-spec "$SPEC"
+            pnpm change-request --job-spec-file /tmp/spec.json
             STATUS=$?
             set -e
           fi

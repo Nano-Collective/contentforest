@@ -200,8 +200,14 @@ jobs:
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           git checkout -B "$BRANCH" origin/main
 
+          # Pass the spec by file path, not by argv. Shoving a multi-KB JSON
+          # blob with embedded \" and \n through `pnpm <script> --job-spec
+          # "$(cat ...)"` round-trips it through sh -c and pnpm's command-
+          # string escaping; on backslash-heavy payloads (e.g. user-pasted
+          # markdown with quoted phrases) that has corrupted the JSON before
+          # it reaches JSON.parse.
           set +e
-          pnpm collective-request --job-spec "$(cat /tmp/spec.json)"
+          pnpm collective-request --job-spec-file /tmp/spec.json
           AGENT_STATUS=$?
           set -e
           echo "agent_status=$AGENT_STATUS" >> "$GITHUB_OUTPUT"

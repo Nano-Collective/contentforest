@@ -17,8 +17,13 @@
  *   7. Write a sidecar `change-request.json` into the pack capturing what
  *      was requested and the run outcome — useful for audit on the PR diff.
  *
- *   pnpm change-request --job-spec '{"product":"nanocoder","version":"1.25.2",...}'
- *   pnpm change-request --job-spec "$(cat /tmp/spec.json)" --dry-run
+ *   pnpm change-request --job-spec-file /tmp/spec.json
+ *   pnpm change-request --job-spec '{"product":"nanocoder",...}' --dry-run
+ *
+ * --job-spec-file is preferred for orchestrators that already have the spec
+ * on disk: it avoids shoving a multi-KB JSON blob through shell argv, where
+ * it would have to round-trip through `sh -c` quoting and pnpm's command-
+ * string escaping (the latter has tripped on backslash-heavy payloads).
  *
  * Exits 0 when the validator is clean, 1 when retries exhaust with failures
  * still present (the workflow opens the PR anyway with a `failed-change`
@@ -69,16 +74,22 @@ function parse(): Args {
 		allowPositionals: true,
 		options: {
 			'job-spec': {type: 'string'},
+			'job-spec-file': {type: 'string'},
 			'dry-run': {type: 'boolean', default: false},
 			'max-retries': {type: 'string', default: '3'},
 		},
 	});
-	if (!values['job-spec']) {
-		console.error('change-request: --job-spec is required');
+	const inline = values['job-spec'] as string | undefined;
+	const file = values['job-spec-file'] as string | undefined;
+	if (!inline && !file) {
+		console.error(
+			'change-request: pass either --job-spec or --job-spec-file',
+		);
 		process.exit(2);
 	}
+	const jobSpec = file ? readFileSync(file, 'utf8') : (inline as string);
 	return {
-		jobSpec: values['job-spec'] as string,
+		jobSpec,
 		dryRun: values['dry-run'] as boolean,
 		maxAttempts: Number.parseInt(values['max-retries'] as string, 10),
 	};
