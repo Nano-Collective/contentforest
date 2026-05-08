@@ -6,6 +6,7 @@ title: "ContentForest: Automated Multi-Channel Release Content for the Nano Coll
 generated_at: "2026-05-05T11:38:49.398Z"
 model: "minimax-m2.7"
 char_count: 4153
+distributed_at: "2026-05-08T12:54:47.306Z"
 ---
 
 The Nano Collective has shipped ContentForest — a tool that automates release content generation across our product stack. This post is a walkthrough of what it does, how it works, and why the shape it takes matters for what we're building next.
