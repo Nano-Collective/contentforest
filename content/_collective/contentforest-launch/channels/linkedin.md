@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-01T17:59:45.689Z"
 model: "minimax-m2.7"
 char_count: 1827
+distributed_at: "2026-05-08T12:54:58.198Z"
 ---
 
 The pattern we're betting on: agents do the work, software gives humans the outputs to act on.
