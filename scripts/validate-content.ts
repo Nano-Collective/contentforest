@@ -428,7 +428,8 @@ function validatePersonalFile(args: {
 		warnings.push({
 			file: fileRel,
 			rule: 'em-dash',
-			message: 'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+			message:
+				'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
 		});
 	}
 	for (const pattern of PLACEHOLDER_PATTERNS) {
@@ -731,7 +732,8 @@ function validatePack(args: {
 			warnings.push({
 				file: fileRel,
 				rule: 'em-dash',
-				message: 'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+				message:
+					'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
 			});
 		}
 
@@ -979,7 +981,8 @@ function validateCollectivePack(args: {
 			warnings.push({
 				file: fileRel,
 				rule: 'em-dash',
-				message: 'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+				message:
+					'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
 			});
 		}
 
