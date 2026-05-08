@@ -2,7 +2,7 @@
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"ignoreDependencies": ["postcss"],
 	"ignoreBinaries": ["semgrep", "report"],
-	"ignore": ["components/ui/**"],
+	"ignore": ["components/ui/**", "worker/**"],
 	"ignoreExportsUsedInFile": {
 		"interface": true,
 		"type": true

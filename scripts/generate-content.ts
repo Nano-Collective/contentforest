@@ -27,6 +27,12 @@
  *   --commit absent (default)  → content/_local/<product>/<version>/
  *   --commit present           → content/<product>/<version>/
  *   --test                     → content/_test/<product>/<version>/
+ *
+ * TODO(distribute): a regen overwrites whatever the agents produce, including
+ * any `distributed_at` field a member previously stamped on a file via the
+ * distribute Worker. If we ever expect to regen a pack that has already been
+ * distributed, snapshot per-file `distributed_at` before the agents run and
+ * re-apply it to the produced files (use lib/frontmatter.ts).
  */
 
 import {execSync, spawnSync} from 'node:child_process';

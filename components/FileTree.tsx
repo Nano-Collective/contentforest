@@ -5,6 +5,7 @@ export type FileTreeItem = {
 	channel: string;
 	label: string;
 	group: 'channels' | 'personal';
+	distributed?: boolean;
 };
 
 export type FileTreeSection = {
@@ -68,10 +69,16 @@ export default function FileTree({sections, selected, onSelect}: Props) {
 																	isSelected
 																		? 'bg-accent text-accent-foreground font-medium'
 																		: 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+																	item.distributed && 'opacity-60',
 																)}
 															>
 																<File className="h-4 w-4 shrink-0" />
-																<span className="truncate text-left">
+																<span
+																	className={cn(
+																		'truncate text-left',
+																		item.distributed && 'line-through',
+																	)}
+																>
 																	{item.label}
 																</span>
 															</button>

@@ -1,6 +1,6 @@
 'use client';
 
-import {Check, Code, Copy, Download, Eye} from 'lucide-react';
+import {Check, Code, Copy, Download, Eye, Send} from 'lucide-react';
 import {marked} from 'marked';
 import {useMemo, useState} from 'react';
 import {Button} from '@/components/ui/button';
@@ -10,11 +10,29 @@ type Props = {
 	filename: string;
 	raw: string;
 	body: string;
+	distributedAt: string | null;
+	marking: boolean;
+	markError: string | null;
+	onMark: () => void;
 };
 
 type Mode = 'preview' | 'raw';
 
-export default function MarkdownPane({filename, raw, body}: Props) {
+function formatDistributedAt(iso: string): string {
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return iso;
+	return d.toLocaleString();
+}
+
+export default function MarkdownPane({
+	filename,
+	raw,
+	body,
+	distributedAt,
+	marking,
+	markError,
+	onMark,
+}: Props) {
 	const [mode, setMode] = useState<Mode>('preview');
 	const [copied, setCopied] = useState(false);
 
@@ -70,6 +88,21 @@ export default function MarkdownPane({filename, raw, body}: Props) {
 					</button>
 				</div>
 				<div className="flex items-center gap-2">
+					{distributedAt ? (
+						<span className="text-xs text-muted-foreground">
+							Distributed {formatDistributedAt(distributedAt)}
+						</span>
+					) : (
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={onMark}
+							disabled={marking}
+						>
+							<Send className="h-3.5 w-3.5" />
+							{marking ? 'Marking…' : 'Mark distributed'}
+						</Button>
+					)}
 					<Button variant="outline" size="sm" onClick={onCopy}>
 						{copied ? (
 							<>
@@ -89,6 +122,10 @@ export default function MarkdownPane({filename, raw, body}: Props) {
 					</Button>
 				</div>
 			</div>
+
+			{markError ? (
+				<p className="text-xs text-destructive mb-3">{markError}</p>
+			) : null}
 
 			{mode === 'preview' ? (
 				<article

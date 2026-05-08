@@ -16,6 +16,7 @@ import {
 	readVersionPack,
 	type VersionPack,
 } from '@/lib/content';
+import {markDistributed} from '@/lib/distribute';
 
 type Props = {
 	pack: VersionPack;
@@ -58,12 +59,16 @@ function classify(slug: string): {item: FileTreeItem; section: string} {
 	};
 }
 
-function buildSections(pack: VersionPack): FileTreeSection[] {
+function buildSections(
+	pack: VersionPack,
+	distributedMap: Record<string, string | null>,
+): FileTreeSection[] {
 	const release: FileTreeItem[] = [];
 	const byArticle: Map<string, FileTreeItem[]> = new Map();
 
 	for (const f of pack.files) {
 		const {item, section} = classify(f.channel);
+		item.distributed = !!distributedMap[f.channel];
 		if (section === 'release') {
 			release.push(item);
 		} else {
@@ -110,12 +115,56 @@ function filenameFor(slug: string): string {
 }
 
 export default function VersionPage({pack}: Props) {
-	const sections = buildSections(pack);
+	const [distributedMap, setDistributedMap] = useState<
+		Record<string, string | null>
+	>(() => {
+		const m: Record<string, string | null> = {};
+		for (const f of pack.files) {
+			m[f.channel] =
+				typeof f.frontmatter.distributed_at === 'string'
+					? f.frontmatter.distributed_at
+					: null;
+		}
+		return m;
+	});
+	const sections = buildSections(pack, distributedMap);
 	const firstChannel = sections.flatMap(s => s.items)[0]?.channel ?? '';
 	const [selected, setSelected] = useState(firstChannel);
+	const [marking, setMarking] = useState(false);
+	const [markError, setMarkError] = useState<{
+		channel: string;
+		message: string;
+	} | null>(null);
 
 	const file = pack.files.find(f => f.channel === selected);
 	const filename = filenameFor(selected);
+	const distributedAt = file ? (distributedMap[file.channel] ?? null) : null;
+	const visibleMarkError =
+		markError && markError.channel === selected ? markError.message : null;
+
+	const handleMark = async () => {
+		if (!file || marking || distributedAt) return;
+		const channel = file.channel;
+		const repoPath = file.repoPath;
+		const optimistic = new Date().toISOString();
+		const previous = distributedMap[channel] ?? null;
+		setDistributedMap(m => ({...m, [channel]: optimistic}));
+		setMarking(true);
+		setMarkError(null);
+		try {
+			const result = await markDistributed(repoPath, optimistic);
+			setDistributedMap(m => ({...m, [channel]: result.distributedAt}));
+		} catch (err) {
+			setDistributedMap(m => ({...m, [channel]: previous}));
+			setMarkError({
+				channel,
+				message:
+					err instanceof Error ? err.message : 'Failed to mark distributed',
+			});
+		} finally {
+			setMarking(false);
+		}
+	};
 
 	return (
 		<>
@@ -168,9 +217,14 @@ export default function VersionPage({pack}: Props) {
 					<section className="min-w-0">
 						{file ? (
 							<MarkdownPane
+								key={file.repoPath}
 								filename={filename}
 								raw={file.raw}
 								body={file.body}
+								distributedAt={distributedAt}
+								marking={marking}
+								markError={visibleMarkError}
+								onMark={handleMark}
 							/>
 						) : (
 							<p className="text-muted-foreground">No file selected.</p>

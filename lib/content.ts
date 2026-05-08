@@ -1,11 +1,12 @@
 import {readdirSync, readFileSync, statSync} from 'node:fs';
-import {join} from 'node:path';
+import {join, relative} from 'node:path';
 import matter from 'gray-matter';
 
 const DEFAULT_CONTENT_DIR = join(process.cwd(), 'content');
 
 export type ContentFile = {
 	path: string;
+	repoPath: string;
 	channel: string;
 	raw: string;
 	body: string;
@@ -135,6 +136,7 @@ function readMarkdown(filePath: string, channel: string): ContentFile {
 	const frontmatter = JSON.parse(JSON.stringify(parsed.data));
 	return {
 		path: filePath,
+		repoPath: relative(process.cwd(), filePath),
 		channel,
 		raw,
 		body: parsed.content,

@@ -15,6 +15,7 @@ import {
 	listCollectivePacks,
 	readCollectivePack,
 } from '@/lib/content';
+import {markDistributed} from '@/lib/distribute';
 
 type Props = {
 	pack: CollectivePack;
@@ -41,15 +42,62 @@ function filenameFor(slug: string): string {
 }
 
 export default function CollectivePackPage({pack}: Props) {
-	const items = pack.files.map(f => classify(f.channel));
+	const [distributedMap, setDistributedMap] = useState<
+		Record<string, string | null>
+	>(() => {
+		const m: Record<string, string | null> = {};
+		for (const f of pack.files) {
+			m[f.channel] =
+				typeof f.frontmatter.distributed_at === 'string'
+					? f.frontmatter.distributed_at
+					: null;
+		}
+		return m;
+	});
+	const items: FileTreeItem[] = pack.files.map(f => ({
+		...classify(f.channel),
+		distributed: !!distributedMap[f.channel],
+	}));
 	const sections: FileTreeSection[] = [
 		{key: 'collective', title: 'Channels', items},
 	];
 	const firstChannel = items[0]?.channel ?? '';
 	const [selected, setSelected] = useState(firstChannel);
+	const [marking, setMarking] = useState(false);
+	const [markError, setMarkError] = useState<{
+		channel: string;
+		message: string;
+	} | null>(null);
 
 	const file = pack.files.find(f => f.channel === selected);
 	const filename = filenameFor(selected);
+	const distributedAt = file ? (distributedMap[file.channel] ?? null) : null;
+	const visibleMarkError =
+		markError && markError.channel === selected ? markError.message : null;
+
+	const handleMark = async () => {
+		if (!file || marking || distributedAt) return;
+		const channel = file.channel;
+		const repoPath = file.repoPath;
+		const optimistic = new Date().toISOString();
+		const previous = distributedMap[channel] ?? null;
+		setDistributedMap(m => ({...m, [channel]: optimistic}));
+		setMarking(true);
+		setMarkError(null);
+		try {
+			const result = await markDistributed(repoPath, optimistic);
+			setDistributedMap(m => ({...m, [channel]: result.distributedAt}));
+		} catch (err) {
+			setDistributedMap(m => ({...m, [channel]: previous}));
+			setMarkError({
+				channel,
+				message:
+					err instanceof Error ? err.message : 'Failed to mark distributed',
+			});
+		} finally {
+			setMarking(false);
+		}
+	};
 
 	const generatedAt =
 		typeof pack.meta?.generated_at === 'string' ? pack.meta.generated_at : null;
@@ -96,9 +144,14 @@ export default function CollectivePackPage({pack}: Props) {
 						<section className="min-w-0">
 							{file ? (
 								<MarkdownPane
+									key={file.repoPath}
 									filename={filename}
 									raw={file.raw}
 									body={file.body}
+									distributedAt={distributedAt}
+									marking={marking}
+									markError={visibleMarkError}
+									onMark={handleMark}
 								/>
 							) : (
 								<p className="text-muted-foreground">No file selected.</p>

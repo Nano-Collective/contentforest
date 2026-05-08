@@ -1,0 +1,14 @@
+name = "contentforest-distribute"
+main = "distribute.ts"
+compatibility_date = "2026-04-01"
+
+# Bind to a custom subdomain on the nanocollective.org Cloudflare zone.
+# Wrangler provisions the DNS record automatically on first deploy.
+routes = [
+  { pattern = "api.contentforest.nanocollective.org", custom_domain = true },
+]
+
+[vars]
+GITHUB_REPO = "Nano-Collective/contentforest"
+GITHUB_BRANCH = "main"
+ALLOWED_ORIGIN = "https://contentforest.nanocollective.org"
