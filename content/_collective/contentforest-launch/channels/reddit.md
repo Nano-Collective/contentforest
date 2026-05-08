@@ -19,7 +19,7 @@ The problem we were solving: every Nano Collective product had its own GitHub Ac
 
 ContentForest is what replaced that setup. Same intent (automated multi-channel release content), but rebuilt around explicit measuring sticks: Minimax as the LLM, Nanocoder as the execution harness, brand rules and length rules baked into config the agent reads at runtime. It still didn't stay consistent at first. The model would generate well in one run and miss the mark in the next, even with the same prompt.
 
-The gap wasn't the model. It was the measuring sticks.
+The gap was the measuring sticks!
 
 ## What "measuring sticks" actually means here
 
