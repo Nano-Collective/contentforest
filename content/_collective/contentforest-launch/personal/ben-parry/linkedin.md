@@ -6,6 +6,7 @@ slug: contentforest-launch
 generated_at: "2026-05-06T12:49:51.335Z"
 model: "minimax-m2.7"
 char_count: 1832
+distributed_at: "2026-05-08T16:00:17.246Z"
 ---
 
 Most people who worry about AI trust themselves with it. The question isn't whether to trust the AI — it's whether the system makes trust the only option.
