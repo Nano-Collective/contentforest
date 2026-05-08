@@ -35,69 +35,97 @@ const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
 export default {
 	async fetch(req: Request, env: Env): Promise<Response> {
 		const cors = corsHeaders(env, req);
-		if (req.method === 'OPTIONS') return new Response(null, {headers: cors});
-		if (req.method !== 'POST')
-			return json({error: 'method not allowed'}, 405, cors);
-
-		let body: Body;
 		try {
-			body = (await req.json()) as Body;
-		} catch {
-			return json({error: 'invalid json'}, 400, cors);
+			return await handle(req, env, cors);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			return json({error: 'worker exception', detail: message}, 500, cors);
 		}
-		if (!body || typeof body !== 'object')
-			return json({error: 'invalid body'}, 400, cors);
-		if (typeof body.repoPath !== 'string' || !REPO_PATH_RE.test(body.repoPath))
-			return json({error: 'invalid repoPath'}, 400, cors);
-		if (
-			typeof body.distributedAt !== 'string' ||
-			!ISO_RE.test(body.distributedAt)
-		)
-			return json({error: 'invalid distributedAt'}, 400, cors);
-
-		const branch = env.GITHUB_BRANCH ?? 'main';
-		const userEmail =
-			req.headers.get('cf-access-authenticated-user-email') ??
-			env.FALLBACK_AUTHOR ??
-			'distribute-bot@nanocollective.org';
-
-		const MAX_ATTEMPTS = 4;
-		for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-			const existing = await ghGetFile(env, body.repoPath, branch);
-			if (!existing) return json({error: 'file not found'}, 404, cors);
-
-			const updated = setFrontmatterField(
-				existing.content,
-				'distributed_at',
-				body.distributedAt,
-			);
-			if (updated === existing.content) {
-				return json({distributedAt: body.distributedAt, noop: true}, 200, cors);
-			}
-
-			const message = `distribute: mark ${body.repoPath} distributed (by ${userEmail})`;
-			const putRes = await ghPutFile(
-				env,
-				body.repoPath,
-				branch,
-				updated,
-				message,
-				existing.sha,
-				userEmail,
-			);
-			if (putRes.ok)
-				return json({distributedAt: body.distributedAt}, 200, cors);
-			if (putRes.status === 409 && attempt < MAX_ATTEMPTS) continue;
-			const text = await putRes.text();
-			return json(
-				{error: 'github commit failed', detail: text, attempts: attempt},
-				putRes.status === 409 ? 409 : 500,
-				cors,
-			);
-		}
-		return json({error: 'unexpected'}, 500, cors);
 	},
 };
+
+async function handle(
+	req: Request,
+	env: Env,
+	cors: Record<string, string>,
+): Promise<Response> {
+	if (req.method === 'OPTIONS') return new Response(null, {headers: cors});
+	if (req.method !== 'POST')
+		return json({error: 'method not allowed'}, 405, cors);
+
+	let body: Body;
+	try {
+		body = (await req.json()) as Body;
+	} catch {
+		return json({error: 'invalid json'}, 400, cors);
+	}
+	if (!body || typeof body !== 'object')
+		return json({error: 'invalid body'}, 400, cors);
+	if (typeof body.repoPath !== 'string' || !REPO_PATH_RE.test(body.repoPath))
+		return json({error: 'invalid repoPath'}, 400, cors);
+	if (
+		typeof body.distributedAt !== 'string' ||
+		!ISO_RE.test(body.distributedAt)
+	)
+		return json({error: 'invalid distributedAt'}, 400, cors);
+
+	const branch = env.GITHUB_BRANCH ?? 'main';
+	const userEmail =
+		req.headers.get('cf-access-authenticated-user-email') ??
+		env.FALLBACK_AUTHOR ??
+		'distribute-bot@nanocollective.org';
+
+	const MAX_ATTEMPTS = 4;
+	for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+		const existing = await ghGetFile(env, body.repoPath, branch);
+		if (existing.kind === 'missing')
+			return json({error: 'file not found'}, 404, cors);
+		if (existing.kind === 'error')
+			return json(
+				{
+					error: 'github get failed',
+					status: existing.status,
+					detail: existing.detail,
+				},
+				502,
+				cors,
+			);
+
+		const updated = setFrontmatterField(
+			existing.content,
+			'distributed_at',
+			body.distributedAt,
+		);
+		if (updated === existing.content) {
+			return json({distributedAt: body.distributedAt, noop: true}, 200, cors);
+		}
+
+		const message = `distribute: mark ${body.repoPath} distributed (by ${userEmail})`;
+		const putRes = await ghPutFile(
+			env,
+			body.repoPath,
+			branch,
+			updated,
+			message,
+			existing.sha,
+			userEmail,
+		);
+		if (putRes.ok) return json({distributedAt: body.distributedAt}, 200, cors);
+		if (putRes.status === 409 && attempt < MAX_ATTEMPTS) continue;
+		const text = await putRes.text();
+		return json(
+			{
+				error: 'github put failed',
+				status: putRes.status,
+				detail: text,
+				attempts: attempt,
+			},
+			putRes.status === 409 ? 409 : 502,
+			cors,
+		);
+	}
+	return json({error: 'unexpected'}, 500, cors);
+}
 
 function corsHeaders(env: Env, req: Request): Record<string, string> {
 	const origin = req.headers.get('origin') ?? '';
@@ -127,17 +155,25 @@ function json(
 	});
 }
 
+type GhGetResult =
+	| {kind: 'ok'; sha: string; content: string}
+	| {kind: 'missing'}
+	| {kind: 'error'; status: number; detail: string};
+
 async function ghGetFile(
 	env: Env,
 	path: string,
 	branch: string,
-): Promise<{sha: string; content: string} | null> {
+): Promise<GhGetResult> {
 	const url = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}?ref=${encodeURIComponent(branch)}`;
 	const res = await fetch(url, {headers: ghHeaders(env)});
-	if (res.status === 404) return null;
-	if (!res.ok) throw new Error(`github get failed: ${res.status}`);
+	if (res.status === 404) return {kind: 'missing'};
+	if (!res.ok) {
+		const detail = await res.text().catch(() => '');
+		return {kind: 'error', status: res.status, detail};
+	}
 	const data = (await res.json()) as {sha: string; content: string};
-	return {sha: data.sha, content: base64ToUtf8(data.content)};
+	return {kind: 'ok', sha: data.sha, content: base64ToUtf8(data.content)};
 }
 
 function base64ToUtf8(b64: string): string {
