@@ -62,10 +62,7 @@ test('extractFields: treats unknown ### headings as content of the current field
 	const fields = extractFields(body);
 	t.is(fields.get('Slug'), 'hello');
 	t.is(fields.get('Scope'), 'Specific file');
-	t.is(
-		fields.get('Request'),
-		'### User-pasted subhead\n\nbody copy here',
-	);
+	t.is(fields.get('Request'), '### User-pasted subhead\n\nbody copy here');
 	t.is(fields.get('Additional context'), null);
 	t.false(fields.has('User-pasted subhead'));
 });

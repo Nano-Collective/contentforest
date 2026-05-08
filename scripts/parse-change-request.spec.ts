@@ -59,10 +59,7 @@ test('extractFields: treats unknown ### headings as content of the current field
 	const fields = extractFields(body);
 	t.is(fields.get('Target'), 'nanocoder/1.25.2');
 	t.is(fields.get('Scope'), 'Headline channels (channels/*.md)');
-	t.is(
-		fields.get('Request'),
-		'### User-pasted subhead\n\nbody copy here',
-	);
+	t.is(fields.get('Request'), '### User-pasted subhead\n\nbody copy here');
 	t.false(fields.has('User-pasted subhead'));
 });
 

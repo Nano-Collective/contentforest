@@ -82,9 +82,7 @@ function parse(): Args {
 	const inline = values['job-spec'] as string | undefined;
 	const file = values['job-spec-file'] as string | undefined;
 	if (!inline && !file) {
-		console.error(
-			'change-request: pass either --job-spec or --job-spec-file',
-		);
+		console.error('change-request: pass either --job-spec or --job-spec-file');
 		process.exit(2);
 	}
 	const jobSpec = file ? readFileSync(file, 'utf8') : (inline as string);
