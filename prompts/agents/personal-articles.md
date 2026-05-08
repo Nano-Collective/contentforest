@@ -102,6 +102,8 @@ First-person writing. Pick "I" vs "we" the way {{MEMBER_NAME}} would on each cha
 
 **Avoid (marketing register):** transformative, revolutionary, game-changing, unleash, supercharge, effortless, seamless, next-generation, cutting-edge, world-class, leverage (as a verb), empower, democratize, disrupt(ive).
 
+**Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy. Use a comma, parenthesis, colon, or full stop instead. En-dashes (`–`) are fine for numeric ranges only. The validator emits a warning on every em-dash.
+
 # Channel specs (member-specific)
 
 ```json

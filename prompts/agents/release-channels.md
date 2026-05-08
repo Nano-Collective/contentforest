@@ -75,6 +75,8 @@ Output goes to `{{PACK_DIR}}` using the `write_file` tool. The exact files to pr
 
 **Avoid (marketing register):** transformative, revolutionary, game-changing, unleash, supercharge, effortless, seamless, next-generation, cutting-edge, world-class, leverage (as a verb), empower, democratize, disrupt(ive). If a sentence reads like a press release, rewrite it.
 
+**Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy and break the engineering-doc register. Where you'd reach for an em-dash, use a comma, parenthesis, colon, or full stop. En-dashes (`–`) are fine for numeric ranges only (e.g. `0–3`). The validator emits a warning on every em-dash.
+
 # Channel specs
 
 Use `config/channels.json` (below) for length/char rules. The `max_*` values are **hard ceilings** — exceeding them fails validation. They are deliberately generous: write what the substance warrants, including a longer post when the release has real depth to unpack (architecture decisions, tradeoffs, examples, before/after, why-this-matters). Don't anchor to the middle of the range. The `min_words` values are **soft targets** — for minor patches with little to communicate write only what the release warrants; padding to hit a minimum produces exactly the filler the brand voice forbids ("be specific", "trust the reader").

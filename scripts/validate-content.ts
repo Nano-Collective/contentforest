@@ -424,6 +424,13 @@ function validatePersonalFile(args: {
 			});
 		}
 	}
+	if (args.body.includes('—')) {
+		warnings.push({
+			file: fileRel,
+			rule: 'em-dash',
+			message: 'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+		});
+	}
 	for (const pattern of PLACEHOLDER_PATTERNS) {
 		if (pattern.test(args.body)) {
 			failures.push({
@@ -719,6 +726,15 @@ function validatePack(args: {
 			}
 		}
 
+		// Em-dash (soft) — engineering-doc register prefers hyphens
+		if (body.includes('—')) {
+			warnings.push({
+				file: fileRel,
+				rule: 'em-dash',
+				message: 'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+			});
+		}
+
 		// Unresolved placeholders
 		for (const pattern of PLACEHOLDER_PATTERNS) {
 			if (pattern.test(body)) {
@@ -957,6 +973,14 @@ function validateCollectivePack(args: {
 					message: `"${term}" — consider replacing with a plainer phrasing`,
 				});
 			}
+		}
+
+		if (body.includes('—')) {
+			warnings.push({
+				file: fileRel,
+				rule: 'em-dash',
+				message: 'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+			});
 		}
 
 		for (const pattern of PLACEHOLDER_PATTERNS) {

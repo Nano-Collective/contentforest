@@ -716,6 +716,27 @@ test('warn: marketing-register term produces warning, not failure', t => {
 	}
 });
 
+test('warn: em-dash produces warning, not failure', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		const body = `${LONG_BODY}\n\nThis release ships fast — and stable.`;
+		writeFileSync(
+			join(packDir, 'channels/linkedin.md'),
+			buildMd('linkedin', body),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
+		t.true(report.warnings.some(w => w.rule === 'em-dash'));
+	} finally {
+		cleanup(root);
+	}
+});
+
 // ---------------------------------------------------------------------------
 // Collective packs (content/_collective/<slug>/)
 // ---------------------------------------------------------------------------

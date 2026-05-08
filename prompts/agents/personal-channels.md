@@ -108,6 +108,8 @@ The collective's hard rules apply on top of the member voice (the validator enfo
 
 **Avoid (marketing register):** transformative, revolutionary, game-changing, unleash, supercharge, effortless, seamless, next-generation, cutting-edge, world-class, leverage (as a verb), empower, democratize, disrupt(ive). If a sentence reads like a press release, rewrite it.
 
+**Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy and break the engineering-doc register. Use a comma, parenthesis, colon, or full stop instead. En-dashes (`–`) are fine for numeric ranges only. The validator emits a warning on every em-dash.
+
 # Channel specs (member-specific)
 
 The member's per-channel rules are below — these are the **only** rules consulted for personal files. The pack-level `config/channels.json` does not apply here.

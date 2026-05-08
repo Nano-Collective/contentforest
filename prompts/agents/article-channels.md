@@ -88,6 +88,8 @@ For each angle, write a complete channel set + per-article `meta.json` at `artic
 
 **Avoid (marketing register):** transformative, revolutionary, game-changing, unleash, supercharge, effortless, seamless, next-generation, cutting-edge, world-class, leverage (as a verb), empower, democratize, disrupt(ive). If a sentence reads like a press release, rewrite it.
 
+**Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy and break the engineering-doc register. Where you'd reach for an em-dash, use a comma, parenthesis, colon, or full stop. En-dashes (`–`) are fine for numeric ranges only (e.g. `0–3`). The validator emits a warning on every em-dash.
+
 # Channel specs
 
 Same per-channel rules as the announcement. Each article gets a full channel set. The `max_*` values in `config/channels.json` are **hard ceilings** but are deliberately generous — articles are deep dives, so use the room. Don't anchor to the middle of the range; let the angle dictate length. Padding to hit `min_words` produces filler the brand voice forbids.
