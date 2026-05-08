@@ -6,6 +6,7 @@ slug: contentforest-launch
 generated_at: "2026-05-06T12:05:28.250Z"
 model: "minimax-m2.7"
 char_count: 1499
+distributed_at: "2026-05-08T12:55:04.597Z"
 ---
 
 There's a version of release day that's just hitting publish — no scramble, no last-minute rewrites across six channels, no checking whether the brand voice slipped on the fifth iteration.
