@@ -30,6 +30,22 @@ test('extractFields: maps "_No response_" sentinel to null', t => {
 	t.is(fields.get('Member'), null);
 });
 
+test('extractFields: treats unknown ### headings as content of the current field', t => {
+	// Sister regression to the collective/change-request fix: a user-pasted
+	// `### Subhead` inside Additional context must not eat the surrounding
+	// value or null-out the previous field.
+	const body =
+		'### Member\n\nwill\n\n### Base pack\n\nnanocoder/1.25.0\n\n### Additional context\n\n### User-pasted subhead\n\nbody copy here\n';
+	const fields = extractFields(body);
+	t.is(fields.get('Member'), 'will');
+	t.is(fields.get('Base pack'), 'nanocoder/1.25.0');
+	t.is(
+		fields.get('Additional context'),
+		'### User-pasted subhead\n\nbody copy here',
+	);
+	t.false(fields.has('User-pasted subhead'));
+});
+
 test('buildJobSpec: builds spec for a product release request', t => {
 	const fields = extractFields(ISSUE_BODY);
 	const spec = buildJobSpec({fields, requester: 'will', issueNumber: 42});

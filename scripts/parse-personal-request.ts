@@ -57,6 +57,11 @@ function readStdin(): Promise<string> {
 }
 /* c8 ignore stop */
 
+/**
+ * A `###` line whose label is not a known field is treated as content of the
+ * current field, so user-pasted markdown subheadings inside a textarea don't
+ * eat the surrounding value.
+ */
 export function extractFields(body: string): Map<string, string | null> {
 	const lines = body.split(/\r?\n/);
 	const out = new Map<string, string | null>();
@@ -72,14 +77,16 @@ export function extractFields(body: string): Map<string, string | null> {
 	for (const line of lines) {
 		const heading = line.match(/^###\s+(.+?)\s*$/);
 		if (heading) {
-			flush();
 			const label = heading[1].trim();
-			currentField =
-				Object.keys(FIELDS).find(
-					k => k.toLowerCase() === label.toLowerCase(),
-				) ?? null;
-			buffer = [];
-			continue;
+			const matched = Object.keys(FIELDS).find(
+				k => k.toLowerCase() === label.toLowerCase(),
+			);
+			if (matched) {
+				flush();
+				currentField = matched;
+				buffer = [];
+				continue;
+			}
 		}
 		if (currentField !== null) buffer.push(line);
 	}

@@ -49,13 +49,21 @@ test('extractFields: tolerates fields in any order', t => {
 	t.is(fields.get('Request'), 'do a thing');
 });
 
-test('extractFields: ignores unknown headings', t => {
+test('extractFields: treats unknown ### headings as content of the current field', t => {
+	// Regression: a user-pasted `### Subhead` inside the Request textarea
+	// used to flush the Request buffer empty and fail with
+	// `required field missing: "Request"`. The unknown heading must stay
+	// part of the Request value.
 	const body =
-		'### Target\n\nnanocoder/1.0.0\n\n### Random Heading\n\nignored\n\n### Scope\n\nWhole pack / article\n\n### Request\n\nx\n';
+		'### Target\n\nnanocoder/1.25.2\n\n### Scope\n\nHeadline channels (channels/*.md)\n\n### File path\n\n_No response_\n\n### Request\n\n### User-pasted subhead\n\nbody copy here\n\n### Additional context\n\n_No response_\n';
 	const fields = extractFields(body);
-	t.is(fields.get('Target'), 'nanocoder/1.0.0');
-	t.is(fields.get('Scope'), 'Whole pack / article');
-	t.false(fields.has('Random Heading'));
+	t.is(fields.get('Target'), 'nanocoder/1.25.2');
+	t.is(fields.get('Scope'), 'Headline channels (channels/*.md)');
+	t.is(
+		fields.get('Request'),
+		'### User-pasted subhead\n\nbody copy here',
+	);
+	t.false(fields.has('User-pasted subhead'));
 });
 
 test('extractFields: matches headings case-insensitively', t => {

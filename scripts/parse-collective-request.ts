@@ -57,8 +57,11 @@ function readStdin(): Promise<string> {
 
 /**
  * Walks the body line by line. When we hit `### <known-field>` we capture
- * everything until the next `###` heading or EOF, trim, and store. The
- * sentinel `_No response_` is mapped to null.
+ * everything until the next known-field heading or EOF, trim, and store. A
+ * `###` line whose label is NOT a known field is treated as content of the
+ * current field — users routinely paste markdown subheadings inside textarea
+ * fields and we must not let those eat the surrounding value. The sentinel
+ * `_No response_` is mapped to null.
  */
 export function extractFields(body: string): Map<string, string | null> {
 	const lines = body.split(/\r?\n/);
@@ -75,14 +78,16 @@ export function extractFields(body: string): Map<string, string | null> {
 	for (const line of lines) {
 		const heading = line.match(/^###\s+(.+?)\s*$/);
 		if (heading) {
-			flush();
 			const label = heading[1].trim();
-			currentField =
-				Object.keys(FIELDS).find(
-					k => k.toLowerCase() === label.toLowerCase(),
-				) ?? null;
-			buffer = [];
-			continue;
+			const matched = Object.keys(FIELDS).find(
+				k => k.toLowerCase() === label.toLowerCase(),
+			);
+			if (matched) {
+				flush();
+				currentField = matched;
+				buffer = [];
+				continue;
+			}
 		}
 		if (currentField !== null) buffer.push(line);
 	}

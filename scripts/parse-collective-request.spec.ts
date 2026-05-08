@@ -52,13 +52,22 @@ test('extractFields: tolerates fields in any order', t => {
 	t.is(fields.get('Request'), 'do a thing');
 });
 
-test('extractFields: ignores unknown headings', t => {
+test('extractFields: treats unknown ### headings as content of the current field', t => {
+	// Regression: an issue body with a user-pasted `### Subhead` inside the
+	// Request textarea used to flush the Request buffer empty and fail with
+	// `required field missing: "Request"`. The unknown heading must stay
+	// part of the Request value.
 	const body =
-		'### Slug\n\nhello\n\n### Random Heading\n\nignored\n\n### Scope\n\nWhole pack\n';
+		'### Slug\n\nhello\n\n### Scope\n\nSpecific file\n\n### File path\n\nchannels/x.md\n\n### Request\n\n### User-pasted subhead\n\nbody copy here\n\n### Additional context\n\n_No response_\n';
 	const fields = extractFields(body);
 	t.is(fields.get('Slug'), 'hello');
-	t.is(fields.get('Scope'), 'Whole pack');
-	t.false(fields.has('Random Heading'));
+	t.is(fields.get('Scope'), 'Specific file');
+	t.is(
+		fields.get('Request'),
+		'### User-pasted subhead\n\nbody copy here',
+	);
+	t.is(fields.get('Additional context'), null);
+	t.false(fields.has('User-pasted subhead'));
 });
 
 test('buildJobSpec: builds a complete spec from a channels-scope request', t => {
