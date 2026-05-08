@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-08T14:39:33.385Z"
 model: "minimax-m2.7"
 char_count: 6074
+distributed_at: "2026-05-08T15:46:12.519Z"
 ---
 
 **TL;DR:** Multi-agent pipelines need measuring sticks to be effective, not just a model and a prompt. ContentForest took time to build its measuring sticks (brand guidelines, tone-of-voice docs, an llms.txt used as a grounded source of truth), and that foundation is what makes the pipeline genuinely autonomous rather than just generative. We're now extracting the engine as a configurable npm package so any repo can plug in its own measuring sticks.
