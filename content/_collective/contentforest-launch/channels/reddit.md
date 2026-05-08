@@ -47,7 +47,7 @@ The AI generates the PR and the markdown files. A human reviews and merges. The 
 
 The thing that's specific to us is the *content* of the measuring sticks: our brand voice, our channels, our forbidden phrases. The engine that consumes those measuring sticks isn't specific to us at all.
 
-So we're pulling the engine out into its own package: `@nanocollective/contentforest-core`. One config file (`contentforest.config.json`) points at your brand docs, your channel definitions, your validators. Drop it into any repo, run `contentforest generate --product foo --version 0.1.0`, get a brand-consistent content pack as a PR. Bring your own coding-agent runtime: nanocoder by default, with adapters planned for claude-code, codex, and aider.
+So we're pulling the engine out into its own package: `@nanocollective/contentforest-core`. One config file (`contentforest.config.json`) points at your brand docs, your channel definitions, your validators. Drop it into any repo, run `contentforest generate --product foo --version 0.1.0`, get a brand-consistent content pack as a PR. Bring your own coding-agent runtime: nanocoder by default, with adapters planned for claude-code, codex etc.
 
 The split is deliberate: the engine ships brand-neutral and reads voice from config; what you see us publishing here is one specific deployment of that engine, with our config, our prompts, our viewer. If the argument in this post lands for you, the test is whether you can describe your own measuring sticks well enough that a config file can encode them. If you can, the pipeline does the rest.
 
