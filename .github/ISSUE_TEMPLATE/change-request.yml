@@ -20,6 +20,10 @@ body:
       description: |
         Pick what to edit. `<product>/<version>` targets the release pack itself (channels, meta, or a single file under it). `<product>/<version>/articles/<slug>` targets one article inside a pack. List is auto-generated from `content/` on `main`, sorted newest-first.
       options:
+        - nanocoder/1.26.0
+        - nanocoder/1.26.0/articles/json-tool-fallback
+        - nanocoder/1.26.0/articles/nano-mode
+        - nanocoder/1.26.0/articles/reasoning-traces
         - nanocoder/1.25.0
         - nanocoder/1.25.0/articles/alwaysallow-bugfix
         - nanocoder/1.25.0/articles/modular-system-prompt
