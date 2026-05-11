@@ -1,0 +1,33 @@
+{
+  "issue_number": 39,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "70k-downloads-milestone",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "article_slugs": [],
+  "agent_mode": "bundled",
+  "generated_at": "2026-05-11T22:24:07.774Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "articles",
+      "attempts": 0,
+      "final_status": "skipped",
+      "failures": []
+    }
+  ]
+}
