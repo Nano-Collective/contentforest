@@ -1,0 +1,7 @@
+{
+  "slug": "nano-mode",
+  "title": "How nano mode works and why we built it",
+  "focus": "A technical walkthrough of how nano mode cuts the system prompt to ~150-250 tokens and what that means for local model usage",
+  "generated_at": "2026-05-10T17:10:04.461Z",
+  "model": "minimax-m2.7"
+}
