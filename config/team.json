@@ -172,7 +172,7 @@
 				"articles": false,
 				"rules": [
 					"Philosophy and ideas only — not product updates, not release announcements. This is the 'mind' channel. The build lives in Mind & Machine.",
-					"Do not generate a Substack essay without a supplied title, at least 3 key points from Ben, and a target word count. Do not infer these — flag that they are required before generating.",
+					"If the request supplies a title, key points, and a target word count, use them as given. If any of those are missing, pick a strong philosophical angle yourself — grounded in the structural / incentives / architecture themes Ben writes in — and proceed. The fallback angle must satisfy every other Substack rule below (philosophy not product updates, essay structure, opening blocks). Briefly state the chosen angle in a `<!-- angle: ... -->` HTML comment at the top so the reviewer can see your reasoning.",
 					"Essay format: cold-open hook → founder thesis → core argument sections → dual argument (idealism and limitations) → evolution arc → founder stance (personal and direct) → closing argument.",
 					"Required opening blocks: summary (3-4 sentences, narrative overview), executive summary (3 bullets — 'if you only read 10 seconds'), key points (8-12 bullets, scan-friendly outline).",
 					"Whisper AI and NC products can appear as structural proof points — never as the subject of the essay.",

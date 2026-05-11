@@ -1,6 +1,6 @@
 {
 	"nanocoder": {
-		"disabledTools": ["agent"],
+		"disabledTools": ["agent", "ask_user"],
 		"providers": [
 			{
 				"name": "MiniMax Coding",
