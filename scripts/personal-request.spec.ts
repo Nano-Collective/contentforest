@@ -2,18 +2,14 @@ import {mkdirSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'ava';
-import type {TeamChannel, TeamMember} from '../lib/team.js';
+import type {TeamMember} from '../lib/team.js';
 import {
-	articleEligibleChannels,
 	basePackDir,
 	basePackId,
-	buildArticlesEditPrompt,
-	buildArticlesPrompt,
 	buildAutoFixPrompt,
 	buildChannelsEditPrompt,
 	buildChannelsPrompt,
 	type JobSpec,
-	listArticleSlugs,
 	listBasePackChannels,
 	planChannelSpawns,
 	substitute,
@@ -106,26 +102,6 @@ test('listBasePackChannels: returns empty array when channels/ missing', t => {
 	}
 });
 
-test('listArticleSlugs: returns directory names sorted', t => {
-	const root = mkdtempSync(join(tmpdir(), 'cf-personal-spec-'));
-	try {
-		mkdirSync(join(root, 'articles/registry-redesign'), {recursive: true});
-		mkdirSync(join(root, 'articles/auto-compact'), {recursive: true});
-		t.deepEqual(listArticleSlugs(root), ['auto-compact', 'registry-redesign']);
-	} finally {
-		rmSync(root, {recursive: true, force: true});
-	}
-});
-
-test('listArticleSlugs: returns empty when articles/ missing (collective packs)', t => {
-	const root = mkdtempSync(join(tmpdir(), 'cf-personal-spec-'));
-	try {
-		t.deepEqual(listArticleSlugs(root), []);
-	} finally {
-		rmSync(root, {recursive: true, force: true});
-	}
-});
-
 test('buildChannelsPrompt: substitutes member voice and channel split (product)', t => {
 	const prompt = buildChannelsPrompt({
 		job: PRODUCT_JOB,
@@ -205,24 +181,6 @@ test('buildChannelsPrompt: defaults CONTEXT to "(none)" when null', t => {
 	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
 });
 
-test('buildArticlesPrompt: substitutes CONTEXT when present', t => {
-	const prompt = buildArticlesPrompt({
-		job: {
-			...PRODUCT_JOB,
-			context: 'Lean harder into the architecture angle.',
-		},
-		member: MEMBER,
-		packDir: '/tmp/pack',
-		packId: 'nanocoder/1.25.0',
-		articleSlugs: ['registry-redesign'],
-		mirroredAndAdditional: [MEMBER.channels[0]],
-		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
-	});
-	t.regex(prompt, /Lean harder into the architecture angle\./);
-	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
-});
-
 test('buildChannelsPrompt: empty additional list renders "(none)"', t => {
 	const prompt = buildChannelsPrompt({
 		job: PRODUCT_JOB,
@@ -235,25 +193,6 @@ test('buildChannelsPrompt: empty additional list renders "(none)"', t => {
 		model: 'minimax-m2.7',
 	});
 	t.regex(prompt, /Channels to add[^\n]*\(none\)/);
-});
-
-test('buildArticlesPrompt: includes article slugs and product/version', t => {
-	const prompt = buildArticlesPrompt({
-		job: PRODUCT_JOB,
-		member: MEMBER,
-		packDir: '/tmp/pack',
-		packId: 'nanocoder/1.25.0',
-		articleSlugs: ['registry-redesign', 'auto-compact'],
-		mirroredAndAdditional: [MEMBER.channels[0], MEMBER.channels[1]],
-		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
-	});
-	t.regex(prompt, /registry-redesign/);
-	t.regex(prompt, /auto-compact/);
-	t.regex(prompt, /nanocoder/);
-	t.regex(prompt, /1\.25\.0/);
-	t.notRegex(prompt, /\{\{ARTICLE_SLUGS\}\}/);
-	t.notRegex(prompt, /\{\{PRODUCT_SLUG\}\}/);
 });
 
 test('buildChannelsEditPrompt: leads with the change request as a directive', t => {
@@ -281,27 +220,6 @@ test('buildChannelsEditPrompt: leads with the change request as a directive', t 
 	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
 	t.notRegex(prompt, /\{\{MEMBER_NAME\}\}/);
 	t.notRegex(prompt, /\{\{TARGET_DIR\}\}/);
-});
-
-test('buildArticlesEditPrompt: leads with the change request and lists article slugs', t => {
-	const prompt = buildArticlesEditPrompt({
-		job: {
-			...PRODUCT_JOB,
-			context: 'Tighten the LinkedIn post in the registry-redesign article.',
-		},
-		member: MEMBER,
-		packDir: '/tmp/pack',
-		packId: 'nanocoder/1.25.0',
-		articleSlugs: ['registry-redesign', 'auto-compact'],
-		generatedAt: '2026-05-06T00:00:00Z',
-		model: 'minimax-m2.7',
-	});
-	t.regex(prompt, /Tighten the LinkedIn post/);
-	t.regex(prompt, /registry-redesign/);
-	t.regex(prompt, /auto-compact/);
-	t.regex(prompt, /non-negotiable/i);
-	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
-	t.notRegex(prompt, /\{\{ARTICLE_SLUGS\}\}/);
 });
 
 test('buildAutoFixPrompt: substitutes attempt counters and error report', t => {
@@ -408,26 +326,6 @@ test('buildChannelsPrompt: inScopeChannels filters MEMBER_CHANNELS_JSON to the s
 	// Self-check command must include the channel filter, quoted so multi-
 	// channel groups survive shell tokenisation.
 	t.regex(prompt, /--personal-channels "linkedin"/);
-});
-
-test('articleEligibleChannels: includes channels with articles undefined (default true)', t => {
-	const channels: TeamChannel[] = [
-		{slug: 'a', kind: 'social'},
-		{slug: 'b', kind: 'social'},
-	];
-	t.is(articleEligibleChannels(channels).length, 2);
-});
-
-test('articleEligibleChannels: filters out channels with articles: false', t => {
-	const channels: TeamChannel[] = [
-		{slug: 'linkedin', kind: 'social'},
-		{slug: 'substack', kind: 'long-form', articles: false},
-		{slug: 'x', kind: 'social', articles: true},
-	];
-	t.deepEqual(
-		articleEligibleChannels(channels).map(c => c.slug),
-		['linkedin', 'x'],
-	);
 });
 
 test('buildChannelsPrompt: default inScopeChannels covers all member channels (bundled mode)', t => {

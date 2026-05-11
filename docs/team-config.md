@@ -40,8 +40,7 @@ You only get personal posts on channels you list here. Channel rules here are th
       "max_words": <number>,
       "max_chars": <number>,
       "rules": ["<rule>", "..."],
-      "bundle_with": ["<sibling-channel-slug>", "..."],
-      "articles": true | false
+      "bundle_with": ["<sibling-channel-slug>", "..."]
     }
   ]
 }
@@ -90,7 +89,6 @@ Each channel entry:
 | `max_chars` | no | Hard ceiling on body characters. Use for `x` (280) and any other strict-length channel. |
 | `rules` | no | Array of channel-specific guidance the agent must follow. "No hashtags." "Lead with the operational detail." "One link, no thread." Concrete and short — these go into the agent prompt verbatim. |
 | `bundle_with` | no | Array of sibling channel slugs (same member) that must be written by the same agent spawn when `agent_mode: "per-channel"`. Ignored in bundled mode. Use this for channels that are companions — e.g. a LinkedIn standalone post that pairs with a LinkedIn newsletter issue. Transitive: A→B and B→C end up in one group. |
-| `articles` | no | `true` (default) or `false`. Whether the channel participates in the **personal-articles** phase (per-release drip pieces, one set of channel posts per article in the base pack). Set `false` for channels whose rules forbid per-release product content — e.g. a philosophy-only Substack. The channel still runs in the channels phase regardless. |
 
 ### Picking limits
 
@@ -110,7 +108,9 @@ In per-channel mode the orchestrator partitions your `channels[]` into groups an
 
 **Groups** are formed by `bundle_with`. A channel with no `bundle_with` is its own group. A channel with `bundle_with: ["linkedin"]` co-locates with `linkedin` in one group, so they're written by the same spawn — useful when channels are companions and need to be co-written (Ben's LinkedIn newsletter rule, for instance, requires a companion LinkedIn standalone post per issue; without bundling, those would be split across spawns and lose coherence).
 
-Per-channel mode is **opt-in per member** — it changes nothing for anyone else. The articles phase always stays bundled (one spawn per request, regardless of mode). Edit mode (driven by `/change` PR comments) also stays bundled regardless of mode — the change request is usually targeted at one file and partitioning loses cross-file context.
+Per-channel mode is **opt-in per member** — it changes nothing for anyone else. Edit mode (driven by `/change` PR comments) stays bundled regardless of mode — the change request is usually targeted at one file and partitioning loses cross-file context.
+
+Personal packs are **pack-level only** — one set of channel posts per request, mirroring the base pack's channels. They do not produce per-article drip pieces; that's the canonical pack's job.
 
 **When to enable it:**
 
@@ -182,7 +182,6 @@ The schema is hand-validated in `lib/team.ts`. CI rejects:
 - Unknown channel `kind` (only `social` and `long-form`).
 - Unknown `agent_mode` (only `bundled` and `per-channel`).
 - `bundle_with` referencing a channel that doesn't exist on the same member, or referencing the channel itself.
-- Non-boolean `articles` (only `true` or `false`).
 - Negative numeric fields.
 - Wrong-shape `voice` (e.g. `do` is a string instead of an array).
 

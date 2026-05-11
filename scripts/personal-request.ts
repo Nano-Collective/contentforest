@@ -1,7 +1,11 @@
 /**
  * Orchestrates a single personal-pack request — generates {{member}}'s
- * personal-voice channel posts (and per-article posts, for release packs)
- * grounded in an existing base pack on disk.
+ * personal-voice channel posts grounded in an existing base pack on disk.
+ *
+ * Personal packs are pack-level only: one set of channel posts per request,
+ * mirroring the base pack's channels. They do NOT generate per-article drip
+ * content (article-level personal posts were removed on 2026-05-12 — the
+ * personal voice doesn't fit interim/drip pieces).
  *
  *   1. Resolve the base pack root from job.basePackKind + job.basePackId.
  *      Fail fast if the directory doesn't exist on disk — the requester is
@@ -13,11 +17,10 @@
  *      The validator's source of truth for personal files is team.json, so a
  *      channel in the base pack that the member doesn't list is silently
  *      skipped (no file written).
- *   4. Spawn the personal-channels agent. Validate `--phase personal`. Auto-fix
+ *   4. Spawn the personal-channels agent (or one per group, when
+ *      `agent_mode: "per-channel"`). Validate `--phase personal`. Auto-fix
  *      retry up to --max-retries on validation failure.
- *   5. For release packs only, spawn the personal-articles agent against the
- *      same base pack. Validate again. Auto-fix retry the same way.
- *   6. Write a sidecar `personal-request.json` next to the generated files
+ *   5. Write a sidecar `personal-request.json` next to the generated files
  *      (under `<base-pack>/personal/<member>/`) capturing what was requested
  *      and the run outcome.
  *
@@ -29,7 +32,7 @@
  * it would have to round-trip through `sh -c` quoting and pnpm's command-
  * string escaping (the latter has tripped on backslash-heavy payloads).
  *
- * Exits 0 when both agents validate clean, 1 if either gives up with
+ * Exits 0 when the channels agent validates clean, 1 if it gives up with
  * failures still present (the workflow opens the PR anyway with a
  * `failed-change` label so a human can finish it). Sister script to
  * collective-request.ts; structure is intentionally parallel.
@@ -155,13 +158,6 @@ export function listBasePackChannels(packDir: string): string[] {
 		.sort();
 }
 
-/** Lists article slugs under <packDir>/articles/ (release packs only). */
-export function listArticleSlugs(packDir: string): string[] {
-	const articlesDir = join(packDir, 'articles');
-	if (!existsSync(articlesDir)) return [];
-	return readdirSync(articlesDir).sort();
-}
-
 function bullets(items: string[]): string {
 	if (items.length === 0) return '- (none)';
 	return items.map(i => `- ${i}`).join('\n');
@@ -181,20 +177,6 @@ export type ChannelSpawn = {
 	/** Stable label used for logging and the sidecar (hyphenated slug list). */
 	label: string;
 };
-
-/**
- * Filters channels to those eligible for the personal-articles phase.
- * Default behaviour (no `articles` field on the channel) is to include it.
- * Channels with `articles: false` are excluded — typically philosophy-only
- * publications whose rules forbid per-release product content (e.g. Ben's
- * Substack). They still run in the channels phase; this only scopes what
- * the articles agent is asked to produce.
- */
-export function articleEligibleChannels(
-	channels: TeamChannel[],
-): TeamChannel[] {
-	return channels.filter(c => c.articles !== false);
-}
 
 /**
  * Plans the channel-phase agent spawns for a member. Returns one spawn for
@@ -307,47 +289,6 @@ export function buildChannelsPrompt(args: {
 	});
 }
 
-export function buildArticlesPrompt(args: {
-	job: JobSpec;
-	member: TeamMember;
-	packDir: string;
-	packId: string;
-	articleSlugs: string[];
-	mirroredAndAdditional: TeamChannel[];
-	generatedAt: string;
-	model: string;
-}): string {
-	const template = readFile(join(PROMPTS_DIR, 'agents/personal-articles.md'));
-	const [productSlug, version] = args.job.basePackId.split('/');
-	return substitute(template, {
-		MEMBER_SLUG: args.member.slug,
-		MEMBER_NAME: args.member.name,
-		MEMBER_ROLE: args.member.role,
-		MEMBER_VOICE_TONE: args.member.voice.tone,
-		MEMBER_VOICE_DO: bullets(args.member.voice.do),
-		MEMBER_VOICE_DONT: bullets(args.member.voice.dont),
-		MEMBER_VOICE_SAMPLES:
-			args.member.voice.samples.length > 0
-				? args.member.voice.samples.map(s => `> ${s}`).join('\n\n')
-				: '(none)',
-		MEMBER_CHANNELS_JSON: JSON.stringify(args.mirroredAndAdditional, null, 2),
-		MIRRORED_CHANNEL_SLUGS: commaList(
-			args.mirroredAndAdditional.map(c => c.slug),
-		),
-		ARTICLE_SLUGS: commaList(args.articleSlugs),
-		BASE_PACK_DIR: args.packDir,
-		BASE_PACK_ID: args.packId,
-		VALIDATOR_ROOT: 'content',
-		PRODUCT_SLUG: productSlug,
-		VERSION: version,
-		REQUESTER: args.job.requester,
-		ISSUE_NUMBER: String(args.job.issueNumber),
-		CONTEXT: args.job.context ?? '(none)',
-		GENERATED_AT: args.generatedAt,
-		MODEL: args.model,
-	});
-}
-
 /**
  * Edit-mode prompt for the channels phase. Used when the orchestrator was
  * called with a non-empty `context` field (typically a /change PR comment).
@@ -374,39 +315,6 @@ export function buildChannelsEditPrompt(args: {
 		MEMBER_VOICE_DO: bullets(args.member.voice.do),
 		MEMBER_VOICE_DONT: bullets(args.member.voice.dont),
 		TARGET_DIR: `${join(args.packDir, 'personal', args.member.slug)}/`,
-		BASE_PACK_DIR: args.packDir,
-		BASE_PACK_ID: args.packId,
-		VALIDATOR_ROOT: 'content',
-		REQUESTER: args.job.requester,
-		CONTEXT: args.job.context ?? '',
-		GENERATED_AT: args.generatedAt,
-		MODEL: args.model,
-	});
-}
-
-/**
- * Edit-mode prompt for the articles phase. Same shape as the channels-edit
- * prompt, parameterised over article slugs from the base pack.
- */
-export function buildArticlesEditPrompt(args: {
-	job: JobSpec;
-	member: TeamMember;
-	packDir: string;
-	packId: string;
-	articleSlugs: string[];
-	generatedAt: string;
-	model: string;
-}): string {
-	const template = readFile(
-		join(PROMPTS_DIR, 'agents/personal-articles-edit.md'),
-	);
-	return substitute(template, {
-		MEMBER_SLUG: args.member.slug,
-		MEMBER_NAME: args.member.name,
-		MEMBER_VOICE_TONE: args.member.voice.tone,
-		MEMBER_VOICE_DO: bullets(args.member.voice.do),
-		MEMBER_VOICE_DONT: bullets(args.member.voice.dont),
-		ARTICLE_SLUGS: commaList(args.articleSlugs),
 		BASE_PACK_DIR: args.packDir,
 		BASE_PACK_ID: args.packId,
 		VALIDATOR_ROOT: 'content',
@@ -494,7 +402,7 @@ function runValidator(
 	return JSON.parse(readFileSync(reportPath, 'utf8')) as ValidationReport;
 }
 
-type AgentPhase = 'channels' | 'articles';
+type AgentPhase = 'channels';
 
 type Sidecar = {
 	issue_number: number;
@@ -505,20 +413,19 @@ type Sidecar = {
 	context: string | null;
 	mirrored_channels: string[];
 	additional_channels: string[];
-	article_slugs: string[];
 	agent_mode: 'bundled' | 'per-channel';
 	generated_at: string;
 	model: string;
 	phases: {
 		phase: AgentPhase;
 		/**
-		 * Channel slugs handled by this spawn. Omitted for the articles phase
-		 * and for bundled-mode channels spawns; present (one phase entry per
-		 * group) when agent_mode === "per-channel".
+		 * Channel slugs handled by this spawn. Omitted for bundled-mode
+		 * spawns; present (one phase entry per group) when
+		 * agent_mode === "per-channel".
 		 */
 		channel_group?: string[];
 		attempts: number;
-		final_status: 'passed' | 'failed-validation' | 'skipped';
+		final_status: 'passed' | 'failed-validation';
 		failures: ValidationReport['failures'];
 	}[];
 };
@@ -621,9 +528,6 @@ async function main() {
 	const baseChannelSlugs = listBasePackChannels(packDir);
 	const {mirrored, additional} = expandChannels(member, baseChannelSlugs);
 
-	const articleSlugs =
-		job.basePackKind === 'product' ? listArticleSlugs(packDir) : [];
-
 	const generatedAt = new Date().toISOString();
 	const model = 'minimax-m2.7';
 
@@ -636,27 +540,12 @@ async function main() {
 	console.log(
 		`  additional channels: ${additional.map(c => c.slug).join(', ') || '(none)'}`,
 	);
-	console.log(`  article slugs: ${articleSlugs.join(', ') || '(none)'}`);
 
 	if (mirrored.length === 0 && additional.length === 0) {
 		console.log(
 			`personal-request: nothing to write — member "${member.slug}" doesn't publish on any base-pack channel and has no additional channels`,
 		);
 		process.exit(0);
-	}
-
-	// Channels that opt out of the per-article phase (e.g. a philosophy-only
-	// Substack whose rules forbid product/release content). Channels stay in
-	// the channels phase regardless — this only scopes what the articles
-	// agent sees.
-	const articleChannels = articleEligibleChannels([...mirrored, ...additional]);
-	const excludedFromArticles = [...mirrored, ...additional].filter(
-		c => c.articles === false,
-	);
-	if (excludedFromArticles.length > 0) {
-		console.log(
-			`  excluded from articles: ${excludedFromArticles.map(c => c.slug).join(', ')}`,
-		);
 	}
 
 	// Edit mode fires when context is non-empty (typically a /change PR
@@ -721,36 +610,6 @@ async function main() {
 			);
 			console.log(buildSpawnPrompt(spawn));
 		}
-		if (
-			job.basePackKind === 'product' &&
-			articleSlugs.length > 0 &&
-			(isEdit || articleChannels.length > 0)
-		) {
-			const articlesPrompt = isEdit
-				? buildArticlesEditPrompt({
-						job,
-						member,
-						packDir,
-						packId,
-						articleSlugs,
-						generatedAt,
-						model,
-					})
-				: buildArticlesPrompt({
-						job,
-						member,
-						packDir,
-						packId,
-						articleSlugs,
-						mirroredAndAdditional: articleChannels,
-						generatedAt,
-						model,
-					});
-			console.log(
-				`\n### personal-articles prompt (mode: ${isEdit ? 'edit' : 'create'}):\n`,
-			);
-			console.log(articlesPrompt);
-		}
 		process.exit(0);
 	}
 
@@ -783,59 +642,6 @@ async function main() {
 		});
 	}
 
-	if (
-		job.basePackKind === 'product' &&
-		articleSlugs.length > 0 &&
-		(isEdit || articleChannels.length > 0)
-	) {
-		// Mirror the same channel rules across articles — the agent filters per
-		// article based on whatever's actually under <article>/channels/.
-		// Channels with `articles: false` are filtered out (articleChannels);
-		// in edit mode the agent only touches existing files so the filter is
-		// implicit. Route to the focused edit prompt when context is set.
-		const articlesPrompt = isEdit
-			? buildArticlesEditPrompt({
-					job,
-					member,
-					packDir,
-					packId,
-					articleSlugs,
-					generatedAt,
-					model,
-				})
-			: buildArticlesPrompt({
-					job,
-					member,
-					packDir,
-					packId,
-					articleSlugs,
-					mirroredAndAdditional: articleChannels,
-					generatedAt,
-					model,
-				});
-		const articlesResult = runAgentPhase({
-			phase: 'articles',
-			initialPrompt: articlesPrompt,
-			packId,
-			packDir,
-			model,
-			maxAttempts: args.maxAttempts,
-		});
-		phases.push({
-			phase: 'articles',
-			attempts: articlesResult.attempts,
-			final_status: articlesResult.status,
-			failures: articlesResult.failures,
-		});
-	} else {
-		phases.push({
-			phase: 'articles',
-			attempts: 0,
-			final_status: 'skipped',
-			failures: [],
-		});
-	}
-
 	const sidecar: Sidecar = {
 		issue_number: job.issueNumber,
 		requester: job.requester,
@@ -845,7 +651,6 @@ async function main() {
 		context: job.context,
 		mirrored_channels: mirrored.map(c => c.slug),
 		additional_channels: additional.map(c => c.slug),
-		article_slugs: articleSlugs,
 		agent_mode: isPerChannel ? 'per-channel' : 'bundled',
 		generated_at: generatedAt,
 		model,

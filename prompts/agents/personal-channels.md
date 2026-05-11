@@ -76,7 +76,7 @@ If `{{TARGET_DIR}}` is empty or missing channel files, you're in **create mode**
 | Path | What's there | Use it for |
 | --- | --- | --- |
 | `{{BASE_PACK_DIR}}/channels/*.md` | The base pack's canonical channel posts | The angle, the facts, the link target — re-voice this, do not invent new substance |
-| `{{BASE_PACK_DIR}}/articles/**` | Base pack drip-articles (release packs only) | Background only; the personal-articles agent handles per-article personal posts |
+| `{{BASE_PACK_DIR}}/articles/**` | Base pack drip-articles (release packs only) | Background only; personal packs do NOT produce per-article personal posts, so don't touch this tree |
 | `{{BASE_PACK_DIR}}/meta.json` | Base pack metadata | Product slug, version, generated_at — for grounding |
 | `_refs/collective/organisation/brand.md` | Brand voice, forbidden terms | The collective's hard rules still apply on top of the member voice |
 
@@ -154,7 +154,7 @@ For each channel in **{{ADDITIONAL_CHANNEL_SLUGS}}** (member-only, fresh):
 
 If both lists are empty, write nothing — that's a successful run (the member doesn't publish on any of the base pack's channels and has no additional channels).
 
-Do **not** modify any file outside `{{TARGET_DIR}}`. Do **not** write under `articles/` — the personal-articles agent owns that path.
+Do **not** modify any file outside `{{TARGET_DIR}}`. Do **not** write under `articles/` — personal packs are pack-level only.
 
 # How to work
 

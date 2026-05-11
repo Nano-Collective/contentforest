@@ -169,7 +169,6 @@
 				"handle": "substack.com/@followbenparry",
 				"min_words": 1500,
 				"max_words": 2500,
-				"articles": false,
 				"rules": [
 					"Philosophy and ideas only — not product updates, not release announcements. This is the 'mind' channel. The build lives in Mind & Machine.",
 					"If the request supplies a title, key points, and a target word count, use them as given. If any of those are missing, pick a strong philosophical angle yourself — grounded in the structural / incentives / architecture themes Ben writes in — and proceed. The fallback angle must satisfy every other Substack rule below (philosophy not product updates, essay structure, opening blocks). Briefly state the chosen angle in a `<!-- angle: ... -->` HTML comment at the top so the reviewer can see your reasoning.",

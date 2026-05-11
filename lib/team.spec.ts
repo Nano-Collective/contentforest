@@ -199,25 +199,6 @@ test('partitionChannelGroups: bundle_with co-locates referenced channels', t => 
 	);
 });
 
-test('parseTeam: defaults channel.articles to undefined (treated as true)', t => {
-	const team = parseTeam(VALID_RAW);
-	t.is(team[0].channels[0].articles, undefined);
-});
-
-test('parseTeam: accepts channel.articles: false', t => {
-	const raw = JSON.parse(JSON.stringify(VALID_RAW));
-	raw[0].channels[0].articles = false;
-	const team = parseTeam(raw);
-	t.is(team[0].channels[0].articles, false);
-});
-
-test('parseTeam: rejects non-boolean channel.articles', t => {
-	const raw = JSON.parse(JSON.stringify(VALID_RAW));
-	raw[0].channels[0].articles = 'no';
-	const err = t.throws(() => parseTeam(raw), {instanceOf: TeamConfigError});
-	t.regex(err.message, /articles/);
-});
-
 test('partitionChannelGroups: bundle_with is transitive (A→B, B→C ⇒ one group)', t => {
 	const channels: TeamChannel[] = [
 		{slug: 'a', kind: 'social', bundle_with: ['b']},

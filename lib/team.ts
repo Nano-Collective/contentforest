@@ -34,13 +34,6 @@ export type TeamChannel = {
 	max_chars?: number;
 	rules?: string[];
 	bundle_with?: string[];
-	/**
-	 * Whether this channel participates in the personal-articles phase.
-	 * Defaults to true. Set false for channels whose rules forbid per-release
-	 * product content (e.g. a philosophy-only Substack). The orchestrator
-	 * filters these out before spawning the articles agent.
-	 */
-	articles?: boolean;
 };
 
 export type AgentMode = 'bundled' | 'per-channel';
@@ -141,15 +134,6 @@ function parseChannel(raw: unknown, path: string): TeamChannel {
 		}
 		bundle_with = obj.bundle_with;
 	}
-	let articles: boolean | undefined;
-	if (obj.articles !== undefined) {
-		if (typeof obj.articles !== 'boolean') {
-			throw new TeamConfigError(
-				`${path}.articles: expected boolean, got ${JSON.stringify(obj.articles)}`,
-			);
-		}
-		articles = obj.articles;
-	}
 	return {
 		slug,
 		kind: kind as TeamChannelKind,
@@ -159,7 +143,6 @@ function parseChannel(raw: unknown, path: string): TeamChannel {
 		...(max_chars !== undefined && {max_chars}),
 		...(rules !== undefined && {rules}),
 		...(bundle_with !== undefined && {bundle_with}),
-		...(articles !== undefined && {articles}),
 	};
 }
 
