@@ -183,6 +183,20 @@ export type ChannelSpawn = {
 };
 
 /**
+ * Filters channels to those eligible for the personal-articles phase.
+ * Default behaviour (no `articles` field on the channel) is to include it.
+ * Channels with `articles: false` are excluded — typically philosophy-only
+ * publications whose rules forbid per-release product content (e.g. Ben's
+ * Substack). They still run in the channels phase; this only scopes what
+ * the articles agent is asked to produce.
+ */
+export function articleEligibleChannels(
+	channels: TeamChannel[],
+): TeamChannel[] {
+	return channels.filter(c => c.articles !== false);
+}
+
+/**
  * Plans the channel-phase agent spawns for a member. Returns one spawn for
  * `agent_mode: "bundled"` (today's default), or one per `bundle_with`-group
  * for `agent_mode: "per-channel"`. Groups containing zero in-scope channels
@@ -631,6 +645,20 @@ async function main() {
 		process.exit(0);
 	}
 
+	// Channels that opt out of the per-article phase (e.g. a philosophy-only
+	// Substack whose rules forbid product/release content). Channels stay in
+	// the channels phase regardless — this only scopes what the articles
+	// agent sees.
+	const articleChannels = articleEligibleChannels([...mirrored, ...additional]);
+	const excludedFromArticles = [...mirrored, ...additional].filter(
+		c => c.articles === false,
+	);
+	if (excludedFromArticles.length > 0) {
+		console.log(
+			`  excluded from articles: ${excludedFromArticles.map(c => c.slug).join(', ')}`,
+		);
+	}
+
 	// Edit mode fires when context is non-empty (typically a /change PR
 	// comment routed via pr-change.yaml). The edit-mode prompt is much
 	// tighter and leads with the change request as a non-negotiable
@@ -693,7 +721,11 @@ async function main() {
 			);
 			console.log(buildSpawnPrompt(spawn));
 		}
-		if (job.basePackKind === 'product' && articleSlugs.length > 0) {
+		if (
+			job.basePackKind === 'product' &&
+			articleSlugs.length > 0 &&
+			(isEdit || articleChannels.length > 0)
+		) {
 			const articlesPrompt = isEdit
 				? buildArticlesEditPrompt({
 						job,
@@ -710,7 +742,7 @@ async function main() {
 						packDir,
 						packId,
 						articleSlugs,
-						mirroredAndAdditional: [...mirrored, ...additional],
+						mirroredAndAdditional: articleChannels,
 						generatedAt,
 						model,
 					});
@@ -751,10 +783,16 @@ async function main() {
 		});
 	}
 
-	if (job.basePackKind === 'product' && articleSlugs.length > 0) {
+	if (
+		job.basePackKind === 'product' &&
+		articleSlugs.length > 0 &&
+		(isEdit || articleChannels.length > 0)
+	) {
 		// Mirror the same channel rules across articles — the agent filters per
 		// article based on whatever's actually under <article>/channels/.
-		// In edit mode, route to the focused edit prompt instead.
+		// Channels with `articles: false` are filtered out (articleChannels);
+		// in edit mode the agent only touches existing files so the filter is
+		// implicit. Route to the focused edit prompt when context is set.
 		const articlesPrompt = isEdit
 			? buildArticlesEditPrompt({
 					job,
@@ -771,7 +809,7 @@ async function main() {
 					packDir,
 					packId,
 					articleSlugs,
-					mirroredAndAdditional: [...mirrored, ...additional],
+					mirroredAndAdditional: articleChannels,
 					generatedAt,
 					model,
 				});

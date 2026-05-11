@@ -2,8 +2,9 @@ import {mkdirSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'ava';
-import type {TeamMember} from '../lib/team.js';
+import type {TeamChannel, TeamMember} from '../lib/team.js';
 import {
+	articleEligibleChannels,
 	basePackDir,
 	basePackId,
 	buildArticlesEditPrompt,
@@ -407,6 +408,26 @@ test('buildChannelsPrompt: inScopeChannels filters MEMBER_CHANNELS_JSON to the s
 	// Self-check command must include the channel filter, quoted so multi-
 	// channel groups survive shell tokenisation.
 	t.regex(prompt, /--personal-channels "linkedin"/);
+});
+
+test('articleEligibleChannels: includes channels with articles undefined (default true)', t => {
+	const channels: TeamChannel[] = [
+		{slug: 'a', kind: 'social'},
+		{slug: 'b', kind: 'social'},
+	];
+	t.is(articleEligibleChannels(channels).length, 2);
+});
+
+test('articleEligibleChannels: filters out channels with articles: false', t => {
+	const channels: TeamChannel[] = [
+		{slug: 'linkedin', kind: 'social'},
+		{slug: 'substack', kind: 'long-form', articles: false},
+		{slug: 'x', kind: 'social', articles: true},
+	];
+	t.deepEqual(
+		articleEligibleChannels(channels).map(c => c.slug),
+		['linkedin', 'x'],
+	);
 });
 
 test('buildChannelsPrompt: default inScopeChannels covers all member channels (bundled mode)', t => {

@@ -169,6 +169,7 @@
 				"handle": "substack.com/@followbenparry",
 				"min_words": 1500,
 				"max_words": 2500,
+				"articles": false,
 				"rules": [
 					"Philosophy and ideas only — not product updates, not release announcements. This is the 'mind' channel. The build lives in Mind & Machine.",
 					"Do not generate a Substack essay without a supplied title, at least 3 key points from Ben, and a target word count. Do not infer these — flag that they are required before generating.",
