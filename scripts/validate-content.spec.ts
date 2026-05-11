@@ -7,8 +7,8 @@
  * Coverage targets:
  *  - Happy paths for each phase (channels / articles / full).
  *  - One test per failure rule the validator emits.
- *  - Soft-rule warnings (`min-words`, marketing-register) confirm they
- *    surface without blocking.
+ *  - Soft-rule warnings (marketing-register) confirm they surface
+ *    without blocking.
  *  - Sample-pack skip (`final_status: "sample"`).
  *  - Legacy back-compat: `personal/<member>/<channel>.md` files in old
  *    committed packs still parse cleanly even though the v2 pipeline no
@@ -42,8 +42,9 @@ const CONFIG: ValidatorConfig = {
 	],
 };
 
-// ~200-word body that hits all happy-path rules: includes the repo URL,
-// no forbidden terms, no placeholders, no release-tag links.
+// ~320-word body that hits all happy-path rules: includes the repo URL,
+// no forbidden terms, no placeholders, no release-tag links. Long enough
+// to clear the 300-word github-discussion floor.
 const LONG_BODY = `${[
 	'Demo v1.0.0 is out today.',
 	'This release lands a structural change to how the demo loop handles tool registration.',
@@ -55,15 +56,19 @@ const LONG_BODY = `${[
 	'We rebuilt the test suite around the new shape so the change is locked in by tests and documented in the release notes.',
 	'If you maintain a plugin that registers tools, the public API has not changed and your code should continue to work without modification.',
 	'If you have feedback or hit edge cases we missed, the project lives at the repo linked above.',
-	'Built by the demo team — a community collective shipping practical tooling.',
+	'Built by the demo team, a community collective shipping practical tooling.',
+	'A few notes on the migration path for plugin authors. The internal registry type is now a Map rather than an Array, but the public registration helpers continue to take the same arguments and return the same handle objects, so existing call sites compile without changes.',
+	'If your plugin reaches into the registry directly via the (previously undocumented) array index you will need to switch to the named lookup helper exported alongside the registration API.',
+	'We also took the opportunity to tighten the duplicate-registration path: registering the same tool name twice now throws at registration time rather than silently overwriting, which surfaces the kind of plugin conflict that previously caused confusing iteration-order bugs.',
+	'On performance: the constant-time lookup matters most in tool-heavy sessions where the loop iterates many times across a registry that has grown via plugin installs.',
 	`${PRODUCT_REPO_URL}`,
 ].join('\n\n')}`;
 
 // X-shaped body: includes the URL, fits ≤ 280 chars.
 const X_BODY = `Demo v1.0.0 is out. Tool registry now indexed by name — constant-time lookups, no behaviour changes for plugins. ${PRODUCT_REPO_URL}`;
 
-// 50-word body — under the 150-word soft minimum for linkedin/reddit. Used
-// only by the min-words warning test.
+// 50-word body — under the 150-word floor for linkedin/reddit. Used only
+// by the min-words failure test.
 const SHORT_BODY = `Demo v1.0.0 is out. The registry walk is now O(1) per lookup. Plugins continue to work as before. ${PRODUCT_REPO_URL}`;
 
 type FrontmatterOverrides = Partial<{
@@ -675,7 +680,7 @@ test('fail: pack directory missing → pack-exists', t => {
 // Soft-rule warnings (must not block; must surface in report.warnings)
 // ---------------------------------------------------------------------------
 
-test('warn: short LinkedIn post produces min-words warning, not failure', t => {
+test('fail: short LinkedIn post fails min-words', t => {
 	const root = makeTmpRoot();
 	try {
 		const packDir = writeHappyPack(root);
@@ -688,8 +693,7 @@ test('warn: short LinkedIn post produces min-words warning, not failure', t => {
 			packFilter: PACK_ID,
 			config: CONFIG,
 		});
-		t.deepEqual(report.failures, []);
-		t.true(report.warnings.some(w => w.rule === 'min-words'));
+		t.true(report.failures.some(f => f.rule === 'min-words'));
 	} finally {
 		cleanup(root);
 	}
@@ -751,6 +755,12 @@ const COLLECTIVE_LONG_BODY = `${[
 	'It is short on philosophy and long on numbers — every clause references a specific project, a specific role, or a specific decision-making cadence.',
 	'The intended audience is members and contributors who want to understand exactly what they are agreeing to before they ship code.',
 	'The charter does not promise outcomes; it sets the rules of engagement, and we expect those rules to be revised as we learn what does and does not work in practice.',
+	'Section one covers the revenue split between project maintainers, contributors, and the collective treasury, with worked examples for the most common shipping shapes (solo maintainer, two-person team, member-plus-external-contributor).',
+	'Section two covers cadence: when payouts happen, how disputes are surfaced, and what the appeal path looks like if a member feels the split was applied incorrectly.',
+	'Section three handles the edge cases that came up during the drafting process — projects that span multiple members, contributions that predate the charter, and the treatment of forks that re-join the main project.',
+	'Section four sets out the review cadence for the charter itself: we expect to revise it every two quarters in the first year, then annually, with member-initiated amendments allowed at any time via the standard proposal process.',
+	'Section five documents the calculations that sit behind the splits, including a worked example for a typical quarter, so members can replicate the numbers from public information and confirm they match the figures that land in their accounts.',
+	'Section six covers tax and jurisdictional treatment at a high level, with pointers to the per-jurisdiction notes maintained separately, since those change more often than the charter itself and benefit from living closer to the relevant tax documentation.',
 	'Read the full charter on the collective home and give us feedback in the relevant Discord channel.',
 	`${COLLECTIVE_URL}/economics-charter`,
 ].join('\n\n')}`;
@@ -977,6 +987,7 @@ const TEAM = [
 			{slug: 'x', kind: 'social' as const, max_chars: 280},
 			{slug: 'medium', kind: 'long-form' as const, max_words: 2500},
 		],
+		agent_mode: 'bundled' as const,
 	},
 ];
 
@@ -1249,6 +1260,61 @@ test('personal (product): additional channel not in base pack passes (member-onl
 			config: CONFIG_WITH_TEAM,
 		});
 		t.deepEqual(report.failures, []);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('personal (product): personalChannels filter scopes which files are checked', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// linkedin file deliberately tripping a hard rule (forbidden term);
+		// x is clean. Filter to x — linkedin's failure must not surface.
+		writePersonalFile(
+			packDir,
+			'linkedin',
+			buildPersonalMd({
+				channel: 'linkedin',
+				body: `${PERSONAL_BODY}\n\nThe Sovereign AI angle.`,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+		writePersonalFile(
+			packDir,
+			'x',
+			buildPersonalMd({
+				channel: 'x',
+				body: `Quick take on Demo v1.0.0. ${PRODUCT_REPO_URL}`,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+		const scopedToX = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+			personalChannels: ['x'],
+		});
+		t.false(
+			scopedToX.failures.some(f => f.file.endsWith('linkedin.md')),
+			'linkedin failures must be filtered out when scoped to x',
+		);
+		// Without the filter, the linkedin failure surfaces normally.
+		const unfiltered = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.true(
+			unfiltered.failures.some(
+				f => f.file.endsWith('linkedin.md') && f.rule === 'forbidden-term',
+			),
+			'linkedin forbidden-term failure should surface when filter is omitted',
+		);
 	} finally {
 		cleanup(root);
 	}

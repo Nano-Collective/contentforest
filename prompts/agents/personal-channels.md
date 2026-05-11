@@ -15,9 +15,10 @@
     {{MEMBER_VOICE_DO}}            bulleted do list (markdown)
     {{MEMBER_VOICE_DONT}}          bulleted don't list (markdown)
     {{MEMBER_VOICE_SAMPLES}}       optional sample paragraphs (markdown), or "(none)"
-    {{MEMBER_CHANNELS_JSON}}       member's channels[] array verbatim from team.json
-    {{MIRRORED_CHANNEL_SLUGS}}     comma-list of channels in BOTH base pack and member.channels (1:1 mirror)
-    {{ADDITIONAL_CHANNEL_SLUGS}}   comma-list of channels in member.channels NOT in base pack (fresh post)
+    {{MEMBER_CHANNELS_JSON}}       channels[] entries for THIS spawn — already filtered to {{IN_SCOPE_CHANNEL_SLUGS}}
+    {{MIRRORED_CHANNEL_SLUGS}}     comma-list of channels in BOTH base pack and member.channels (1:1 mirror), scoped to this spawn
+    {{ADDITIONAL_CHANNEL_SLUGS}}   comma-list of channels in member.channels NOT in base pack (fresh post), scoped to this spawn
+    {{IN_SCOPE_CHANNEL_SLUGS}}     comma-list of every channel this spawn owns (mirrored ∪ additional); same as the slugs in MEMBER_CHANNELS_JSON
     {{BASE_KIND}}                  "release" or "collective"
     {{BASE_PACK_DIR}}              absolute path to the base pack on disk
     {{BASE_PACK_ID}}               "<product>/<version>" or "_collective/<slug>" — validator id
@@ -110,9 +111,9 @@ The collective's hard rules apply on top of the member voice (the validator enfo
 
 **Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy and break the engineering-doc register. Use a comma, parenthesis, colon, or full stop instead. En-dashes (`–`) are fine for numeric ranges only. The validator emits a warning on every em-dash.
 
-# Channel specs (member-specific)
+# Channel specs (this spawn only)
 
-The member's per-channel rules are below — these are the **only** rules consulted for personal files. The pack-level `config/channels.json` does not apply here.
+The per-channel rules below are **scoped to this spawn** — `{{IN_SCOPE_CHANNEL_SLUGS}}`. Other channels the member publishes to may be handled by sibling spawns; you don't see their rules and you must not write their files. These are the **only** rules consulted for personal files in your scope. The pack-level `config/channels.json` does not apply here.
 
 ```json
 {{MEMBER_CHANNELS_JSON}}
@@ -168,8 +169,10 @@ Do **not** modify any file outside `{{TARGET_DIR}}`. Do **not** write under `art
 Before declaring yourself done, validate your own output. You're in yolo mode so you can run bash directly:
 
 ```
-pnpm validate --pack {{BASE_PACK_ID}} --root {{VALIDATOR_ROOT}} --phase personal --report /tmp/cf-self-check.json --quiet
+pnpm validate --pack {{BASE_PACK_ID}} --root {{VALIDATOR_ROOT}} --phase personal --personal-channels "{{IN_SCOPE_CHANNEL_SLUGS}}" --report /tmp/cf-self-check.json --quiet
 ```
+
+The `--personal-channels` flag scopes validation to **only** the channels this spawn owns. Any other personal files in the pack (written by other spawns) are skipped — don't touch them and don't try to fix failures you didn't introduce.
 
 Read `/tmp/cf-self-check.json`. If `failures` is `[]`, you're done — stop. If there are failures listed, fix only the listed files and re-validate.
 

@@ -50,6 +50,7 @@ import {
 	expandChannels,
 	findMember,
 	loadTeam,
+	partitionChannelGroups,
 	type TeamChannel,
 	type TeamMember,
 } from '../lib/team.js';
@@ -170,6 +171,60 @@ function commaList(items: string[]): string {
 	return items.length === 0 ? '(none)' : items.join(', ');
 }
 
+export type ChannelSpawn = {
+	/** Channels covered by this spawn (group). */
+	channels: TeamChannel[];
+	/** Mirrored subset (intersect with the base pack). */
+	mirrored: TeamChannel[];
+	/** Additional subset (member-only, not in the base pack). */
+	additional: TeamChannel[];
+	/** Stable label used for logging and the sidecar (hyphenated slug list). */
+	label: string;
+};
+
+/**
+ * Plans the channel-phase agent spawns for a member. Returns one spawn for
+ * `agent_mode: "bundled"` (today's default), or one per `bundle_with`-group
+ * for `agent_mode: "per-channel"`. Groups containing zero in-scope channels
+ * (mirrored ∪ additional is empty) are dropped — those channels would be a
+ * no-op for this run.
+ */
+export function planChannelSpawns(args: {
+	member: TeamMember;
+	mirrored: TeamChannel[];
+	additional: TeamChannel[];
+}): ChannelSpawn[] {
+	const mirroredSet = new Set(args.mirrored.map(c => c.slug));
+	const additionalSet = new Set(args.additional.map(c => c.slug));
+	const isInScope = (slug: string) =>
+		mirroredSet.has(slug) || additionalSet.has(slug);
+
+	if (args.member.agent_mode !== 'per-channel') {
+		return [
+			{
+				channels: args.member.channels,
+				mirrored: args.mirrored,
+				additional: args.additional,
+				label: 'all',
+			},
+		];
+	}
+
+	const groups = partitionChannelGroups(args.member.channels);
+	const spawns: ChannelSpawn[] = [];
+	for (const group of groups) {
+		const groupSlugs = group.map(c => c.slug);
+		if (!groupSlugs.some(isInScope)) continue;
+		spawns.push({
+			channels: group,
+			mirrored: args.mirrored.filter(c => groupSlugs.includes(c.slug)),
+			additional: args.additional.filter(c => groupSlugs.includes(c.slug)),
+			label: groupSlugs.join('-'),
+		});
+	}
+	return spawns;
+}
+
 export function buildChannelsPrompt(args: {
 	job: JobSpec;
 	member: TeamMember;
@@ -179,8 +234,16 @@ export function buildChannelsPrompt(args: {
 	additional: TeamChannel[];
 	generatedAt: string;
 	model: string;
+	/**
+	 * Subset of member.channels in scope for this spawn. Defaults to all of
+	 * them (bundled mode). In per-channel mode the orchestrator passes a
+	 * partitioned group so the agent only sees the rules and validator scope
+	 * for the channels it's writing.
+	 */
+	inScopeChannels?: TeamChannel[];
 }): string {
 	const template = readFile(join(PROMPTS_DIR, 'agents/personal-channels.md'));
+	const inScope = args.inScopeChannels ?? args.member.channels;
 
 	const baseFmHints =
 		args.job.basePackKind === 'product'
@@ -209,9 +272,10 @@ export function buildChannelsPrompt(args: {
 			args.member.voice.samples.length > 0
 				? args.member.voice.samples.map(s => `> ${s}`).join('\n\n')
 				: '(none)',
-		MEMBER_CHANNELS_JSON: JSON.stringify(args.member.channels, null, 2),
+		MEMBER_CHANNELS_JSON: JSON.stringify(inScope, null, 2),
 		MIRRORED_CHANNEL_SLUGS: commaList(args.mirrored.map(c => c.slug)),
 		ADDITIONAL_CHANNEL_SLUGS: commaList(args.additional.map(c => c.slug)),
+		IN_SCOPE_CHANNEL_SLUGS: commaList(inScope.map(c => c.slug)),
 		BASE_KIND: args.job.basePackKind === 'product' ? 'release' : 'collective',
 		BASE_PACK_DIR: args.packDir,
 		BASE_PACK_ID: args.packId,
@@ -382,24 +446,31 @@ type ValidationReport = {
 	warnings: {file: string; rule: string; message: string}[];
 };
 
-function runValidator(packId: string): ValidationReport {
+function runValidator(
+	packId: string,
+	channelFilter?: string[],
+): ValidationReport {
 	const reportPath = join(tmpdir(), `cf-personal-validate-${Date.now()}.json`);
-	const result = spawnSync(
-		'pnpm',
-		[
-			'validate',
-			'--pack',
-			packId,
-			'--root',
-			'content',
-			'--report',
-			reportPath,
-			'--phase',
-			'personal',
-			'--quiet',
-		],
-		{cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']},
-	);
+	const argv = [
+		'validate',
+		'--pack',
+		packId,
+		'--root',
+		'content',
+		'--report',
+		reportPath,
+		'--phase',
+		'personal',
+		'--quiet',
+	];
+	if (channelFilter && channelFilter.length > 0) {
+		argv.push('--personal-channels', channelFilter.join(','));
+	}
+	const result = spawnSync('pnpm', argv, {
+		cwd: ROOT,
+		encoding: 'utf8',
+		stdio: ['ignore', 'pipe', 'pipe'],
+	});
 	if (!existsSync(reportPath)) {
 		console.error(
 			`personal-request: validator did not write a report.\n  exit=${result.status}\n  stdout=${result.stdout?.toString() ?? ''}\n  stderr=${result.stderr?.toString() ?? ''}`,
@@ -421,10 +492,17 @@ type Sidecar = {
 	mirrored_channels: string[];
 	additional_channels: string[];
 	article_slugs: string[];
+	agent_mode: 'bundled' | 'per-channel';
 	generated_at: string;
 	model: string;
 	phases: {
 		phase: AgentPhase;
+		/**
+		 * Channel slugs handled by this spawn. Omitted for the articles phase
+		 * and for bundled-mode channels spawns; present (one phase entry per
+		 * group) when agent_mode === "per-channel".
+		 */
+		channel_group?: string[];
 		attempts: number;
 		final_status: 'passed' | 'failed-validation' | 'skipped';
 		failures: ValidationReport['failures'];
@@ -446,11 +524,13 @@ function writeSidecar(args: {memberDir: string; sidecar: Sidecar}) {
  */
 function runAgentPhase(args: {
 	phase: AgentPhase;
+	label?: string;
 	initialPrompt: string;
 	packId: string;
 	packDir: string;
 	model: string;
 	maxAttempts: number;
+	channelFilter?: string[];
 }): {
 	status: 'passed' | 'failed-validation';
 	attempts: number;
@@ -459,30 +539,31 @@ function runAgentPhase(args: {
 	let attempt = 0;
 	let prompt = args.initialPrompt;
 	let lastReport: ValidationReport | null = null;
+	const tag = args.label ? `${args.phase}:${args.label}` : args.phase;
 
 	while (attempt < args.maxAttempts) {
 		attempt += 1;
 		console.log(
-			`\npersonal-request[${args.phase}]: attempt ${attempt}/${args.maxAttempts}`,
+			`\npersonal-request[${tag}]: attempt ${attempt}/${args.maxAttempts}`,
 		);
 		const code = runNanocoder(prompt, args.model);
 		if (code !== 0) {
 			console.error(
-				`personal-request[${args.phase}]: nanocoder exited ${code}; aborting phase`,
+				`personal-request[${tag}]: nanocoder exited ${code}; aborting phase`,
 			);
 			return {status: 'failed-validation', attempts: attempt, failures: []};
 		}
 
-		lastReport = runValidator(args.packId);
+		lastReport = runValidator(args.packId, args.channelFilter);
 		if (lastReport.failures.length === 0) {
 			console.log(
-				`personal-request[${args.phase}]: ✓ validation passed${lastReport.warnings.length > 0 ? ` (${lastReport.warnings.length} warnings)` : ''}`,
+				`personal-request[${tag}]: ✓ validation passed${lastReport.warnings.length > 0 ? ` (${lastReport.warnings.length} warnings)` : ''}`,
 			);
 			return {status: 'passed', attempts: attempt, failures: []};
 		}
 
 		console.log(
-			`personal-request[${args.phase}]: ✗ validation failed (${lastReport.failures.length} failures)`,
+			`personal-request[${tag}]: ✗ validation failed (${lastReport.failures.length} failures)`,
 		);
 		if (attempt >= args.maxAttempts) break;
 		prompt = buildAutoFixPrompt({
@@ -554,38 +635,64 @@ async function main() {
 	// comment routed via pr-change.yaml). The edit-mode prompt is much
 	// tighter and leads with the change request as a non-negotiable
 	// directive — necessary because the create-mode prompt's "produce
-	// personal-voice posts" framing dilutes targeted edits.
+	// personal-voice posts" framing dilutes targeted edits. Edit mode stays
+	// bundled even when agent_mode === "per-channel" — the change is usually
+	// targeted at one file already and partitioning loses cross-file context.
 	const isEdit =
 		typeof job.context === 'string' && job.context.trim().length > 0;
 
-	const channelsPrompt = isEdit
-		? buildChannelsEditPrompt({
-				job,
-				member,
-				packDir,
-				packId,
-				generatedAt,
-				model,
-			})
-		: buildChannelsPrompt({
-				job,
-				member,
-				packDir,
-				packId,
-				mirrored,
-				additional,
-				generatedAt,
-				model,
-			});
+	const spawns: ChannelSpawn[] = isEdit
+		? [
+				{
+					channels: member.channels,
+					mirrored,
+					additional,
+					label: 'all',
+				},
+			]
+		: planChannelSpawns({member, mirrored, additional});
+
+	console.log(
+		`  agent mode: ${member.agent_mode}${isEdit ? ' (edit mode — bundled regardless)' : ''} → ${spawns.length} channel spawn(s)`,
+	);
+	for (const s of spawns) {
+		console.log(
+			`    spawn "${s.label}": ${s.channels.map(c => c.slug).join(', ')}`,
+		);
+	}
+
+	const buildSpawnPrompt = (spawn: ChannelSpawn): string =>
+		isEdit
+			? buildChannelsEditPrompt({
+					job,
+					member,
+					packDir,
+					packId,
+					generatedAt,
+					model,
+				})
+			: buildChannelsPrompt({
+					job,
+					member,
+					packDir,
+					packId,
+					mirrored: spawn.mirrored,
+					additional: spawn.additional,
+					inScopeChannels: spawn.channels,
+					generatedAt,
+					model,
+				});
 
 	if (args.dryRun) {
 		console.log(
 			'\n--- DRY RUN: substituted prompts below, nanocoder NOT invoked ---\n',
 		);
-		console.log(
-			`### personal-channels prompt (mode: ${isEdit ? 'edit' : 'create'}):\n`,
-		);
-		console.log(channelsPrompt);
+		for (const spawn of spawns) {
+			console.log(
+				`### personal-channels prompt (mode: ${isEdit ? 'edit' : 'create'}, spawn: ${spawn.label}):\n`,
+			);
+			console.log(buildSpawnPrompt(spawn));
+		}
 		if (job.basePackKind === 'product' && articleSlugs.length > 0) {
 			const articlesPrompt = isEdit
 				? buildArticlesEditPrompt({
@@ -620,20 +727,29 @@ async function main() {
 
 	const phases: Sidecar['phases'] = [];
 
-	const channelsResult = runAgentPhase({
-		phase: 'channels',
-		initialPrompt: channelsPrompt,
-		packId,
-		packDir,
-		model,
-		maxAttempts: args.maxAttempts,
-	});
-	phases.push({
-		phase: 'channels',
-		attempts: channelsResult.attempts,
-		final_status: channelsResult.status,
-		failures: channelsResult.failures,
-	});
+	const isPerChannel = !isEdit && member.agent_mode === 'per-channel';
+	for (const spawn of spawns) {
+		const channelFilter = isPerChannel
+			? spawn.channels.map(c => c.slug)
+			: undefined;
+		const channelsResult = runAgentPhase({
+			phase: 'channels',
+			label: isPerChannel ? spawn.label : undefined,
+			initialPrompt: buildSpawnPrompt(spawn),
+			packId,
+			packDir,
+			model,
+			maxAttempts: args.maxAttempts,
+			channelFilter,
+		});
+		phases.push({
+			phase: 'channels',
+			...(isPerChannel && {channel_group: spawn.channels.map(c => c.slug)}),
+			attempts: channelsResult.attempts,
+			final_status: channelsResult.status,
+			failures: channelsResult.failures,
+		});
+	}
 
 	if (job.basePackKind === 'product' && articleSlugs.length > 0) {
 		// Mirror the same channel rules across articles — the agent filters per
@@ -692,6 +808,7 @@ async function main() {
 		mirrored_channels: mirrored.map(c => c.slug),
 		additional_channels: additional.map(c => c.slug),
 		article_slugs: articleSlugs,
+		agent_mode: isPerChannel ? 'per-channel' : 'bundled',
 		generated_at: generatedAt,
 		model,
 		phases,

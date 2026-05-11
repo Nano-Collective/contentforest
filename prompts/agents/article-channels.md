@@ -92,7 +92,7 @@ For each angle, write a complete channel set + per-article `meta.json` at `artic
 
 # Channel specs
 
-Same per-channel rules as the announcement. Each article gets a full channel set. The `max_*` values in `config/channels.json` are **hard ceilings** but are deliberately generous — articles are deep dives, so use the room. Don't anchor to the middle of the range; let the angle dictate length. Padding to hit `min_words` produces filler the brand voice forbids.
+Same per-channel rules as the announcement. Each article gets a full channel set. Both `min_words` and `max_*` in `config/channels.json` are **hard rules** but the ranges are deliberately generous — articles are deep dives, so use the room. Don't anchor to the middle of the range; let the angle dictate length.
 
 ```json
 {{CHANNELS_JSON}}

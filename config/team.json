@@ -74,6 +74,7 @@
 		"name": "Ben Parry",
 		"github": "followbenparry",
 		"role": "Co-Founder, Ava Technologies & Nano Collective",
+		"agent_mode": "per-channel",
 		"voice": {
 			"tone": "Philosophical and architectural — argues from structure and incentives, not features or announcements. Plain, direct language that makes complex ideas feel accessible without dumbing them down. First-person throughout. Short sentences land harder than long ones. Calm and systemic — not alarmist, not conspiratorial. Writes like someone building in the middle of it, not commenting from the sidelines. Opens with a structural observation or an external reference point, builds the argument from first principles, lands on a principle that generalises beyond the specific thing being discussed. The product or release, if it appears at all, arrives as proof — not as the subject.",
 			"do": [
@@ -134,6 +135,7 @@
 				"handle": "Mind & Machine — linkedin.com/build-relation/newsletter-follow?entityUrn=7222242466664521728",
 				"min_words": 600,
 				"max_words": 1000,
+				"bundle_with": ["linkedin"],
 				"rules": [
 					"Builder's log register — what shipped, how it works, why the architecture decision matters.",
 					"Technical detail is appropriate here — this is where implementation depth belongs.",
@@ -151,7 +153,7 @@
 				"handle": "FollowBenParry",
 				"max_chars": 280,
 				"rules": [
-					"Generate 14 posts per release cycle — intended as 2 posts per day across a 7-day window.",
+					"Generate 7 posts per release cycle — intended as 1 posts per day across a 7-day window.",
 					"Vary the angle across the 14 posts — do not repeat the same framing. Required mix: 3 technical (for developers and builders), 3 non-technical (accessible to anyone), 3 philosophical (structural arguments about AI, sovereignty, incentives), 3 thought leadership (patterns, predictions, broader implications), 2 danger-of-centralisation (what happens when AI infrastructure is controlled by a single entity).",
 					"Each post stands alone — do not assume the reader has seen the previous one.",
 					"No hashtags.",
@@ -165,8 +167,8 @@
 				"slug": "substack",
 				"kind": "long-form",
 				"handle": "substack.com/@followbenparry",
-				"min_words": 1200,
-				"max_words": 4000,
+				"min_words": 1500,
+				"max_words": 2500,
 				"rules": [
 					"Philosophy and ideas only — not product updates, not release announcements. This is the 'mind' channel. The build lives in Mind & Machine.",
 					"Do not generate a Substack essay without a supplied title, at least 3 key points from Ben, and a target word count. Do not infer these — flag that they are required before generating.",

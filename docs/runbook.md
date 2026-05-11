@@ -51,7 +51,7 @@ The PR opens with the `failed-validation` label when the validator's hard rules 
 | `articles-cap` | More than 3 articles | Delete the weakest article directory. |
 | `article-slug-kebab-case` / `article-slug-matches` / `article-meta-shape` | Article structure issue | Rename the directory (kebab-case) or fix the article's `meta.json`. |
 
-`min-words` shortfalls show up as **warnings** in the validator output, not failures. They don't block merge — minor patch releases legitimately fall below the soft target. Eyeball them; if the release was substantive and the post is genuinely thin, edit by hand before merging.
+`min-words` shortfalls are hard failures — pad the body until it clears the floor, or lower `min_words` on the channel if the floor is wrong.
 
 ## Cleaning up stale state
 
@@ -112,7 +112,7 @@ Quick reference for the common symptoms:
 | `gh pr create` fails | Org-level **"Allow Actions to create PRs"** toggle on `https://github.com/organizations/Nano-Collective/settings/actions`. |
 | Validator reports `file-exists` for files you can see | Path-shape mismatch. Check the agent's prompt for the expected paths and the `expectedFiles` function in `scripts/validate-content.ts`. |
 | Cloudflare Pages bot comments on PRs | Pages project has a Git connection. Disconnect or restrict preview branches. |
-| `min-words` shows as a failure | Validator regression — it must be a `warnings.push`, not `failures.push`. |
+| `min-words` failure on a thin patch release | Either flesh the body out, or lower `min_words` for that channel in `config/channels.json` / `config/team.json` if the floor is genuinely wrong. |
 | TypeScript fails on `_repos/<product>/...` files | `tsconfig.json` exclude list missing — re-add `_repos`, `_refs`, `content/_local`, `content/_test`. |
 | Sign-out button missing on the live site | The `iss` field isn't in the get-identity response. Check the Access app's claims config. |
 | Sign-out button 404s | The per-app `/cdn-cgi/access/logout` is being served by Pages's 404. The Navbar derives the team-domain logout from `iss` instead — confirm the user actually has an identity (the button is hidden when not). |

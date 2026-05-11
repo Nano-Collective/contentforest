@@ -24,6 +24,7 @@ You only get personal posts on channels you list here. Channel rules here are th
   "name": "<Your Name>",
   "github": "<your-gh-handle>",
   "role": "<your role>",
+  "agent_mode": "bundled" | "per-channel",
   "voice": {
     "tone": "<one paragraph>",
     "do": ["<rule>", "..."],
@@ -38,7 +39,8 @@ You only get personal posts on channels you list here. Channel rules here are th
       "min_words": <number>,
       "max_words": <number>,
       "max_chars": <number>,
-      "rules": ["<rule>", "..."]
+      "rules": ["<rule>", "..."],
+      "bundle_with": ["<sibling-channel-slug>", "..."]
     }
   ]
 }
@@ -56,6 +58,7 @@ Order doesn't matter inside an entry. The validator rejects unknown fields, miss
 | `role` | yes | Short role string. Helps the agent calibrate register (e.g. `"Lead, ContentForest"` vs `"Community contributor"`). |
 | `voice` | yes | Object — see below. The most important field. The agent reads this every time it generates a post in your voice. |
 | `channels` | yes | Array — see below. Each entry is a channel you publish on. |
+| `agent_mode` | no | `"bundled"` (default) or `"per-channel"`. Controls how many Nanocoder spawns run for your channel phase — see [agent mode](#agent-mode-bundled-vs-per-channel) below. |
 
 ## `voice`
 
@@ -81,14 +84,42 @@ Each channel entry:
 | `slug` | yes | Kebab-case channel identifier. Match canonical channel slugs where they apply (`linkedin`, `x`, `github-discussion`, `reddit`); use your own for channels not in `config/channels.json` (`medium`, `substack`, `mastodon`, etc). |
 | `kind` | yes | `"social"` for short / immediate-feed channels; `"long-form"` for blog-shaped channels. The validator currently treats them the same — `kind` is there for the agent's framing. |
 | `handle` | no | Your handle or URL on this channel (e.g. `"in/will-lamerton"`, `"willlamerton"`). Recorded but not auto-linked; useful as future-proofing. |
-| `min_words` | no | Soft floor — the validator emits a warning if a body is shorter, doesn't block. Skip on `x` (use `max_chars`). |
+| `min_words` | no | Hard floor — bodies shorter than this fail validation. Skip on `x` (use `max_chars`). |
 | `max_words` | no | Hard ceiling — failures block. Be **generous**; tight ceilings squeeze depth and produce filler when the angle has more to say. Bias up. |
 | `max_chars` | no | Hard ceiling on body characters. Use for `x` (280) and any other strict-length channel. |
 | `rules` | no | Array of channel-specific guidance the agent must follow. "No hashtags." "Lead with the operational detail." "One link, no thread." Concrete and short — these go into the agent prompt verbatim. |
+| `bundle_with` | no | Array of sibling channel slugs (same member) that must be written by the same agent spawn when `agent_mode: "per-channel"`. Ignored in bundled mode. Use this for channels that are companions — e.g. a LinkedIn standalone post that pairs with a LinkedIn newsletter issue. Transitive: A→B and B→C end up in one group. |
 
 ### Picking limits
 
 Looking at `config/channels.json` is a reasonable starting point — but it's a starting point, not a constraint. Your personal cadence may run shorter or longer than the canonical pack. Personal LinkedIn posts often want to be tighter than the canonical version (your audience trusts you, no need to re-prove the case); personal Medium posts often want to run longer (you're using the long-form room intentionally). Bias generous on `max_words` — if it turns out the agent writes too much, you can lower it later.
+
+## Agent mode: bundled vs per-channel
+
+`agent_mode` controls how many Nanocoder spawns run when generating your channel phase. Default is `"bundled"` — one spawn produces every channel in one pass. That's fine for most members: 2–3 channels, a handful of pieces, the agent juggles them comfortably.
+
+If you publish to many channels — or a single channel that itself produces a batch (e.g. seven X posts per release cycle) — bundled mode strains. The agent's attention thins across all the rules at once, output drifts, and a single channel's failure pushes the whole batch into the auto-fix loop. Switch to `"per-channel"`:
+
+```json
+"agent_mode": "per-channel"
+```
+
+In per-channel mode the orchestrator partitions your `channels[]` into groups and spawns one Nanocoder per group. Each spawn sees only its own channel rules, writes only its own files, and validates only its own scope. Failures in one channel don't affect the others.
+
+**Groups** are formed by `bundle_with`. A channel with no `bundle_with` is its own group. A channel with `bundle_with: ["linkedin"]` co-locates with `linkedin` in one group, so they're written by the same spawn — useful when channels are companions and need to be co-written (Ben's LinkedIn newsletter rule, for instance, requires a companion LinkedIn standalone post per issue; without bundling, those would be split across spawns and lose coherence).
+
+Per-channel mode is **opt-in per member** — it changes nothing for anyone else. The articles phase always stays bundled (one spawn per request, regardless of mode). Edit mode (driven by `/change` PR comments) also stays bundled regardless of mode — the change request is usually targeted at one file and partitioning loses cross-file context.
+
+**When to enable it:**
+
+- You have ≥ 4 channels.
+- One channel produces a batch (e.g. multiple posts per release).
+- Bundled generation is failing or timing out frequently.
+
+**When not to:**
+
+- 2–3 simple channels — bundled is faster (one spawn, less validator-spawn overhead).
+- You want every channel to "know about" the others as it writes them. Per-channel deliberately scopes each spawn to its own rules.
 
 ## Worked example
 
@@ -147,6 +178,8 @@ The schema is hand-validated in `lib/team.ts`. CI rejects:
 - Non-kebab-case slugs (member or channel).
 - Duplicate slugs (across members, or across channels within one member).
 - Unknown channel `kind` (only `social` and `long-form`).
+- Unknown `agent_mode` (only `bundled` and `per-channel`).
+- `bundle_with` referencing a channel that doesn't exist on the same member, or referencing the channel itself.
 - Negative numeric fields.
 - Wrong-shape `voice` (e.g. `do` is a string instead of an array).
 

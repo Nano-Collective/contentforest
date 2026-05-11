@@ -384,10 +384,11 @@ function validatePersonalFile(args: {
 			memberChannel.min_words !== undefined &&
 			wordCount < memberChannel.min_words
 		) {
-			warnings.push({
+			failures.push({
 				file: fileRel,
 				rule: 'min-words',
-				message: `${wordCount} words; soft target ≥${memberChannel.min_words}`,
+				expected: `≥${memberChannel.min_words}`,
+				actual: String(wordCount),
 			});
 		}
 		if (
@@ -481,6 +482,7 @@ function validatePack(args: {
 	phase: Phase;
 	kind?: PackKind;
 	articleSlug?: string;
+	personalChannels?: string[];
 }): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
 	const failures: Failure[] = [];
 	const warnings: Warning[] = [];
@@ -599,6 +601,15 @@ function validatePack(args: {
 				});
 				continue;
 			}
+			// When personalChannels is set (per-channel agent spawn), skip
+			// personal files outside the spawn's channel scope so the report
+			// doesn't surface failures the current agent can't fix.
+			if (
+				args.personalChannels &&
+				!args.personalChannels.includes(ctx.channel)
+			) {
+				continue;
+			}
 			const result = validatePersonalFile({
 				file,
 				body,
@@ -680,16 +691,12 @@ function validatePack(args: {
 					actual: String(charCount),
 				});
 			}
-			// min_words is a soft target, not a hard floor — minor patch releases
-			// genuinely don't have ≥N words of substance to write about, and
-			// padding to hit a minimum produces exactly the filler the brand voice
-			// forbids. We surface a warning so a reviewer can sanity-check, but
-			// don't block merge.
 			if (rule.min_words !== undefined && wordCount < rule.min_words) {
-				warnings.push({
+				failures.push({
 					file: fileRel,
 					rule: 'min-words',
-					message: `${wordCount} words; soft target ≥${rule.min_words}. Fine for minor patches; review if the release was substantial`,
+					expected: `≥${rule.min_words}`,
+					actual: String(wordCount),
 				});
 			}
 			if (rule.max_words !== undefined && wordCount > rule.max_words) {
@@ -787,6 +794,7 @@ function validateCollectivePack(args: {
 	channels: ChannelRule[];
 	team: TeamMember[];
 	phase: Phase;
+	personalChannels?: string[];
 }): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
 	const failures: Failure[] = [];
 	const warnings: Warning[] = [];
@@ -861,6 +869,12 @@ function validateCollectivePack(args: {
 					expected: 'personal/<member>/<channel>.md',
 					actual: 'unrecognised path shape for kind: personal file',
 				});
+				continue;
+			}
+			if (
+				args.personalChannels &&
+				!args.personalChannels.includes(ctx.channel)
+			) {
 				continue;
 			}
 			const result = validatePersonalFile({
@@ -938,10 +952,11 @@ function validateCollectivePack(args: {
 				});
 			}
 			if (rule.min_words !== undefined && wordCount < rule.min_words) {
-				warnings.push({
+				failures.push({
 					file: fileRel,
 					rule: 'min-words',
-					message: `${wordCount} words; soft target ≥${rule.min_words}.`,
+					expected: `≥${rule.min_words}`,
+					actual: String(wordCount),
 				});
 			}
 			if (rule.max_words !== undefined && wordCount > rule.max_words) {
@@ -1021,6 +1036,7 @@ export function runValidate(options: {
 	packFilter?: string;
 	phase?: Phase;
 	config?: ValidatorConfig;
+	personalChannels?: string[];
 }): Report {
 	const phase = options.phase ?? 'full';
 	if (!PHASES.includes(phase)) {
@@ -1089,6 +1105,7 @@ export function runValidate(options: {
 			team: cfg.team ?? [],
 			phase,
 			kind: 'release',
+			personalChannels: options.personalChannels,
 		});
 		const id = `${product.slug}/${version}`;
 		if (result.skipped) {
@@ -1133,6 +1150,7 @@ export function runValidate(options: {
 					phase,
 					kind: 'article',
 					articleSlug: slug,
+					personalChannels: options.personalChannels,
 				});
 				report.scannedPacks.push(`${id}#${slug}`);
 				report.failures.push(...articleResult.failures);
@@ -1168,6 +1186,7 @@ export function runValidate(options: {
 			channels: cfg.channels,
 			team: cfg.team ?? [],
 			phase,
+			personalChannels: options.personalChannels,
 		});
 		if (result.skipped) {
 			report.skippedPacks.push(id);
@@ -1190,6 +1209,7 @@ function main() {
 			report: {type: 'string', default: 'validation-report.json'},
 			phase: {type: 'string', default: 'full'},
 			quiet: {type: 'boolean', default: false},
+			'personal-channels': {type: 'string'},
 		},
 	});
 
@@ -1201,12 +1221,21 @@ function main() {
 		process.exit(2);
 	}
 
+	const personalChannelsArg = values['personal-channels'] as string | undefined;
+	const personalChannels = personalChannelsArg
+		? personalChannelsArg
+				.split(',')
+				.map(s => s.trim())
+				.filter(s => s.length > 0)
+		: undefined;
+
 	let report: Report;
 	try {
 		report = runValidate({
 			contentRoot: join(ROOT, values.root as string),
 			packFilter: values.pack as string | undefined,
 			phase,
+			personalChannels,
 		});
 	} catch (e) {
 		console.error((e as Error).message);

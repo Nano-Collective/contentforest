@@ -14,6 +14,7 @@ import {
 	type JobSpec,
 	listArticleSlugs,
 	listBasePackChannels,
+	planChannelSpawns,
 	substitute,
 } from './personal-request.js';
 
@@ -51,6 +52,7 @@ const MEMBER: TeamMember = {
 		{slug: 'x', kind: 'social', max_chars: 280},
 		{slug: 'medium', kind: 'long-form', max_words: 2500},
 	],
+	agent_mode: 'bundled',
 };
 
 test('substitute: replaces all occurrences', t => {
@@ -313,4 +315,113 @@ test('buildAutoFixPrompt: substitutes attempt counters and error report', t => {
 	t.regex(prompt, /ORIGINAL_BODY/);
 	t.notRegex(prompt, /\{\{PACK_DIR\}\}/);
 	t.notRegex(prompt, /\{\{ATTEMPT_NUMBER\}\}/);
+});
+
+// ---------------------------------------------------------------------------
+// planChannelSpawns + per-channel prompt scoping
+// ---------------------------------------------------------------------------
+
+test('planChannelSpawns: bundled mode returns a single spawn covering all channels', t => {
+	const spawns = planChannelSpawns({
+		member: MEMBER,
+		mirrored: [MEMBER.channels[0]],
+		additional: [MEMBER.channels[1], MEMBER.channels[2]],
+	});
+	t.is(spawns.length, 1);
+	t.is(spawns[0].label, 'all');
+	t.deepEqual(
+		spawns[0].channels.map(c => c.slug),
+		['linkedin', 'x', 'medium'],
+	);
+});
+
+test('planChannelSpawns: per-channel mode returns one spawn per bundle group', t => {
+	const perChannelMember: TeamMember = {
+		...MEMBER,
+		agent_mode: 'per-channel',
+		channels: [
+			{slug: 'linkedin', kind: 'social', max_words: 500},
+			{
+				slug: 'linkedin-newsletter',
+				kind: 'long-form',
+				max_words: 2000,
+				bundle_with: ['linkedin'],
+			},
+			{slug: 'x', kind: 'social', max_chars: 280},
+			{slug: 'substack', kind: 'long-form', max_words: 3000},
+		],
+	};
+	const spawns = planChannelSpawns({
+		member: perChannelMember,
+		mirrored: [perChannelMember.channels[0], perChannelMember.channels[2]],
+		additional: [perChannelMember.channels[1], perChannelMember.channels[3]],
+	});
+	// 3 groups: {linkedin, linkedin-newsletter}, {x}, {substack}
+	t.is(spawns.length, 3);
+	const labels = spawns.map(s => s.label).sort();
+	t.deepEqual(labels, ['linkedin-linkedin-newsletter', 'substack', 'x']);
+	const linkedinSpawn = spawns.find(s =>
+		s.channels.some(c => c.slug === 'linkedin-newsletter'),
+	)!;
+	t.deepEqual(
+		linkedinSpawn.mirrored.map(c => c.slug),
+		['linkedin'],
+	);
+	t.deepEqual(
+		linkedinSpawn.additional.map(c => c.slug),
+		['linkedin-newsletter'],
+	);
+});
+
+test('planChannelSpawns: per-channel mode drops groups with no in-scope channels', t => {
+	const perChannelMember: TeamMember = {
+		...MEMBER,
+		agent_mode: 'per-channel',
+	};
+	// Only linkedin is in scope (mirrored). x and medium are not in scope at all.
+	const spawns = planChannelSpawns({
+		member: perChannelMember,
+		mirrored: [perChannelMember.channels[0]],
+		additional: [],
+	});
+	t.is(spawns.length, 1);
+	t.is(spawns[0].label, 'linkedin');
+});
+
+test('buildChannelsPrompt: inScopeChannels filters MEMBER_CHANNELS_JSON to the spawn', t => {
+	const prompt = buildChannelsPrompt({
+		job: PRODUCT_JOB,
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		mirrored: [MEMBER.channels[0]],
+		additional: [],
+		inScopeChannels: [MEMBER.channels[0]],
+		generatedAt: '2026-05-05T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	// In-scope channel is present; out-of-scope channels are not.
+	t.regex(prompt, /"slug": "linkedin"/);
+	t.notRegex(prompt, /"slug": "x"/);
+	t.notRegex(prompt, /"slug": "medium"/);
+	// Self-check command must include the channel filter, quoted so multi-
+	// channel groups survive shell tokenisation.
+	t.regex(prompt, /--personal-channels "linkedin"/);
+});
+
+test('buildChannelsPrompt: default inScopeChannels covers all member channels (bundled mode)', t => {
+	const prompt = buildChannelsPrompt({
+		job: PRODUCT_JOB,
+		member: MEMBER,
+		packDir: '/tmp/pack',
+		packId: 'nanocoder/1.25.0',
+		mirrored: [MEMBER.channels[0]],
+		additional: [MEMBER.channels[1], MEMBER.channels[2]],
+		generatedAt: '2026-05-05T00:00:00Z',
+		model: 'minimax-m2.7',
+	});
+	t.regex(prompt, /"slug": "linkedin"/);
+	t.regex(prompt, /"slug": "x"/);
+	t.regex(prompt, /"slug": "medium"/);
+	t.regex(prompt, /--personal-channels "linkedin, x, medium"/);
 });

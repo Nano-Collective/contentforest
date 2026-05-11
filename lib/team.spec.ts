@@ -3,6 +3,8 @@ import {
 	expandChannels,
 	findMember,
 	parseTeam,
+	partitionChannelGroups,
+	type TeamChannel,
 	TeamConfigError,
 	type TeamMember,
 } from './team.js';
@@ -118,4 +120,92 @@ test('expandChannels: channels in pack but not in member are skipped', t => {
 	]);
 	t.is(mirrored.length, 0);
 	t.is(additional.length, 2);
+});
+
+test('parseTeam: defaults agent_mode to "bundled" when omitted', t => {
+	const team = parseTeam(VALID_RAW);
+	t.is(team[0].agent_mode, 'bundled');
+});
+
+test('parseTeam: accepts agent_mode: "per-channel"', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].agent_mode = 'per-channel';
+	const team = parseTeam(raw);
+	t.is(team[0].agent_mode, 'per-channel');
+});
+
+test('parseTeam: rejects unknown agent_mode', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].agent_mode = 'sequential';
+	const err = t.throws(() => parseTeam(raw), {instanceOf: TeamConfigError});
+	t.regex(err.message, /agent_mode/);
+});
+
+test('parseTeam: accepts bundle_with referencing sibling channels', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].channels[0].bundle_with = ['x'];
+	const team = parseTeam(raw);
+	t.deepEqual(team[0].channels[0].bundle_with, ['x']);
+});
+
+test('parseTeam: rejects bundle_with pointing at unknown channel', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].channels[0].bundle_with = ['substack'];
+	const err = t.throws(() => parseTeam(raw), {instanceOf: TeamConfigError});
+	t.regex(err.message, /bundle_with/);
+	t.regex(err.message, /substack/);
+});
+
+test('parseTeam: rejects bundle_with referencing self', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].channels[0].bundle_with = ['linkedin'];
+	const err = t.throws(() => parseTeam(raw), {instanceOf: TeamConfigError});
+	t.regex(err.message, /self/);
+});
+
+test('partitionChannelGroups: no bundle_with → one group per channel', t => {
+	const channels: TeamChannel[] = [
+		{slug: 'a', kind: 'social'},
+		{slug: 'b', kind: 'social'},
+		{slug: 'c', kind: 'social'},
+	];
+	const groups = partitionChannelGroups(channels);
+	t.is(groups.length, 3);
+	t.deepEqual(
+		groups.map(g => g.map(c => c.slug)),
+		[['a'], ['b'], ['c']],
+	);
+});
+
+test('partitionChannelGroups: bundle_with co-locates referenced channels', t => {
+	const channels: TeamChannel[] = [
+		{slug: 'linkedin-newsletter', kind: 'long-form', bundle_with: ['linkedin']},
+		{slug: 'linkedin', kind: 'social'},
+		{slug: 'x', kind: 'social'},
+	];
+	const groups = partitionChannelGroups(channels);
+	t.is(groups.length, 2);
+	const linkedinGroup = groups.find(g =>
+		g.some(c => c.slug === 'linkedin-newsletter'),
+	)!;
+	t.deepEqual(linkedinGroup.map(c => c.slug).sort(), [
+		'linkedin',
+		'linkedin-newsletter',
+	]);
+	const xGroup = groups.find(g => g.some(c => c.slug === 'x'))!;
+	t.deepEqual(
+		xGroup.map(c => c.slug),
+		['x'],
+	);
+});
+
+test('partitionChannelGroups: bundle_with is transitive (A→B, B→C ⇒ one group)', t => {
+	const channels: TeamChannel[] = [
+		{slug: 'a', kind: 'social', bundle_with: ['b']},
+		{slug: 'b', kind: 'social', bundle_with: ['c']},
+		{slug: 'c', kind: 'social'},
+	];
+	const groups = partitionChannelGroups(channels);
+	t.is(groups.length, 1);
+	t.deepEqual(groups[0].map(c => c.slug).sort(), ['a', 'b', 'c']);
 });

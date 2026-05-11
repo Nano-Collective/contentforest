@@ -33,7 +33,10 @@ export type TeamChannel = {
 	max_words?: number;
 	max_chars?: number;
 	rules?: string[];
+	bundle_with?: string[];
 };
+
+export type AgentMode = 'bundled' | 'per-channel';
 
 export type TeamMemberVoice = {
 	tone: string;
@@ -49,12 +52,14 @@ export type TeamMember = {
 	role: string;
 	voice: TeamMemberVoice;
 	channels: TeamChannel[];
+	agent_mode: AgentMode;
 };
 
 export class TeamConfigError extends Error {}
 
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const VALID_KINDS: TeamChannelKind[] = ['long-form', 'social'];
+const VALID_AGENT_MODES: AgentMode[] = ['bundled', 'per-channel'];
 
 function isStringArray(v: unknown): v is string[] {
 	return Array.isArray(v) && v.every(x => typeof x === 'string');
@@ -120,6 +125,15 @@ function parseChannel(raw: unknown, path: string): TeamChannel {
 		}
 		rules = obj.rules;
 	}
+	let bundle_with: string[] | undefined;
+	if (obj.bundle_with !== undefined) {
+		if (!isStringArray(obj.bundle_with)) {
+			throw new TeamConfigError(
+				`${path}.bundle_with: expected string[], got ${JSON.stringify(obj.bundle_with)}`,
+			);
+		}
+		bundle_with = obj.bundle_with;
+	}
 	return {
 		slug,
 		kind: kind as TeamChannelKind,
@@ -128,6 +142,7 @@ function parseChannel(raw: unknown, path: string): TeamChannel {
 		...(max_words !== undefined && {max_words}),
 		...(max_chars !== undefined && {max_chars}),
 		...(rules !== undefined && {rules}),
+		...(bundle_with !== undefined && {bundle_with}),
 	};
 }
 
@@ -191,7 +206,36 @@ export function parseTeam(raw: unknown): TeamMember[] {
 			}
 			channelSeen.add(c.slug);
 		}
-		members.push({slug, name, github, role, voice, channels});
+		// bundle_with must reference sibling channels on the same member and
+		// must not reference the channel itself.
+		for (const c of channels) {
+			if (!c.bundle_with) continue;
+			for (const ref of c.bundle_with) {
+				if (ref === c.slug) {
+					throw new TeamConfigError(
+						`${path}.channels[${c.slug}].bundle_with: cannot reference self`,
+					);
+				}
+				if (!channelSeen.has(ref)) {
+					throw new TeamConfigError(
+						`${path}.channels[${c.slug}].bundle_with: unknown channel "${ref}"`,
+					);
+				}
+			}
+		}
+		let agent_mode: AgentMode = 'bundled';
+		if (obj.agent_mode !== undefined) {
+			if (
+				typeof obj.agent_mode !== 'string' ||
+				!(VALID_AGENT_MODES as string[]).includes(obj.agent_mode)
+			) {
+				throw new TeamConfigError(
+					`${path}.agent_mode: expected one of ${VALID_AGENT_MODES.join(', ')}, got ${JSON.stringify(obj.agent_mode)}`,
+				);
+			}
+			agent_mode = obj.agent_mode as AgentMode;
+		}
+		members.push({slug, name, github, role, voice, channels, agent_mode});
 	}
 	return members;
 }
@@ -238,4 +282,49 @@ export function expandChannels(
 		else additional.push(c);
 	}
 	return {mirrored, additional};
+}
+
+/**
+ * Groups channels into agent-spawn units based on `bundle_with`. Channels with
+ * `bundle_with: ["x"]` end up in the same group as `x`. Transitive: A bundles
+ * B and B bundles C → A, B, C in one group. Channels with no `bundle_with`
+ * (and not referenced by any) form singleton groups.
+ *
+ * Used by `personal-request.ts` when `agent_mode === "per-channel"` to decide
+ * how many Nanocoder spawns to run and which channels each one handles.
+ *
+ * Returns groups preserving the input order of the first channel in each
+ * group, so callers get a stable iteration order.
+ */
+export function partitionChannelGroups(
+	channels: TeamChannel[],
+): TeamChannel[][] {
+	const slugIndex = new Map(channels.map((c, i) => [c.slug, i]));
+	const parent = channels.map((_, i) => i);
+	const find = (i: number): number => {
+		while (parent[i] !== i) {
+			parent[i] = parent[parent[i]];
+			i = parent[i];
+		}
+		return i;
+	};
+	const union = (a: number, b: number) => {
+		const ra = find(a);
+		const rb = find(b);
+		if (ra !== rb) parent[Math.max(ra, rb)] = Math.min(ra, rb);
+	};
+	for (let i = 0; i < channels.length; i++) {
+		const refs = channels[i].bundle_with ?? [];
+		for (const ref of refs) {
+			const j = slugIndex.get(ref);
+			if (j !== undefined) union(i, j);
+		}
+	}
+	const groups = new Map<number, TeamChannel[]>();
+	for (let i = 0; i < channels.length; i++) {
+		const root = find(i);
+		if (!groups.has(root)) groups.set(root, []);
+		groups.get(root)!.push(channels[i]);
+	}
+	return [...groups.values()];
 }

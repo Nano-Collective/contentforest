@@ -33,7 +33,6 @@ Two issue-driven side flows sit alongside the release pipeline:
 These have been decided. Don't relitigate them:
 
 - Posting integrations (out of scope — content is copy-paste by design).
-- `min_words` as a hard rule (it's a soft warning by design).
 - Bringing back `release.md` as a separate file (`channels/github-discussion.md` is the canonical long-form).
 - Reconnecting Cloudflare Pages to Git (Direct Upload via the GH Action only).
 - Subagent-spawning during generation (blocked at `agents.config.json` via `nanocoder.disabledTools: ["agent"]`).

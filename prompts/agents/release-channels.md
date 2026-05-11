@@ -79,7 +79,7 @@ Output goes to `{{PACK_DIR}}` using the `write_file` tool. The exact files to pr
 
 # Channel specs
 
-Use `config/channels.json` (below) for length/char rules. The `max_*` values are **hard ceilings** — exceeding them fails validation. They are deliberately generous: write what the substance warrants, including a longer post when the release has real depth to unpack (architecture decisions, tradeoffs, examples, before/after, why-this-matters). Don't anchor to the middle of the range. The `min_words` values are **soft targets** — for minor patches with little to communicate write only what the release warrants; padding to hit a minimum produces exactly the filler the brand voice forbids ("be specific", "trust the reader").
+Use `config/channels.json` (below) for length/char rules. Both `min_words` and `max_*` are **hard rules** — falling below the floor or exceeding the ceiling fails validation. The ranges are deliberately generous: write what the substance warrants, including a longer post when the release has real depth to unpack (architecture decisions, tradeoffs, examples, before/after, why-this-matters). Don't anchor to the middle of the range. If a minor patch genuinely has too little to clear `min_words`, that's a signal the floor for the channel is wrong — not a license to pad.
 
 ```json
 {{CHANNELS_JSON}}
