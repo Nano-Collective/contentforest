@@ -64,7 +64,7 @@ You are **not** generating new content. The voice, structure, validation are alr
 
 - No forbidden phrases ("Sovereign AI" etc).
 - No marketing-prefab words (transformative, leverage, etc — validator warns).
-- No em-dashes (`—`); use hyphens or other punctuation (validator warns). En-dashes are fine for numeric ranges only.
+- No em-dashes (`—`); use hyphens or other punctuation. **The validator fails on every em-dash.** En-dashes are fine for numeric ranges only.
 - No unresolved placeholders.
 
 # Self-check before stopping

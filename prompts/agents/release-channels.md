@@ -75,7 +75,7 @@ Output goes to `{{PACK_DIR}}` using the `write_file` tool. The exact files to pr
 
 **Avoid (marketing register):** transformative, revolutionary, game-changing, unleash, supercharge, effortless, seamless, next-generation, cutting-edge, world-class, leverage (as a verb), empower, democratize, disrupt(ive). If a sentence reads like a press release, rewrite it.
 
-**Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy and break the engineering-doc register. Where you'd reach for an em-dash, use a comma, parenthesis, colon, or full stop. En-dashes (`–`) are fine for numeric ranges only (e.g. `0–3`). The validator emits a warning on every em-dash.
+**Punctuation:** use regular hyphens (`-`), never em-dashes (`—`). Em-dashes signal AI-generated copy and break the engineering-doc register. Where you'd reach for an em-dash, use a comma, parenthesis, colon, or full stop. En-dashes (`–`) are fine for numeric ranges only (e.g. `0–3`). **The validator fails on every em-dash.** One em-dash anywhere in your output blocks the pack.
 
 # Channel specs
 

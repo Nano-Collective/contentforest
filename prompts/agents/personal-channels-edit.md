@@ -69,7 +69,7 @@ The validator enforces these regardless. Don't introduce:
 
 - Forbidden phrases (case-insensitive): "Sovereign AI", "Trustless AI", "Intimate Technology", "Intelligent Infrastructure".
 - Marketing-prefab register: transformative, revolutionary, game-changing, unleash, supercharge, effortless, seamless, next-generation, cutting-edge, world-class, leverage, empower, democratize, disrupt(ive). The validator emits warnings on these.
-- Em-dashes (`—`). Use regular hyphens (`-`), or a comma, parenthesis, colon, or full stop. En-dashes (`–`) are fine for numeric ranges only. The validator warns on every em-dash.
+- Em-dashes (`—`). Use regular hyphens (`-`), or a comma, parenthesis, colon, or full stop. En-dashes (`–`) are fine for numeric ranges only. **The validator fails on every em-dash.**
 - Unresolved placeholders ({{TODO}}, {{RELEASE_URL}}, etc).
 
 # Self-check before stopping

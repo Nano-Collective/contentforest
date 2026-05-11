@@ -426,11 +426,11 @@ function validatePersonalFile(args: {
 		}
 	}
 	if (args.body.includes('—')) {
-		warnings.push({
+		failures.push({
 			file: fileRel,
 			rule: 'em-dash',
-			message:
-				'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+			expected: 'no em-dash (use hyphen, comma, parenthesis, or full stop)',
+			actual: 'em-dash present',
 		});
 	}
 	for (const pattern of PLACEHOLDER_PATTERNS) {
@@ -734,13 +734,13 @@ function validatePack(args: {
 			}
 		}
 
-		// Em-dash (soft) — engineering-doc register prefers hyphens
+		// Em-dash (hard fail) — engineering-doc register requires hyphens
 		if (body.includes('—')) {
-			warnings.push({
+			failures.push({
 				file: fileRel,
 				rule: 'em-dash',
-				message:
-					'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+				expected: 'no em-dash (use hyphen, comma, parenthesis, or full stop)',
+				actual: 'em-dash present',
 			});
 		}
 
@@ -993,11 +993,11 @@ function validateCollectivePack(args: {
 		}
 
 		if (body.includes('—')) {
-			warnings.push({
+			failures.push({
 				file: fileRel,
 				rule: 'em-dash',
-				message:
-					'em-dash present; use a hyphen, comma, parenthesis, or full stop instead',
+				expected: 'no em-dash (use hyphen, comma, parenthesis, or full stop)',
+				actual: 'em-dash present',
 			});
 		}
 

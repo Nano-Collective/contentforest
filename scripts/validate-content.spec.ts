@@ -65,7 +65,7 @@ const LONG_BODY = `${[
 ].join('\n\n')}`;
 
 // X-shaped body: includes the URL, fits ≤ 280 chars.
-const X_BODY = `Demo v1.0.0 is out. Tool registry now indexed by name — constant-time lookups, no behaviour changes for plugins. ${PRODUCT_REPO_URL}`;
+const X_BODY = `Demo v1.0.0 is out. Tool registry now indexed by name: constant-time lookups, no behaviour changes for plugins. ${PRODUCT_REPO_URL}`;
 
 // 50-word body — under the 150-word floor for linkedin/reddit. Used only
 // by the min-words failure test.
@@ -720,7 +720,7 @@ test('warn: marketing-register term produces warning, not failure', t => {
 	}
 });
 
-test('warn: em-dash produces warning, not failure', t => {
+test('fail: em-dash in body → em-dash', t => {
 	const root = makeTmpRoot();
 	try {
 		const packDir = writeHappyPack(root);
@@ -734,8 +734,7 @@ test('warn: em-dash produces warning, not failure', t => {
 			packFilter: PACK_ID,
 			config: CONFIG,
 		});
-		t.deepEqual(report.failures, []);
-		t.true(report.warnings.some(w => w.rule === 'em-dash'));
+		t.true(report.failures.some(f => f.rule === 'em-dash'));
 	} finally {
 		cleanup(root);
 	}
@@ -752,12 +751,12 @@ const COLLECTIVE_URL = 'https://nanocollective.org';
 const COLLECTIVE_LONG_BODY = `${[
 	'The Nano Collective shipped its economics charter today.',
 	'The charter sets out how revenue from the collective is split, who gets paid, and on what cadence.',
-	'It is short on philosophy and long on numbers — every clause references a specific project, a specific role, or a specific decision-making cadence.',
+	'It is short on philosophy and long on numbers; every clause references a specific project, a specific role, or a specific decision-making cadence.',
 	'The intended audience is members and contributors who want to understand exactly what they are agreeing to before they ship code.',
 	'The charter does not promise outcomes; it sets the rules of engagement, and we expect those rules to be revised as we learn what does and does not work in practice.',
 	'Section one covers the revenue split between project maintainers, contributors, and the collective treasury, with worked examples for the most common shipping shapes (solo maintainer, two-person team, member-plus-external-contributor).',
 	'Section two covers cadence: when payouts happen, how disputes are surfaced, and what the appeal path looks like if a member feels the split was applied incorrectly.',
-	'Section three handles the edge cases that came up during the drafting process — projects that span multiple members, contributions that predate the charter, and the treatment of forks that re-join the main project.',
+	'Section three handles the edge cases that came up during the drafting process: projects that span multiple members, contributions that predate the charter, and the treatment of forks that re-join the main project.',
 	'Section four sets out the review cadence for the charter itself: we expect to revise it every two quarters in the first year, then annually, with member-initiated amendments allowed at any time via the standard proposal process.',
 	'Section five documents the calculations that sit behind the splits, including a worked example for a typical quarter, so members can replicate the numbers from public information and confirm they match the figures that land in their accounts.',
 	'Section six covers tax and jurisdictional treatment at a high level, with pointers to the per-jurisdiction notes maintained separately, since those change more often than the charter itself and benefit from living closer to the relevant tax documentation.',
