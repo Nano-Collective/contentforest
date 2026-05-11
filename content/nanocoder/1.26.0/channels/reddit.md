@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-05-11T22:51:33.433Z"
 ---
 
 Nanocoder v1.26.0 is out. Here is what we shipped and why each addition made it in.
