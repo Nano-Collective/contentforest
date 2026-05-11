@@ -1,0 +1,37 @@
+{
+  "issue_number": 32,
+  "requester": "followbenparry",
+  "member": "ben-parry",
+  "base_pack_kind": "product",
+  "base_pack_id": "nanocoder/1.26.0",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "linkedin-newsletter",
+    "substack"
+  ],
+  "article_slugs": [
+    "json-tool-fallback",
+    "nano-mode",
+    "reasoning-traces"
+  ],
+  "generated_at": "2026-05-11T10:06:12.421Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "articles",
+      "attempts": 1,
+      "final_status": "failed-validation",
+      "failures": []
+    }
+  ]
+}
