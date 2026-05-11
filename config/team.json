@@ -154,7 +154,7 @@
 				"max_chars": 280,
 				"rules": [
 					"Generate 7 posts per release cycle — intended as 1 posts per day across a 7-day window.",
-					"Vary the angle across the 14 posts — do not repeat the same framing. Required mix: 3 technical (for developers and builders), 3 non-technical (accessible to anyone), 3 philosophical (structural arguments about AI, sovereignty, incentives), 3 thought leadership (patterns, predictions, broader implications), 2 danger-of-centralisation (what happens when AI infrastructure is controlled by a single entity).",
+					"Vary the angle across the 7 posts — do not repeat the same framing. Required mix: 1 technical (for developers and builders), 1 non-technical (accessible to anyone), 2 philosophical (structural arguments about AI, sovereignty, incentives), 2 thought leadership (patterns, predictions, broader implications), 1 danger-of-centralisation (what happens when AI infrastructure is controlled by a single entity).",
 					"Each post stands alone — do not assume the reader has seen the previous one.",
 					"No hashtags.",
 					"No link in the main post body — if driving to content, add the link as a pinned reply.",
