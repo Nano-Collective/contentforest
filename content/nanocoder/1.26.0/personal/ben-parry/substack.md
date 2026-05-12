@@ -7,6 +7,7 @@ version: "1.26.0"
 generated_at: "2026-05-11T23:28:32.462Z"
 model: "minimax-m2.7"
 char_count: 13542
+distributed_at: "2026-05-12T13:44:13.265Z"
 ---
 
 <!-- angle: Token economics and resource-aware design as the hidden architecture of AI tooling. Most tooling assumes abundance; designing from real constraints surfaces the tradeoffs that are normally invisible, and those tradeoffs encode values. -->
