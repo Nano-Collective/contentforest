@@ -7,6 +7,7 @@ version: "1.26.0"
 generated_at: "2026-05-11T23:28:32.462Z"
 model: "minimax-m2.7"
 char_count: 4394
+distributed_at: "2026-05-12T13:44:23.120Z"
 ---
 
 Most AI tooling assumes abundance. Abundant context windows, abundant compute, abundant memory. Build for the largest deployment and ship a slightly throttled version for smaller setups.
