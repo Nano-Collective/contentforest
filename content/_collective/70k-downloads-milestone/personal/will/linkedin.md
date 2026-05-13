@@ -6,6 +6,7 @@ slug: 70k-downloads-milestone
 generated_at: "2026-05-11T22:24:07.774Z"
 model: "minimax-m2.7"
 char_count: 630
+distributed_at: "2026-05-13T22:48:35.579Z"
 ---
 
 🔥 70,000 downloads across the Nano Collective.
