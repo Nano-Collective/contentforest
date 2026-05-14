@@ -33,6 +33,7 @@ body:
       description: |
         Pick the existing pack to ground the personal-pack in. List is auto-generated from `content/` on `main`, sorted newest-first. `<product>/<version>` for release packs; `_collective/<slug>` for collective packs.
       options:
+        - _collective/pi-versus-nanocoder
         - _collective/70k-downloads-milestone
         - nanocoder/1.26.0
         - _collective/contentforest-launch
