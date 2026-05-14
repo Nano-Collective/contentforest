@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-11T11:13:20.409Z"
 model: "minimax-m2.7"
 char_count: 1109
+distributed_at: "2026-05-14T22:37:00.697Z"
 ---
 
 The Nano Collective just passed 70,000 total downloads across its open-source AI tooling packages — Nanocoder, Nanotune, get-md, and json-up. Sharing it here because this community tends to care about tools that stay open, run locally, and don't route your work through a third-party platform.
