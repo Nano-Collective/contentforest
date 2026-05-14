@@ -23,6 +23,7 @@ body:
       options:
         - 70k-downloads-milestone
         - contentforest-launch
+        - pi-versus-nanocoder
     validations:
       required: true
   # END AUTO-SLUGS
