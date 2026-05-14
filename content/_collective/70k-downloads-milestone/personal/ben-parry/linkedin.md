@@ -6,6 +6,7 @@ slug: 70k-downloads-milestone
 generated_at: "2026-05-12T11:06:28.191Z"
 model: "minimax-m2.7"
 char_count: 1187
+distributed_at: "2026-05-14T14:01:46.383Z"
 ---
 
 There's a structural difference between a tool that succeeds because it was built well, and one that succeeds because it has to. Open-source software mostly operates in the second category. Its survival depends on being genuinely useful - not on hitting a revenue target, not on converting free users into paying ones. The incentive structure points in a different direction.
