@@ -1,0 +1,26 @@
+{
+  "issue_number": 55,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "pi-versus-nanocoder",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "agent_mode": "bundled",
+  "generated_at": "2026-05-15T14:00:58.217Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
