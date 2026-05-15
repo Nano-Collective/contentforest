@@ -361,6 +361,58 @@ test('fail: missing channel file → file-exists', t => {
 	}
 });
 
+test('fail: extra file in channels/ → file-unexpected', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Model created a stray combined-posts file alongside the expected ones.
+		// All four expected channels still exist, so file-exists won't fire.
+		writeFileSync(
+			join(packDir, 'channels/extras.md'),
+			buildMd('x', X_BODY, {channel: 'x'}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-unexpected' && f.file.endsWith('channels/extras.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('fail: extra file in article channels/ → file-unexpected', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		const articleDir = writeArticle(packDir, 'registry-redesign');
+		writeFileSync(
+			join(articleDir, 'channels/extras.md'),
+			buildMd('x', X_BODY, {channel: 'x'}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'articles',
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(
+				f =>
+					f.rule === 'file-unexpected' &&
+					f.file.endsWith('articles/registry-redesign/channels/extras.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
 test('fail: frontmatter missing required field → frontmatter-shape', t => {
 	const root = makeTmpRoot();
 	try {
@@ -930,6 +982,29 @@ test('collective: missing channel file → file-exists', t => {
 		t.true(
 			report.failures.some(
 				f => f.rule === 'file-exists' && f.expected.includes('linkedin'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: extra file in channels/ → file-unexpected', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyCollectivePack(root);
+		writeFileSync(
+			join(packDir, 'channels/extras.md'),
+			buildCollectiveMd('x', COLLECTIVE_X_BODY, {channel: 'x'}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-unexpected' && f.file.endsWith('channels/extras.md'),
 			),
 		);
 	} finally {

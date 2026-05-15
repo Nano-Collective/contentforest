@@ -566,6 +566,28 @@ function validatePack(args: {
 				});
 			}
 		}
+
+		// Extra channel files. `channel-known` fires on the frontmatter slug;
+		// this fires on the path, so it catches LLM over-generation (stray
+		// combined-posts file, leftover from a prior pass) even when the
+		// frontmatter inside happens to be valid. Auto-fix needs to delete
+		// these by path, not rewrite them.
+		const channelsDir = join(args.packRoot, 'channels');
+		if (existsSync(channelsDir)) {
+			const expectedSlugs = new Set(args.channels.map(c => c.slug));
+			for (const entry of readdirSync(channelsDir)) {
+				if (!entry.endsWith('.md')) continue;
+				const slug = entry.slice(0, -3);
+				if (!expectedSlugs.has(slug)) {
+					failures.push({
+						file: relative(ROOT, join(channelsDir, entry)),
+						rule: 'file-unexpected',
+						expected: `file path matches a slug in config/channels.json (${[...expectedSlugs].join(', ')})`,
+						actual: 'extra file (delete it, or rename to a configured slug)',
+					});
+				}
+			}
+		}
 	}
 
 	// Per-file content checks
@@ -847,6 +869,24 @@ function validateCollectivePack(args: {
 					expected: exp.rel,
 					actual: 'missing',
 				});
+			}
+		}
+
+		// Extra channel files — see validatePack for the rationale.
+		const channelsDir = join(args.packRoot, 'channels');
+		if (existsSync(channelsDir)) {
+			const expectedSlugs = new Set(args.channels.map(c => c.slug));
+			for (const entry of readdirSync(channelsDir)) {
+				if (!entry.endsWith('.md')) continue;
+				const slug = entry.slice(0, -3);
+				if (!expectedSlugs.has(slug)) {
+					failures.push({
+						file: relative(ROOT, join(channelsDir, entry)),
+						rule: 'file-unexpected',
+						expected: `file path matches a slug in config/channels.json (${[...expectedSlugs].join(', ')})`,
+						actual: 'extra file (delete it, or rename to a configured slug)',
+					});
+				}
 			}
 		}
 	}
