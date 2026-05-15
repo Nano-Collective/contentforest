@@ -378,7 +378,8 @@ test('fail: extra file in channels/ → file-unexpected', t => {
 		});
 		t.true(
 			report.failures.some(
-				f => f.rule === 'file-unexpected' && f.file.endsWith('channels/extras.md'),
+				f =>
+					f.rule === 'file-unexpected' && f.file.endsWith('channels/extras.md'),
 			),
 		);
 	} finally {
@@ -1004,7 +1005,8 @@ test('collective: extra file in channels/ → file-unexpected', t => {
 		});
 		t.true(
 			report.failures.some(
-				f => f.rule === 'file-unexpected' && f.file.endsWith('channels/extras.md'),
+				f =>
+					f.rule === 'file-unexpected' && f.file.endsWith('channels/extras.md'),
 			),
 		);
 	} finally {

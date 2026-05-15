@@ -13,6 +13,7 @@
 		"test:ava:watch": "ava --watch",
 		"test:format": "biome check --no-errors-on-unmatched .",
 		"test:types": "tsc --noEmit",
+		"lint": "pnpm test:lint",
 		"test:lint": "biome lint .",
 		"test:lint:fix": "biome check --write --unsafe .",
 		"test:knip": "knip",

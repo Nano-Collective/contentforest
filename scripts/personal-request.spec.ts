@@ -281,13 +281,13 @@ test('planChannelSpawns: per-channel mode returns one spawn per bundle group', t
 	t.deepEqual(labels, ['linkedin-linkedin-newsletter', 'substack', 'x']);
 	const linkedinSpawn = spawns.find(s =>
 		s.channels.some(c => c.slug === 'linkedin-newsletter'),
-	)!;
+	);
 	t.deepEqual(
-		linkedinSpawn.mirrored.map(c => c.slug),
+		linkedinSpawn?.mirrored.map(c => c.slug),
 		['linkedin'],
 	);
 	t.deepEqual(
-		linkedinSpawn.additional.map(c => c.slug),
+		linkedinSpawn?.additional.map(c => c.slug),
 		['linkedin-newsletter'],
 	);
 });

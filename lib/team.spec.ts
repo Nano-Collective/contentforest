@@ -185,16 +185,15 @@ test('partitionChannelGroups: bundle_with co-locates referenced channels', t => 
 	];
 	const groups = partitionChannelGroups(channels);
 	t.is(groups.length, 2);
-	const linkedinGroup = groups.find(g =>
-		g.some(c => c.slug === 'linkedin-newsletter'),
-	)!;
-	t.deepEqual(linkedinGroup.map(c => c.slug).sort(), [
-		'linkedin',
-		'linkedin-newsletter',
-	]);
-	const xGroup = groups.find(g => g.some(c => c.slug === 'x'))!;
 	t.deepEqual(
-		xGroup.map(c => c.slug),
+		groups
+			.find(g => g.some(c => c.slug === 'linkedin-newsletter'))
+			?.map(c => c.slug)
+			.sort(),
+		['linkedin', 'linkedin-newsletter'],
+	);
+	t.deepEqual(
+		groups.find(g => g.some(c => c.slug === 'x'))?.map(c => c.slug),
 		['x'],
 	);
 });
