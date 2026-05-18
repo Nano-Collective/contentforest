@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-13T22:34:48.445Z"
 model: "minimax-m2.7"
 char_count: 1150
+distributed_at: "2026-05-18T12:35:22.107Z"
 ---
 
 Nanocoder and Pi are both terminal-based AI coding agents. They take different approaches to what a coding agent should be, and who it ultimately answers to.
