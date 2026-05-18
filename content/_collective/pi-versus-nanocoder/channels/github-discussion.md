@@ -6,6 +6,7 @@ title: "Nanocoder vs Pi: a comparison from the Nano Collective side"
 generated_at: "2026-05-13T22:34:48.445Z"
 model: "minimax-m2.7"
 char_count: 3780
+distributed_at: "2026-05-18T12:31:16.245Z"
 ---
 
 [Pi](https://pi.dev/) is a thoughtful, well-built terminal coding agent. We respect the engineering behind it. This is not a takedown, it is a "which one fits me?" guide written from our side of the fence.
