@@ -1,0 +1,49 @@
+{
+  "issue_number": 59,
+  "requester": "will-lamerton",
+  "member": "ben-parry",
+  "base_pack_kind": "collective",
+  "base_pack_id": "pi-versus-nanocoder",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "linkedin-newsletter",
+    "substack"
+  ],
+  "agent_mode": "per-channel",
+  "generated_at": "2026-05-18T14:42:22.287Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "channel_group": [
+        "linkedin",
+        "linkedin-newsletter"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "x"
+      ],
+      "attempts": 1,
+      "final_status": "failed-validation",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "substack"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
