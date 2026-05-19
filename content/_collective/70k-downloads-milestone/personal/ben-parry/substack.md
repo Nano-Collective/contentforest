@@ -6,6 +6,7 @@ slug: 70k-downloads-milestone
 generated_at: "2026-05-12T11:06:28.191Z"
 model: "minimax-m2.7"
 char_count: 9118
+distributed_at: "2026-05-19T12:42:14.610Z"
 ---
 
 <!-- angle: The 70k downloads milestone as evidence of a structural principle. Tools that survive by being genuinely useful, not by extracting value from users, behave differently. The number is a signal about incentive architecture, not a celebration of scale. -->
