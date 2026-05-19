@@ -1557,6 +1557,46 @@ test('personal (count > 1): 7 files for a count=7 channel passes', t => {
 	}
 });
 
+test('personal (count > 1): zero files for a count=7 channel fails (channel skipped entirely)', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Ben generates linkedin but skips x entirely. Without the strict
+		// required-existence check this would pass; with it, all 7 x files
+		// must be reported missing.
+		writePersonalFile(
+			packDir,
+			'linkedin',
+			buildPersonalMd({
+				channel: 'linkedin',
+				body: PERSONAL_BODY,
+				member: BEN_MEMBER_SLUG,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+			BEN_MEMBER_SLUG,
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected === 'x1.md',
+			),
+		);
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected === 'x7.md',
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
 test('personal (count > 1): missing files fail file-exists', t => {
 	const root = makeTmpRoot();
 	try {

@@ -153,6 +153,8 @@ For each channel in **{{MIRRORED_CHANNEL_SLUGS}}** (mirrored from base pack) and
 - `count` is `1` (or absent): write one file at `{{TARGET_DIR}}<channel>.md`.
 - `count` is N where N > 1: write N files at `{{TARGET_DIR}}<channel>1.md`, `{{TARGET_DIR}}<channel>2.md`, ..., `{{TARGET_DIR}}<channel>N.md`. No `<channel>.md` without a number. Each file is a standalone post — vary the angle across them per the channel `rules`. Frontmatter `channel` is the bare slug (`<channel>`, not `<channel>1`).
 
+**Multi-post channels are not optional.** If a channel in this spawn has `count > 1`, you must produce all N files. Do not skip it because "N feels like a lot" or "the angle doesn't lend itself to that many posts" — the channel's `rules` list how to vary the angles. The validator fails the run when count is wrong, including zero files for a `count > 1` channel.
+
 If both channel lists are empty, write nothing — that's a successful run (the member doesn't publish on any of the base pack's channels and has no additional channels).
 
 Do **not** modify any file outside `{{TARGET_DIR}}`. Do **not** write under `articles/` — personal packs are pack-level only.

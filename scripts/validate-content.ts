@@ -538,11 +538,34 @@ function checkPersonalFileCounts(args: {
 			filesByChannel.set(channel, list);
 		}
 
-		for (const [channelSlug, actualFiles] of filesByChannel) {
+		// Decide which channels to check. Two sources:
+		//   1. Member channels with count > 1 are STRICTLY REQUIRED — the agent
+		//      must produce exactly N files. Zero files is a fail, not a skip.
+		//      Without this, the agent can silently drop a multi-post channel
+		//      and the validator passes (we saw this on PR #68 where Ben's
+		//      x channel produced 0 files instead of 7).
+		//   2. Channels with files on disk are checked for correct shape
+		//      regardless of count — catches "wrong filename" / extra files.
+		// Single-file channels (count = 1, default) stay permissive: zero
+		// files is OK, but if any exist they must match `<slug>.md`.
+		const inFilter = (slug: string) =>
+			!args.personalChannels || args.personalChannels.includes(slug);
+		const channelsToCheck = new Set<string>();
+		for (const c of member.channels) {
+			if ((c.count ?? 1) > 1 && inFilter(c.slug)) {
+				channelsToCheck.add(c.slug);
+			}
+		}
+		for (const channelSlug of filesByChannel.keys()) {
+			channelsToCheck.add(channelSlug);
+		}
+
+		for (const channelSlug of channelsToCheck) {
 			const channel = member.channels.find(c => c.slug === channelSlug);
 			if (!channel) continue;
 			const expected = expectedPersonalFiles(channel);
 			const expectedSet = new Set(expected);
+			const actualFiles = filesByChannel.get(channelSlug) ?? [];
 			const actualSet = new Set(actualFiles);
 			for (const exp of expected) {
 				if (!actualSet.has(exp)) {
