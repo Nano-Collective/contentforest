@@ -121,6 +121,8 @@ The per-channel rules below are **scoped to this spawn** — `{{IN_SCOPE_CHANNEL
 
 The `max_*` values are hard ceilings. Per-channel `rules` are member-specific guidance (e.g. "no hashtags") and you must follow them.
 
+**`count` field.** A channel may specify `count: N` (default 1). When `count > 1`, the channel expects N distinct posts per run — each its own standalone post, written to its own file (`<slug>1.md`..`<slug>N.md`). The validator fails if the count is wrong. See the output spec below for filenames.
+
 **Link policy:** permissive. {{MEMBER_NAME}} may link to the product repo, the canonical pack post (once published), their own blog, or whatever else makes the post land for their audience. Pick what fits the channel. The validator does not require any specific URL.
 
 # Frontmatter (every .md file you write)
@@ -146,13 +148,12 @@ char_count: <integer>
 
 Write **only** these files under `{{TARGET_DIR}}`:
 
-For each channel in **{{MIRRORED_CHANNEL_SLUGS}}** (mirrored from base pack):
-- `{{TARGET_DIR}}<channel>.md`
+For each channel in **{{MIRRORED_CHANNEL_SLUGS}}** (mirrored from base pack) and **{{ADDITIONAL_CHANNEL_SLUGS}}** (member-only, fresh), look up the channel's `count` in the JSON above:
 
-For each channel in **{{ADDITIONAL_CHANNEL_SLUGS}}** (member-only, fresh):
-- `{{TARGET_DIR}}<channel>.md`
+- `count` is `1` (or absent): write one file at `{{TARGET_DIR}}<channel>.md`.
+- `count` is N where N > 1: write N files at `{{TARGET_DIR}}<channel>1.md`, `{{TARGET_DIR}}<channel>2.md`, ..., `{{TARGET_DIR}}<channel>N.md`. No `<channel>.md` without a number. Each file is a standalone post — vary the angle across them per the channel `rules`. Frontmatter `channel` is the bare slug (`<channel>`, not `<channel>1`).
 
-If both lists are empty, write nothing — that's a successful run (the member doesn't publish on any of the base pack's channels and has no additional channels).
+If both channel lists are empty, write nothing — that's a successful run (the member doesn't publish on any of the base pack's channels and has no additional channels).
 
 Do **not** modify any file outside `{{TARGET_DIR}}`. Do **not** write under `articles/` — personal packs are pack-level only.
 

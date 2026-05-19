@@ -152,8 +152,9 @@
 				"kind": "social",
 				"handle": "FollowBenParry",
 				"max_chars": 280,
+				"count": 7,
 				"rules": [
-					"Generate 7 posts per release cycle — intended as 1 posts per day across a 7-day window.",
+					"Generate 7 posts per release cycle — intended as 1 posts per day across a 7-day window. Files: x1.md, x2.md, ..., x7.md.",
 					"Vary the angle across the 7 posts — do not repeat the same framing. Required mix: 1 technical (for developers and builders), 1 non-technical (accessible to anyone), 2 philosophical (structural arguments about AI, sovereignty, incentives), 2 thought leadership (patterns, predictions, broader implications), 1 danger-of-centralisation (what happens when AI infrastructure is controlled by a single entity).",
 					"Each post stands alone — do not assume the reader has seen the previous one.",
 					"No hashtags.",

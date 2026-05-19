@@ -77,6 +77,27 @@ test('parseTeam: rejects negative numeric fields', t => {
 	t.regex(err.message, /min_words/);
 });
 
+test('parseTeam: accepts positive integer count', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].channels[1].count = 7;
+	const team = parseTeam(raw);
+	t.is(team[0].channels[1].count, 7);
+});
+
+test('parseTeam: rejects non-integer count', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].channels[0].count = 1.5;
+	const err = t.throws(() => parseTeam(raw), {instanceOf: TeamConfigError});
+	t.regex(err.message, /count/);
+});
+
+test('parseTeam: rejects zero count', t => {
+	const raw = JSON.parse(JSON.stringify(VALID_RAW));
+	raw[0].channels[0].count = 0;
+	const err = t.throws(() => parseTeam(raw), {instanceOf: TeamConfigError});
+	t.regex(err.message, /count/);
+});
+
 test('parseTeam: rejects non-string-array voice fields', t => {
 	const raw = JSON.parse(JSON.stringify(VALID_RAW));
 	raw[0].voice.do = [1, 2];

@@ -473,6 +473,107 @@ function fileExistsAny(packRoot: string, rel: string): boolean {
 	return false;
 }
 
+/**
+ * Expected filenames for a personal channel: `<slug>.md` when count is 1
+ * (or unset), `<slug>1.md`..`<slug>N.md` when count > 1. Numbered files
+ * are 1-indexed; unnumbered `<slug>.md` is NOT accepted in the numbered
+ * case (avoids ambiguity between "the canonical post" and "the first
+ * post").
+ */
+function expectedPersonalFiles(channel: TeamChannel): string[] {
+	const count = channel.count ?? 1;
+	if (count === 1) return [`${channel.slug}.md`];
+	return Array.from({length: count}, (_, i) => `${channel.slug}${i + 1}.md`);
+}
+
+/**
+ * For each member's `personal/<member>/` subtree, group .md files by their
+ * frontmatter `channel` and compare actual filenames to the expected set
+ * derived from `member.channels[].count`. Missing files emit `file-exists`,
+ * extras emit `file-unexpected` — reusing existing rule names so auto-fix
+ * keeps a single set of recipes.
+ *
+ * Files whose channel isn't listed in `member.channels` are skipped here;
+ * `team-channel-known` fires for those elsewhere. Files for members not in
+ * `team.json` are skipped; `team-member-known` covers that case.
+ *
+ * Scope: when `personalChannels` is set, only those channels are checked,
+ * mirroring the per-file filter so per-channel agent spawns don't see
+ * count failures for channels they don't own.
+ */
+function checkPersonalFileCounts(args: {
+	packRoot: string;
+	team: TeamMember[];
+	personalChannels?: string[];
+}): Failure[] {
+	const failures: Failure[] = [];
+	const personalDir = join(args.packRoot, 'personal');
+	if (!existsSync(personalDir)) return failures;
+
+	for (const memberSlug of readdirSync(personalDir)) {
+		const memberDir = join(personalDir, memberSlug);
+		if (!statSync(memberDir).isDirectory()) continue;
+		const member = args.team.find(m => m.slug === memberSlug);
+		if (!member) continue;
+
+		// Group files by frontmatter.channel. Skip files that aren't kind:
+		// personal — the personal directory shouldn't contain other shapes,
+		// but if it does they're handled by the main per-file loop.
+		const filesByChannel = new Map<string, string[]>();
+		for (const entry of readdirSync(memberDir)) {
+			if (!entry.endsWith('.md')) continue;
+			const filePath = join(memberDir, entry);
+			const raw = readFileSync(filePath, 'utf8');
+			const fm = matter(raw).data as Record<string, unknown>;
+			if (fm.kind !== 'personal') continue;
+			const channel =
+				typeof fm.channel === 'string'
+					? fm.channel
+					: entry.replace(/\.md$/, '');
+			if (args.personalChannels && !args.personalChannels.includes(channel)) {
+				continue;
+			}
+			const list = filesByChannel.get(channel) ?? [];
+			list.push(entry);
+			filesByChannel.set(channel, list);
+		}
+
+		for (const [channelSlug, actualFiles] of filesByChannel) {
+			const channel = member.channels.find(c => c.slug === channelSlug);
+			if (!channel) continue;
+			const expected = expectedPersonalFiles(channel);
+			const expectedSet = new Set(expected);
+			const actualSet = new Set(actualFiles);
+			for (const exp of expected) {
+				if (!actualSet.has(exp)) {
+					failures.push({
+						file: relative(ROOT, join(memberDir, exp)),
+						rule: 'file-exists',
+						expected: exp,
+						actual: 'missing',
+					});
+				}
+			}
+			for (const actual of actualFiles) {
+				if (!expectedSet.has(actual)) {
+					const count = channel.count ?? 1;
+					failures.push({
+						file: relative(ROOT, join(memberDir, actual)),
+						rule: 'file-unexpected',
+						expected:
+							count === 1
+								? `${channelSlug}.md (count: 1)`
+								: `${channelSlug}1.md..${channelSlug}${count}.md (count: ${count})`,
+						actual: 'extra file (delete or rename)',
+					});
+				}
+			}
+		}
+	}
+
+	return failures;
+}
+
 function validatePack(args: {
 	product: Product;
 	version: string;
@@ -625,11 +726,13 @@ function validatePack(args: {
 			}
 			// When personalChannels is set (per-channel agent spawn), skip
 			// personal files outside the spawn's channel scope so the report
-			// doesn't surface failures the current agent can't fix.
-			if (
-				args.personalChannels &&
-				!args.personalChannels.includes(ctx.channel)
-			) {
+			// doesn't surface failures the current agent can't fix. Filter on
+			// fm.channel — for count > 1 channels the filename slug includes a
+			// trailing digit (`x1.md`) but the canonical channel id sits in
+			// frontmatter.
+			const fmChannel =
+				typeof fm.channel === 'string' ? fm.channel : ctx.channel;
+			if (args.personalChannels && !args.personalChannels.includes(fmChannel)) {
 				continue;
 			}
 			const result = validatePersonalFile({
@@ -798,6 +901,14 @@ function validatePack(args: {
 		}
 	}
 
+	failures.push(
+		...checkPersonalFileCounts({
+			packRoot: args.packRoot,
+			team: args.team,
+			personalChannels: args.personalChannels,
+		}),
+	);
+
 	return {failures, warnings, skipped: false};
 }
 
@@ -911,10 +1022,9 @@ function validateCollectivePack(args: {
 				});
 				continue;
 			}
-			if (
-				args.personalChannels &&
-				!args.personalChannels.includes(ctx.channel)
-			) {
+			const fmChannel =
+				typeof fm.channel === 'string' ? fm.channel : ctx.channel;
+			if (args.personalChannels && !args.personalChannels.includes(fmChannel)) {
 				continue;
 			}
 			const result = validatePersonalFile({
@@ -1061,6 +1171,14 @@ function validateCollectivePack(args: {
 			});
 		}
 	}
+
+	failures.push(
+		...checkPersonalFileCounts({
+			packRoot: args.packRoot,
+			team: args.team,
+			personalChannels: args.personalChannels,
+		}),
+	);
 
 	return {failures, warnings, skipped: false};
 }

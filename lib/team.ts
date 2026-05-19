@@ -32,6 +32,13 @@ export type TeamChannel = {
 	min_words?: number;
 	max_words?: number;
 	max_chars?: number;
+	/**
+	 * Number of files the personal-channels agent must produce for this
+	 * channel per run. Defaults to 1. When > 1, files are written as
+	 * `<slug>1.md`..`<slug>N.md` (no unnumbered `<slug>.md`). The validator
+	 * enforces both the count and the filename shape.
+	 */
+	count?: number;
 	rules?: string[];
 	bundle_with?: string[];
 };
@@ -116,6 +123,12 @@ function parseChannel(raw: unknown, path: string): TeamChannel {
 	const min_words = optionalNumber(obj, 'min_words', path);
 	const max_words = optionalNumber(obj, 'max_words', path);
 	const max_chars = optionalNumber(obj, 'max_chars', path);
+	const count = optionalNumber(obj, 'count', path);
+	if (count !== undefined && (!Number.isInteger(count) || count < 1)) {
+		throw new TeamConfigError(
+			`${path}.count: expected positive integer, got ${JSON.stringify(count)}`,
+		);
+	}
 	let rules: string[] | undefined;
 	if (obj.rules !== undefined) {
 		if (!isStringArray(obj.rules)) {
@@ -141,6 +154,7 @@ function parseChannel(raw: unknown, path: string): TeamChannel {
 		...(min_words !== undefined && {min_words}),
 		...(max_words !== undefined && {max_words}),
 		...(max_chars !== undefined && {max_chars}),
+		...(count !== undefined && {count}),
 		...(rules !== undefined && {rules}),
 		...(bundle_with !== undefined && {bundle_with}),
 	};

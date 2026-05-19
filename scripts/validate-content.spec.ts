@@ -1051,6 +1051,7 @@ test('collective: pack filter missing slug throws', t => {
 // ---------------------------------------------------------------------------
 
 const TEAM_MEMBER_SLUG = 'will';
+const BEN_MEMBER_SLUG = 'ben';
 const TEAM = [
 	{
 		slug: TEAM_MEMBER_SLUG,
@@ -1064,6 +1065,18 @@ const TEAM = [
 			{slug: 'medium', kind: 'long-form' as const, max_words: 2500},
 		],
 		agent_mode: 'bundled' as const,
+	},
+	{
+		slug: BEN_MEMBER_SLUG,
+		name: 'Ben Test',
+		github: 'bentest',
+		role: 'Co-founder',
+		voice: {tone: 't', do: ['a'], dont: ['b'], samples: []},
+		channels: [
+			{slug: 'linkedin', kind: 'social' as const, max_words: 500},
+			{slug: 'x', kind: 'social' as const, max_chars: 280, count: 7},
+		],
+		agent_mode: 'per-channel' as const,
 	},
 ];
 
@@ -1497,6 +1510,206 @@ test('personal (article-level): nested under articles/<slug>/personal/<member>/'
 			config: CONFIG_WITH_TEAM,
 		});
 		t.deepEqual(report.failures, []);
+	} finally {
+		cleanup(root);
+	}
+});
+
+// ---------------------------------------------------------------------------
+// kind: personal — count > 1 (multi-file channels, e.g. Ben's "x" with 7 posts)
+// ---------------------------------------------------------------------------
+
+// Short body for X posts — well under 280 chars, no required link.
+const X_PERSONAL_BODY =
+	'My take on this release. Short. Punchy. No link needed.';
+
+function writeBenXFiles(packDir: string, count: number) {
+	const dir = join(packDir, 'personal', BEN_MEMBER_SLUG);
+	mkdirSync(dir, {recursive: true});
+	for (let i = 1; i <= count; i++) {
+		writeFileSync(
+			join(dir, `x${i}.md`),
+			buildPersonalMd({
+				channel: 'x',
+				body: `${X_PERSONAL_BODY} (post ${i})`,
+				member: BEN_MEMBER_SLUG,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+	}
+}
+
+test('personal (count > 1): 7 files for a count=7 channel passes', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		writeBenXFiles(packDir, 7);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.deepEqual(report.failures, []);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('personal (count > 1): missing files fail file-exists', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Only 6 of the 7 — x7.md is missing.
+		writeBenXFiles(packDir, 6);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected === 'x7.md',
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('personal (count > 1): extra files fail file-unexpected', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// All 7 + a stray x8.md.
+		writeBenXFiles(packDir, 7);
+		writeFileSync(
+			join(packDir, 'personal', BEN_MEMBER_SLUG, 'x8.md'),
+			buildPersonalMd({
+				channel: 'x',
+				body: `${X_PERSONAL_BODY} (post 8)`,
+				member: BEN_MEMBER_SLUG,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-unexpected' && f.file.endsWith('x8.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('personal (count > 1): unnumbered x.md is rejected when count > 1', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Old shape: a single x.md instead of x1..x7. file-unexpected on x.md
+		// AND file-exists on each of x1..x7.
+		const dir = join(packDir, 'personal', BEN_MEMBER_SLUG);
+		mkdirSync(dir, {recursive: true});
+		writeFileSync(
+			join(dir, 'x.md'),
+			buildPersonalMd({
+				channel: 'x',
+				body: X_PERSONAL_BODY,
+				member: BEN_MEMBER_SLUG,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-unexpected' && f.file.endsWith('/x.md'),
+			),
+		);
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected === 'x1.md',
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('personal (count = 1): stray numbered linkedin1.md fails file-unexpected', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Will's linkedin has no count (default 1). Writing linkedin1.md as
+		// well as linkedin.md is over-generation.
+		writePersonalFile(
+			packDir,
+			'linkedin',
+			buildPersonalMd({
+				channel: 'linkedin',
+				body: PERSONAL_BODY,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+		writeFileSync(
+			join(packDir, 'personal', TEAM_MEMBER_SLUG, 'linkedin1.md'),
+			buildPersonalMd({
+				channel: 'linkedin',
+				body: PERSONAL_BODY,
+				product: PRODUCT_SLUG,
+				version: VERSION,
+			}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-unexpected' && f.file.endsWith('linkedin1.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('personal (count > 1): personalChannels filter scopes count check', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Only 6 of 7 — would normally fail file-exists for x7. Scope to
+		// linkedin instead; the x count failure must not surface.
+		writeBenXFiles(packDir, 6);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'personal',
+			config: CONFIG_WITH_TEAM,
+			personalChannels: ['linkedin'],
+		});
+		t.false(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected === 'x7.md',
+			),
+		);
 	} finally {
 		cleanup(root);
 	}
