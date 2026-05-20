@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:50.725Z"
 ---
 
 The reasoning trace feature in v1.26.0 gets a one-line mention in the release notes, but it shipped after a non-trivial set of fixes. Here is what was wrong and what changed.
