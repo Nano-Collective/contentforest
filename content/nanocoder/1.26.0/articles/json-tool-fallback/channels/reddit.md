@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:30.288Z"
 ---
 
 Wanted to flag the JSON tool fallback that landed in v1.26.0 — it is a real improvement if you run Qwen, Kimi, or GLM through Nanocoder.
