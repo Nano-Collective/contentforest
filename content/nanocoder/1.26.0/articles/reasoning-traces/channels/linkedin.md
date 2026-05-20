@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:48.375Z"
 ---
 
 Nanocoder v1.26.0 streams reasoning content from reasoning models in real time — but the release note is a one-liner. The engineering behind it had several iterations worth knowing about if you use reasoning models with Nanocoder.
