@@ -6,6 +6,7 @@ title: "How nano mode works and why we built it"
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:35.192Z"
 ---
 
 Nano mode is a new tool profile under `/tune` that drops the system prompt from roughly 500-700 tokens (the minimal profile) down to 150-250 tokens. This is not a cosmetic trim. It is a targeted reduction in what the model has to read on every request, which matters when your hardware is the bottleneck.
