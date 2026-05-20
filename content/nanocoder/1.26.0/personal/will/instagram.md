@@ -7,6 +7,7 @@ version: "1.26.0"
 generated_at: "2026-05-10T21:59:28.274Z"
 model: "minimax-m2.7"
 char_count: 710
+wont_use_at: "2026-05-20T12:19:17.000Z"
 ---
 
 Nanocoder 1.26.0 🔥
