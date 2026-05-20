@@ -15,7 +15,7 @@ import {
 	listCollectivePacks,
 	readCollectivePack,
 } from '@/lib/content';
-import {markDistributed} from '@/lib/distribute';
+import {type MarkStatus, markStatus} from '@/lib/distribute';
 
 type Props = {
 	pack: CollectivePack;
@@ -41,22 +41,37 @@ function filenameFor(slug: string): string {
 	return `${slug}.md`;
 }
 
+function readField(
+	frontmatter: Record<string, unknown>,
+	key: string,
+): string | null {
+	const v = frontmatter[key];
+	return typeof v === 'string' ? v : null;
+}
+
 export default function CollectivePackPage({pack}: Props) {
 	const [distributedMap, setDistributedMap] = useState<
 		Record<string, string | null>
 	>(() => {
 		const m: Record<string, string | null> = {};
 		for (const f of pack.files) {
-			m[f.channel] =
-				typeof f.frontmatter.distributed_at === 'string'
-					? f.frontmatter.distributed_at
-					: null;
+			m[f.channel] = readField(f.frontmatter, 'distributed_at');
 		}
 		return m;
 	});
+	const [wontUseMap, setWontUseMap] = useState<Record<string, string | null>>(
+		() => {
+			const m: Record<string, string | null> = {};
+			for (const f of pack.files) {
+				m[f.channel] = readField(f.frontmatter, 'wont_use_at');
+			}
+			return m;
+		},
+	);
 	const items: FileTreeItem[] = pack.files.map(f => ({
 		...classify(f.channel),
 		distributed: !!distributedMap[f.channel],
+		wontUse: !!wontUseMap[f.channel],
 	}));
 	const sections: FileTreeSection[] = [
 		{key: 'collective', title: 'Channels', items},
@@ -72,27 +87,32 @@ export default function CollectivePackPage({pack}: Props) {
 	const file = pack.files.find(f => f.channel === selected);
 	const filename = filenameFor(selected);
 	const distributedAt = file ? (distributedMap[file.channel] ?? null) : null;
+	const wontUseAt = file ? (wontUseMap[file.channel] ?? null) : null;
 	const visibleMarkError =
 		markError && markError.channel === selected ? markError.message : null;
 
-	const handleMark = async () => {
-		if (!file || marking || distributedAt) return;
+	const handleMark = async (status: MarkStatus) => {
+		if (!file || marking || distributedAt || wontUseAt) return;
 		const channel = file.channel;
 		const repoPath = file.repoPath;
 		const optimistic = new Date().toISOString();
-		const previous = distributedMap[channel] ?? null;
-		setDistributedMap(m => ({...m, [channel]: optimistic}));
+		const setMap = status === 'distributed' ? setDistributedMap : setWontUseMap;
+		setMap(m => ({...m, [channel]: optimistic}));
 		setMarking(true);
 		setMarkError(null);
 		try {
-			const result = await markDistributed(repoPath, optimistic);
-			setDistributedMap(m => ({...m, [channel]: result.distributedAt}));
+			const result = await markStatus(repoPath, status, optimistic);
+			setMap(m => ({...m, [channel]: result.markedAt}));
 		} catch (err) {
-			setDistributedMap(m => ({...m, [channel]: previous}));
+			setMap(m => ({...m, [channel]: null}));
 			setMarkError({
 				channel,
 				message:
-					err instanceof Error ? err.message : 'Failed to mark distributed',
+					err instanceof Error
+						? err.message
+						: status === 'distributed'
+							? 'Failed to mark distributed'
+							: "Failed to mark won't use",
 			});
 		} finally {
 			setMarking(false);
@@ -149,9 +169,11 @@ export default function CollectivePackPage({pack}: Props) {
 									raw={file.raw}
 									body={file.body}
 									distributedAt={distributedAt}
+									wontUseAt={wontUseAt}
 									marking={marking}
 									markError={visibleMarkError}
-									onMark={handleMark}
+									onMarkDistributed={() => handleMark('distributed')}
+									onMarkWontUse={() => handleMark('wont_use')}
 								/>
 							) : (
 								<p className="text-muted-foreground">No file selected.</p>

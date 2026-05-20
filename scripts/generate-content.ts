@@ -29,10 +29,10 @@
  *   --test                     → content/_test/<product>/<version>/
  *
  * TODO(distribute): a regen overwrites whatever the agents produce, including
- * any `distributed_at` field a member previously stamped on a file via the
- * distribute Worker. If we ever expect to regen a pack that has already been
- * distributed, snapshot per-file `distributed_at` before the agents run and
- * re-apply it to the produced files (use lib/frontmatter.ts).
+ * any `distributed_at` or `wont_use_at` field a member previously stamped on
+ * a file via the distribute Worker. If we ever expect to regen a pack that
+ * has already been distributed, snapshot those fields per-file before the
+ * agents run and re-apply them to the produced files (use lib/frontmatter.ts).
  */
 
 import {execSync, spawnSync} from 'node:child_process';

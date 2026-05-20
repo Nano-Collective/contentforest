@@ -1,8 +1,9 @@
 # `contentforest-distribute` worker
 
-Cloudflare Worker that handles "Mark distributed" clicks from the
-ContentForest UI. It writes `distributed_at: <ISO>` into the markdown
-file's frontmatter and commits the change to GitHub via the Contents API.
+Cloudflare Worker that handles "Mark distributed" and "Mark won't use"
+clicks from the ContentForest UI. It writes either `distributed_at: <ISO>`
+or `wont_use_at: <ISO>` into the markdown file's frontmatter and commits
+the change to GitHub via the Contents API.
 
 ## Auth model
 
@@ -53,15 +54,22 @@ POST /
 Content-Type: application/json
 
 { "repoPath": "content/nanocoder/1.25.0/channels/linkedin.md",
-  "distributedAt": "2026-05-08T10:00:00.000Z" }
+  "status": "distributed",
+  "markedAt": "2026-05-08T10:00:00.000Z" }
 ```
+
+`status` is `"distributed"` or `"wont_use"` and selects which frontmatter
+field is set (`distributed_at` or `wont_use_at`). For back-compat, omitting
+`status` and passing `distributedAt` instead of `markedAt` is treated as a
+`"distributed"` request.
 
 Responses:
 
-- `200 { distributedAt }` — committed (or no-op if `distributed_at` was
-  already set to the same value).
-- `400` — bad payload (path doesn't match `^content/.../*.md`, or
-  `distributedAt` isn't ISO-8601 UTC).
+- `200 { status, markedAt }` — committed (or no-op if the field was already
+  set to the same value). For `status: "distributed"`, `distributedAt` is
+  also echoed for back-compat.
+- `400` — bad payload (path doesn't match `^content/.../*.md`, `status` not
+  one of the accepted values, or `markedAt` isn't ISO-8601 UTC).
 - `404` — file not found in the repo.
 - `409` — sha conflict after retry exhaustion.
 - `500` — GitHub API failure.

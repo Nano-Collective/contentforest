@@ -1,7 +1,7 @@
-// Cloudflare Worker: receive a "mark distributed" request from the
-// ContentForest browser, set `distributed_at: <ISO>` in the markdown
-// frontmatter at `repoPath`, and commit the change to GitHub via the
-// Contents API.
+// Cloudflare Worker: receive a "mark distributed" or "mark won't use" request
+// from the ContentForest browser, set `distributed_at: <ISO>` or
+// `wont_use_at: <ISO>` in the markdown frontmatter at `repoPath`, and commit
+// the change to GitHub via the Contents API.
 //
 // Access control is handled by Cloudflare Access in front of the Worker.
 // The signed-in member's email is read from `Cf-Access-Authenticated-User-Email`
@@ -24,13 +24,26 @@ export interface Env {
 	FALLBACK_AUTHOR?: string;
 }
 
+type Status = 'distributed' | 'wont_use';
+
 type Body = {
 	repoPath: string;
-	distributedAt: string;
+	status?: Status;
+	markedAt?: string;
+	// Back-compat with the original "Mark distributed"-only wire format.
+	distributedAt?: string;
 };
 
 const REPO_PATH_RE = /^content\/[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*\.md$/;
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+const FIELD_BY_STATUS: Record<Status, string> = {
+	distributed: 'distributed_at',
+	wont_use: 'wont_use_at',
+};
+const COMMIT_SUFFIX: Record<Status, string> = {
+	distributed: 'distributed',
+	wont_use: "won't use",
+};
 
 export default {
 	async fetch(req: Request, env: Env): Promise<Response> {
@@ -63,17 +76,26 @@ async function handle(
 		return json({error: 'invalid body'}, 400, cors);
 	if (typeof body.repoPath !== 'string' || !REPO_PATH_RE.test(body.repoPath))
 		return json({error: 'invalid repoPath'}, 400, cors);
-	if (
-		typeof body.distributedAt !== 'string' ||
-		!ISO_RE.test(body.distributedAt)
-	)
-		return json({error: 'invalid distributedAt'}, 400, cors);
+
+	const status: Status = body.status ?? 'distributed';
+	if (status !== 'distributed' && status !== 'wont_use')
+		return json({error: 'invalid status'}, 400, cors);
+	const markedAt = body.markedAt ?? body.distributedAt;
+	if (typeof markedAt !== 'string' || !ISO_RE.test(markedAt))
+		return json({error: 'invalid markedAt'}, 400, cors);
 
 	const branch = env.GITHUB_BRANCH ?? 'main';
 	const userEmail =
 		req.headers.get('cf-access-authenticated-user-email') ??
 		env.FALLBACK_AUTHOR ??
 		'distribute-bot@nanocollective.org';
+
+	const field = FIELD_BY_STATUS[status];
+	const successPayload = {
+		status,
+		markedAt,
+		...(status === 'distributed' ? {distributedAt: markedAt} : {}),
+	};
 
 	const MAX_ATTEMPTS = 4;
 	for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
@@ -91,16 +113,12 @@ async function handle(
 				cors,
 			);
 
-		const updated = setFrontmatterField(
-			existing.content,
-			'distributed_at',
-			body.distributedAt,
-		);
+		const updated = setFrontmatterField(existing.content, field, markedAt);
 		if (updated === existing.content) {
-			return json({distributedAt: body.distributedAt, noop: true}, 200, cors);
+			return json({...successPayload, noop: true}, 200, cors);
 		}
 
-		const message = `distribute: mark ${body.repoPath} distributed (by ${userEmail})`;
+		const message = `distribute: mark ${body.repoPath} ${COMMIT_SUFFIX[status]} (by ${userEmail})`;
 		const putRes = await ghPutFile(
 			env,
 			body.repoPath,
@@ -110,7 +128,7 @@ async function handle(
 			existing.sha,
 			userEmail,
 		);
-		if (putRes.ok) return json({distributedAt: body.distributedAt}, 200, cors);
+		if (putRes.ok) return json(successPayload, 200, cors);
 		if (putRes.status === 409 && attempt < MAX_ATTEMPTS) continue;
 		const text = await putRes.text();
 		return json(

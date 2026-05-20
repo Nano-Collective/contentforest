@@ -1,6 +1,6 @@
 'use client';
 
-import {Check, Code, Copy, Download, Eye, Send} from 'lucide-react';
+import {Ban, Check, Code, Copy, Download, Eye, Send} from 'lucide-react';
 import {marked} from 'marked';
 import {useMemo, useState} from 'react';
 import {Button} from '@/components/ui/button';
@@ -11,14 +11,16 @@ type Props = {
 	raw: string;
 	body: string;
 	distributedAt: string | null;
+	wontUseAt: string | null;
 	marking: boolean;
 	markError: string | null;
-	onMark: () => void;
+	onMarkDistributed: () => void;
+	onMarkWontUse: () => void;
 };
 
 type Mode = 'preview' | 'raw';
 
-function formatDistributedAt(iso: string): string {
+function formatMarkedAt(iso: string): string {
 	const d = new Date(iso);
 	if (Number.isNaN(d.getTime())) return iso;
 	return d.toLocaleString();
@@ -29,9 +31,11 @@ export default function MarkdownPane({
 	raw,
 	body,
 	distributedAt,
+	wontUseAt,
 	marking,
 	markError,
-	onMark,
+	onMarkDistributed,
+	onMarkWontUse,
 }: Props) {
 	const [mode, setMode] = useState<Mode>('preview');
 	const [copied, setCopied] = useState(false);
@@ -90,18 +94,33 @@ export default function MarkdownPane({
 				<div className="flex items-center gap-2">
 					{distributedAt ? (
 						<span className="text-xs text-muted-foreground">
-							Distributed {formatDistributedAt(distributedAt)}
+							Distributed {formatMarkedAt(distributedAt)}
+						</span>
+					) : wontUseAt ? (
+						<span className="text-xs text-destructive">
+							Won't use · {formatMarkedAt(wontUseAt)}
 						</span>
 					) : (
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={onMark}
-							disabled={marking}
-						>
-							<Send className="h-3.5 w-3.5" />
-							{marking ? 'Marking…' : 'Mark distributed'}
-						</Button>
+						<>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={onMarkDistributed}
+								disabled={marking}
+							>
+								<Send className="h-3.5 w-3.5" />
+								{marking ? 'Marking…' : 'Mark distributed'}
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={onMarkWontUse}
+								disabled={marking}
+							>
+								<Ban className="h-3.5 w-3.5" />
+								Won't use
+							</Button>
+						</>
 					)}
 					<Button variant="outline" size="sm" onClick={onCopy}>
 						{copied ? (

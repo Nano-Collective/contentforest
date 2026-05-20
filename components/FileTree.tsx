@@ -6,6 +6,7 @@ export type FileTreeItem = {
 	label: string;
 	group: 'channels' | 'personal';
 	distributed?: boolean;
+	wontUse?: boolean;
 };
 
 export type FileTreeSection = {
@@ -69,7 +70,8 @@ export default function FileTree({sections, selected, onSelect}: Props) {
 																	isSelected
 																		? 'bg-accent text-accent-foreground font-medium'
 																		: 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
-																	item.distributed && 'opacity-60',
+																	(item.distributed || item.wontUse) &&
+																		'opacity-60',
 																)}
 															>
 																<File className="h-4 w-4 shrink-0" />
@@ -77,6 +79,8 @@ export default function FileTree({sections, selected, onSelect}: Props) {
 																	className={cn(
 																		'truncate text-left',
 																		item.distributed && 'line-through',
+																		item.wontUse &&
+																			'line-through text-destructive',
 																	)}
 																>
 																	{item.label}
