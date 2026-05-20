@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:38.458Z"
 ---
 
 Small models on limited hardware have been hitting a wall with Nanocoder — not because the model cannot code, but because the system prompt eats too much of the context window before the model gets to the actual work. v1.26.0 ships nano mode to address that.
