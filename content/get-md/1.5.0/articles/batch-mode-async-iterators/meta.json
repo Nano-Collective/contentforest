@@ -1,0 +1,7 @@
+{
+  "slug": "batch-mode-async-iterators",
+  "title": "Convert hundreds of URLs in one go: how batch mode works inside get-md",
+  "focus": "How the async iterator pattern in convertBatch() gives you per-result streaming, bounded concurrency, and a JSONL output mode for piping results into jq or databases.",
+  "generated_at": "2026-05-25T21:29:04.902Z",
+  "model": "minimax-m2.7"
+}

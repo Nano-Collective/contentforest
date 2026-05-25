@@ -1,0 +1,7 @@
+{
+  "slug": "image-localization-rag",
+  "title": "Downloading images for RAG: what get-md v1.5.0 does differently with image localization",
+  "focus": "The lazy-load attribute handling, smart path rewriting relative to outputPath, and SHA256 deduplication that stop broken 1x1 placeholders and stale cached images from reaching your RAG pipeline.",
+  "generated_at": "2026-05-25T21:29:04.902Z",
+  "model": "minimax-m2.7"
+}

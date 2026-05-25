@@ -1,0 +1,7 @@
+{
+  "slug": "sitemap-crawling",
+  "title": "Crawl a whole site from its sitemap: what get-md v1.5.0's sitemap mode does and why it exists",
+  "focus": "What parseSitemap() and convertSitemap() actually do — recursive sitemapindex handling, glob filters, depth and URL caps, and the kinds of pipelines this replaces.",
+  "generated_at": "2026-05-25T21:29:04.902Z",
+  "model": "minimax-m2.7"
+}
