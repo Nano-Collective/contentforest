@@ -1,0 +1,7 @@
+{
+  "slug": "batch-sitemap-large-site-crawl",
+  "title": "Bulk URL conversion — how to crawl an entire site with get-md",
+  "focus": "Show how convertBatch's bounded-concurrency async iterator and parseSitemap/convertSitemap work together for site-wide extraction, covering CLI usage (--sitemap, --batch, --concurrency), glob filtering, and the API equivalent for scripted pipelines.",
+  "generated_at": "2026-05-25T22:03:00.677Z",
+  "model": "minimax-m2.7"
+}
