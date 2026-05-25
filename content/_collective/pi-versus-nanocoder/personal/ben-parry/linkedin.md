@@ -6,6 +6,7 @@ slug: pi-versus-nanocoder
 generated_at: "2026-05-19T19:51:41.293Z"
 model: "minimax-m2.7"
 char_count: 1476
+distributed_at: "2026-05-20T14:06:04.732Z"
 ---
 
 Mario Zechner built pi as a MIT-licensed solo project. The MIT license gave anyone permission to do anything with it. What it did not do was prevent what just happened: pi was acquired by Earendil, backed by Accel and Balderton. The MIT core is still there. The structure changed.

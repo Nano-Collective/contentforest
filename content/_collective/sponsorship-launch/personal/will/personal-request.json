@@ -1,0 +1,26 @@
+{
+  "issue_number": 70,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "sponsorship-launch",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "agent_mode": "bundled",
+  "generated_at": "2026-05-25T21:27:12.149Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}

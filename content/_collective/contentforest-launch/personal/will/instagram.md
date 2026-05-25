@@ -6,6 +6,7 @@ slug: contentforest-launch
 generated_at: "2026-05-06T12:05:28.250Z"
 model: "minimax-m2.7"
 char_count: 467
+wont_use_at: "2026-05-20T12:17:45.622Z"
 ---
 
 We shipped ContentForest 🔥

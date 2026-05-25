@@ -6,6 +6,7 @@ title: "JSON tool calling for open-weights models: how it works"
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:23.874Z"
 ---
 
 Nanocoder v1.26.0 adds a JSON tool fallback path for open-weights models that do not emit native tool calls. This matters for Qwen, Kimi, and GLM users who want to run Nanocoder with models that produce structured JSON tool calls rather than the XML or native tool-call formats the SDK normally expects.

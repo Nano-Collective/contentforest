@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:41.229Z"
 ---
 
 v1.26.0 shipped nano mode and it is worth knowing about if you run Nanocoder with small local models.

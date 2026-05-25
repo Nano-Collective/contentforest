@@ -6,6 +6,7 @@ slug: pi-versus-nanocoder
 generated_at: "2026-05-19T19:51:41.293Z"
 model: "minimax-m2.7"
 char_count: 12582
+wont_use_at: "2026-05-20T16:50:52.092Z"
 ---
 
 <!-- angle: The ownership structure of a tool determines what it can promise, what it will prioritise, and what it will look like in ten years. The Pi vs Nanocoder comparison is evidence for a deeper claim: the question is not 'which tool is better?' but 'whose incentives am I trusting?' Structure is not background context - it is the actual argument. -->

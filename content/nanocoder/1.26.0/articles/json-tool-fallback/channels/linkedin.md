@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:27.213Z"
 ---
 
 Running Qwen, Kimi, or GLM with Nanocoder? v1.26.0 adds a JSON tool fallback path specifically for open-weights models that do not emit native tool calls.

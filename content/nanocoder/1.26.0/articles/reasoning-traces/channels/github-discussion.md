@@ -6,6 +6,7 @@ title: "Reasoning traces: streaming, rendering, and the fixes after first releas
 generated_at: "2026-05-10T17:10:04.461Z"
 model: "minimax-m2.7"
 char_count: 0
+wont_use_at: "2026-05-20T12:19:46.033Z"
 ---
 
 Nanocoder v1.26.0 streams reasoning content from models that emit it — DeepSeek-R1-style, Anthropic extended thinking, Codex GPT-5 with `reasoningSummary=auto`, and similar. The feature is not new to this release, but the release notes only surface the headline. The engineering behind it had several rounds of iteration that are worth documenting.
