@@ -1218,6 +1218,16 @@ export function runValidate(options: {
 	phase?: Phase;
 	config?: ValidatorConfig;
 	personalChannels?: string[];
+	/**
+	 * Restrict the articles iteration to these slugs. Used by the per-article
+	 * writer agent's self-check (and the orchestrator's per-article gate) so a
+	 * single failing sibling doesn't surface in another article's report.
+	 *
+	 * Also suppresses the pack-level `articles-cap` check — that's a planner
+	 * concern, not a per-article one, and would fire spuriously when the pack
+	 * already has 3 dirs on disk and we're rerunning one of them.
+	 */
+	articleSlugs?: string[];
 }): Report {
 	const phase = options.phase ?? 'full';
 	if (!PHASES.includes(phase)) {
@@ -1303,13 +1313,21 @@ export function runValidate(options: {
 		if (!phaseIncludesArticles(phase)) continue;
 		const articlesDir = join(packRoot, 'articles');
 		if (existsSync(articlesDir)) {
-			const articleSlugs = listDirs(articlesDir);
-			if (articleSlugs.length > MAX_ARTICLES_PER_PACK) {
+			const allSlugs = listDirs(articlesDir);
+			const filterSet = options.articleSlugs
+				? new Set(options.articleSlugs)
+				: null;
+			const articleSlugs = filterSet
+				? allSlugs.filter(s => filterSet.has(s))
+				: allSlugs;
+			// articles-cap is a pack-level concern; suppress it when the caller
+			// is scoping to a subset (the planner enforces the cap separately).
+			if (!filterSet && allSlugs.length > MAX_ARTICLES_PER_PACK) {
 				report.failures.push({
 					file: relative(ROOT, articlesDir),
 					rule: 'articles-cap',
 					expected: `≤ ${MAX_ARTICLES_PER_PACK} articles per release`,
-					actual: String(articleSlugs.length),
+					actual: String(allSlugs.length),
 				});
 			}
 			for (const slug of articleSlugs) {
@@ -1391,6 +1409,7 @@ function main() {
 			phase: {type: 'string', default: 'full'},
 			quiet: {type: 'boolean', default: false},
 			'personal-channels': {type: 'string'},
+			articles: {type: 'string'},
 		},
 	});
 
@@ -1410,6 +1429,14 @@ function main() {
 				.filter(s => s.length > 0)
 		: undefined;
 
+	const articlesArg = values.articles as string | undefined;
+	const articleSlugs = articlesArg
+		? articlesArg
+				.split(',')
+				.map(s => s.trim())
+				.filter(s => s.length > 0)
+		: undefined;
+
 	let report: Report;
 	try {
 		report = runValidate({
@@ -1417,6 +1444,7 @@ function main() {
 			packFilter: values.pack as string | undefined,
 			phase,
 			personalChannels,
+			articleSlugs,
 		});
 	} catch (e) {
 		console.error((e as Error).message);

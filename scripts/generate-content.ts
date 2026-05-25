@@ -1,22 +1,23 @@
 /**
- * Orchestrates a single release-pack generation via the v2 two-agent
- * pipeline (planning §6.4.3).
+ * Orchestrates a single release-pack generation via the v3 multi-stage
+ * pipeline. The article phase is split into a planner + per-article writers
+ * so one bad article (or one model misbehaviour mid-write) can't take down
+ * the whole pack the way the v2 monolithic article-channels agent did.
  *
  *   1. Resolve product repo (NC_REPOS_DIR/<product>/ if set, else shallow
  *      clone v<version> into _repos/<product>/).
  *   2. Read the GitHub release body via `gh api`.
- *   3. For each agent in the pipeline (release-channels, article-channels):
- *        - Load prompts/agents/<slug>.md, substitute {{VAR}} placeholders.
- *        - Spawn `nanocoder run "<prompt>" --mode yolo`.
- *        - Run the validator at that agent's phase.
- *        - On failure, build the auto-fix prompt with the structured error
- *          report and retry up to --max-retries (default 6 = 1 initial + 5
- *          retries) for that agent.
- *        - If the agent exhausts retries, write meta.json with
- *          final_status: "failed-validation" + failed_agent: <slug>, leave
- *          whatever was produced on disk for inspection, and abort the run.
- *   4. After all four agents pass, write final meta.json with cumulative
- *      attempt counters and final_status: "passed".
+ *   3. release-channels agent: write the announcement (channels/*.md + the
+ *      top-level meta.json). Auto-fix retry loop on validation failure.
+ *   4. article-plan agent: writes a JSON array of {slug,title,focus} (0-3
+ *      entries) to a tmp file. Orchestrator parses + sanity-checks it.
+ *   5. For each planned article, run an article-write spawn that produces
+ *      exactly that article's files. Validate scoped to --articles <slug>.
+ *      Auto-fix retry loop per article. A failing article doesn't abort
+ *      the others — every planned article gets its own attempt budget.
+ *   6. Write the final meta.json with cumulative attempt counters, an
+ *      `articles: [...]` array carrying per-article status, and an overall
+ *      `final_status` (passed iff every stage and every article passed).
  *
  *   pnpm generate -- --product nanocoder --version 1.25.3
  *   pnpm generate -- --product nanocoder --version 1.25.3 --commit
@@ -46,6 +47,9 @@ import {
 import {homedir, tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {parseArgs} from 'node:util';
+
+const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const MAX_ARTICLES_PER_PACK = 3;
 
 const ROOT = process.cwd();
 const PROMPTS_DIR = join(ROOT, 'prompts');
@@ -77,11 +81,23 @@ export const AGENTS: AgentSpec[] = [
 		promptFile: 'agents/release-channels.md',
 	},
 	{
-		slug: 'article-channels',
+		slug: 'article-plan',
 		phase: 'articles',
-		promptFile: 'agents/article-channels.md',
+		promptFile: 'agents/article-plan.md',
+	},
+	{
+		slug: 'article-write',
+		phase: 'articles',
+		promptFile: 'agents/article-write.md',
 	},
 ];
+
+/** Single entry in the planner's output JSON array. */
+export type PlannedArticle = {
+	slug: string;
+	title: string;
+	focus: string;
+};
 
 type Args = {
 	product?: string;
@@ -338,10 +354,17 @@ function runNanocoder(prompt: string, model: string): number {
 	return result.status ?? 1;
 }
 
+type ValidationFailure = {
+	file: string;
+	rule: string;
+	expected: string;
+	actual: string;
+};
+
 type ValidationReport = {
 	scannedPacks: string[];
 	skippedPacks: string[];
-	failures: {file: string; rule: string; expected: string; actual: string}[];
+	failures: ValidationFailure[];
 	warnings: {file: string; rule: string; message: string}[];
 };
 
@@ -349,28 +372,30 @@ function runValidator(args: {
 	packId: string;
 	root: string;
 	phase: Phase;
+	/** When set, restrict the articles iteration to these slugs. */
+	articleSlugs?: string[];
 }): ValidationReport {
 	const reportPath = join(tmpdir(), `cf-validation-${Date.now()}.json`);
-	const result = spawnSync(
-		'pnpm',
-		[
-			'validate',
-			'--pack',
-			args.packId,
-			'--root',
-			args.root,
-			'--report',
-			reportPath,
-			'--phase',
-			args.phase,
-			'--quiet',
-		],
-		{
-			cwd: ROOT,
-			encoding: 'utf8',
-			stdio: ['ignore', 'pipe', 'pipe'],
-		},
-	);
+	const argv = [
+		'validate',
+		'--pack',
+		args.packId,
+		'--root',
+		args.root,
+		'--report',
+		reportPath,
+		'--phase',
+		args.phase,
+		'--quiet',
+	];
+	if (args.articleSlugs && args.articleSlugs.length > 0) {
+		argv.push('--articles', args.articleSlugs.join(','));
+	}
+	const result = spawnSync('pnpm', argv, {
+		cwd: ROOT,
+		encoding: 'utf8',
+		stdio: ['ignore', 'pipe', 'pipe'],
+	});
 	if (!existsSync(reportPath)) {
 		console.error(
 			`generate: validator did not write a report.\n  exit=${result.status}\n  stdout=${result.stdout?.toString() ?? ''}\n  stderr=${result.stderr?.toString() ?? ''}`,
@@ -379,6 +404,101 @@ function runValidator(args: {
 	}
 	return JSON.parse(readFileSync(reportPath, 'utf8')) as ValidationReport;
 }
+
+/**
+ * Parses + sanity-checks the planner's JSON output. The planner is asked to
+ * emit a JSON array of `PlannedArticle`; anything else fails fast so the
+ * orchestrator can retry the planner spawn with a structured error.
+ *
+ * Returns the list on success, or a list of human-readable problems
+ * (suitable for feeding back to the model via the auto-fix prompt) on
+ * failure. Never throws.
+ */
+export function parsePlan(raw: string): {
+	ok: true;
+	plan: PlannedArticle[];
+} | {ok: false; problems: string[]} {
+	const problems: string[] = [];
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(raw);
+	} catch (e) {
+		return {ok: false, problems: [`plan file is not valid JSON: ${(e as Error).message}`]};
+	}
+	if (!Array.isArray(parsed)) {
+		return {ok: false, problems: ['plan must be a JSON array (use [] for zero articles)']};
+	}
+	if (parsed.length > MAX_ARTICLES_PER_PACK) {
+		problems.push(
+			`plan has ${parsed.length} entries; cap is ${MAX_ARTICLES_PER_PACK}`,
+		);
+	}
+	const seenSlugs = new Set<string>();
+	const plan: PlannedArticle[] = [];
+	for (const [i, entry] of parsed.entries()) {
+		if (!entry || typeof entry !== 'object') {
+			problems.push(`entry ${i} is not an object`);
+			continue;
+		}
+		const obj = entry as Record<string, unknown>;
+		const slug = obj.slug;
+		const title = obj.title;
+		const focus = obj.focus;
+		if (typeof slug !== 'string' || slug.length === 0) {
+			problems.push(`entry ${i}: "slug" must be a non-empty string`);
+		} else if (!KEBAB_CASE.test(slug)) {
+			problems.push(
+				`entry ${i}: slug "${slug}" must be kebab-case (lowercase letters, digits, single hyphens)`,
+			);
+		} else if (seenSlugs.has(slug)) {
+			problems.push(`entry ${i}: slug "${slug}" is duplicated in the plan`);
+		} else {
+			seenSlugs.add(slug);
+		}
+		if (typeof title !== 'string' || title.length === 0) {
+			problems.push(`entry ${i}: "title" must be a non-empty string`);
+		}
+		if (typeof focus !== 'string' || focus.length === 0) {
+			problems.push(`entry ${i}: "focus" must be a non-empty string`);
+		}
+		if (
+			typeof slug === 'string' &&
+			typeof title === 'string' &&
+			typeof focus === 'string'
+		) {
+			plan.push({slug, title, focus});
+		}
+	}
+	if (problems.length > 0) return {ok: false, problems};
+	return {ok: true, plan};
+}
+
+/**
+ * Substitutes the per-article variables into the article-write template.
+ * Built on top of `substitute` because each article writer needs three
+ * extra vars (slug, title, focus) on top of the shared promptVars.
+ */
+export function buildArticleWritePrompt(args: {
+	template: string;
+	promptVars: Record<string, string>;
+	article: PlannedArticle;
+}): string {
+	return substitute(args.template, {
+		...args.promptVars,
+		ARTICLE_SLUG: args.article.slug,
+		ARTICLE_TITLE: args.article.title,
+		ARTICLE_FOCUS: args.article.focus,
+	});
+}
+
+type ArticleOutcome = {
+	slug: string;
+	title: string;
+	focus: string;
+	final_status: 'passed' | 'failed-validation';
+	attempts: number;
+	failures: ValidationFailure[];
+};
 
 function writeMeta(args: {
 	packDir: string;
@@ -391,6 +511,7 @@ function writeMeta(args: {
 	autoFixAttempts: number;
 	finalStatus: 'passed' | 'failed-validation' | 'pending';
 	failedAgent?: string;
+	articles?: ArticleOutcome[];
 }) {
 	const meta: Record<string, unknown> = {
 		product: args.product,
@@ -403,8 +524,90 @@ function writeMeta(args: {
 		final_status: args.finalStatus,
 	};
 	if (args.failedAgent) meta.failed_agent = args.failedAgent;
+	if (args.articles) meta.articles = args.articles;
 	mkdirSync(args.packDir, {recursive: true});
 	writeFileSync(join(args.packDir, 'meta.json'), JSON.stringify(meta, null, 2));
+}
+
+type PhaseTotals = {
+	generationAttempts: number;
+	autoFixAttempts: number;
+};
+
+type PhaseOutcome =
+	| {status: 'passed'; attempts: number}
+	| {status: 'failed-validation'; attempts: number; failures: ValidationFailure[]};
+
+/**
+ * Runs a single agent spawn with the auto-fix retry loop. Returns
+ * `{status, failures}` per attempt budget. Increments the shared
+ * totals counter so the orchestrator can write cumulative numbers
+ * to meta.json regardless of how many phases ran.
+ *
+ * `validate` is called from the orchestrator (not inline) so the caller
+ * can scope the validator however it needs — pack-wide for the release
+ * agent, --articles <slug> for a single article writer.
+ */
+function runRetryLoop(args: {
+	agentSlug: string;
+	initialPrompt: string;
+	packDir: string;
+	model: string;
+	maxAttempts: number;
+	totals: PhaseTotals;
+	validate: () => ValidationReport;
+	/** Called when nanocoder exits non-zero (system failure, not a content rule
+	 * miss). Returns the failures synthesised for the next auto-fix prompt. */
+	onCrash: (exitCode: number) => ValidationFailure[];
+}): PhaseOutcome {
+	let prompt = args.initialPrompt;
+	let attempt = 0;
+	let lastFailures: ValidationFailure[] = [];
+
+	while (attempt < args.maxAttempts) {
+		attempt += 1;
+		args.totals.generationAttempts += 1;
+		console.log(
+			`generate: ${args.agentSlug} attempt ${attempt}/${args.maxAttempts}`,
+		);
+		const code = runNanocoder(prompt, args.model);
+		if (code !== 0) {
+			console.error(
+				`generate: nanocoder exited ${code} on agent ${args.agentSlug}`,
+			);
+			lastFailures = args.onCrash(code);
+		} else {
+			const report = args.validate();
+			if (report.failures.length === 0) {
+				console.log(
+					`generate: ✓ ${args.agentSlug} passed` +
+						(report.warnings.length > 0
+							? ` (${report.warnings.length} warnings)`
+							: ''),
+				);
+				return {status: 'passed', attempts: attempt};
+			}
+			console.log(
+				`generate: ✗ ${args.agentSlug} failed validation (${report.failures.length} failures)`,
+			);
+			lastFailures = report.failures;
+		}
+
+		if (attempt >= args.maxAttempts) break;
+		args.totals.autoFixAttempts += 1;
+		prompt = buildAutoFixPrompt({
+			originalPrompt: args.initialPrompt,
+			errorReport: JSON.stringify(lastFailures, null, 2),
+			packDir: args.packDir,
+			attemptNumber: attempt,
+			maxAttempts: args.maxAttempts - 1,
+		});
+	}
+
+	console.error(
+		`\ngenerate: gave up on ${args.agentSlug} after ${attempt} attempts; final failures:\n${JSON.stringify(lastFailures, null, 2)}`,
+	);
+	return {status: 'failed-validation', attempts: attempt, failures: lastFailures};
 }
 
 type PipelineResult = {
@@ -412,6 +615,7 @@ type PipelineResult = {
 	failedAgent?: string;
 	generationAttempts: number;
 	autoFixAttempts: number;
+	articles: ArticleOutcome[];
 };
 
 function runAgentPipeline(args: {
@@ -436,86 +640,183 @@ function runAgentPipeline(args: {
 		validatorRoot: args.validatorRoot,
 	});
 	const packId = `${args.product.slug}/${args.version}`;
+	const totals: PhaseTotals = {generationAttempts: 0, autoFixAttempts: 0};
 
-	let totalGenerationAttempts = 0;
-	let totalAutoFixAttempts = 0;
+	// ── Phase 1: release-channels ────────────────────────────────────────────
+	const releaseAgent = AGENTS.find(a => a.slug === 'release-channels')!;
+	console.log(`\ngenerate: ━━━ agent: ${releaseAgent.slug} (phase=channels) ━━━`);
+	const releaseOutcome = runRetryLoop({
+		agentSlug: releaseAgent.slug,
+		initialPrompt: buildAgentPrompt(releaseAgent, promptVars),
+		packDir: args.packDir,
+		model: args.model,
+		maxAttempts: args.maxAttemptsPerAgent,
+		totals,
+		validate: () =>
+			runValidator({packId, root: args.validatorRoot, phase: 'channels'}),
+		onCrash: code => [
+			{
+				file: '(nanocoder)',
+				rule: 'nanocoder-exit',
+				expected: 'exit 0',
+				actual: `exit ${code}`,
+			},
+		],
+	});
+	if (releaseOutcome.status === 'failed-validation') {
+		return {
+			finalStatus: 'failed-validation',
+			failedAgent: releaseAgent.slug,
+			generationAttempts: totals.generationAttempts,
+			autoFixAttempts: totals.autoFixAttempts,
+			articles: [],
+		};
+	}
 
-	for (const agent of AGENTS) {
-		console.log(
-			`\ngenerate: ━━━ agent: ${agent.slug} (phase=${agent.phase}) ━━━`,
-		);
-		const initialPrompt = buildAgentPrompt(agent, promptVars);
-		let prompt = initialPrompt;
-		let attempt = 0;
-		let lastReport: ValidationReport | null = null;
-
-		while (attempt < args.maxAttemptsPerAgent) {
-			attempt += 1;
-			totalGenerationAttempts += 1;
-			console.log(
-				`generate: ${agent.slug} attempt ${attempt}/${args.maxAttemptsPerAgent}`,
-			);
-			const code = runNanocoder(prompt, args.model);
-			if (code !== 0) {
-				console.error(
-					`generate: nanocoder exited ${code} on agent ${agent.slug}; aborting pipeline`,
-				);
+	// ── Phase 2: article-plan ────────────────────────────────────────────────
+	const plannerAgent = AGENTS.find(a => a.slug === 'article-plan')!;
+	console.log(`\ngenerate: ━━━ agent: ${plannerAgent.slug} (phase=articles) ━━━`);
+	const planPath = join(tmpdir(), `cf-plan-${Date.now()}.json`);
+	const plannerVars = {...promptVars, PLAN_OUTPUT_PATH: planPath};
+	const plannerPrompt = buildAgentPrompt(plannerAgent, plannerVars);
+	let plan: PlannedArticle[] | null = null;
+	const planOutcome = runRetryLoop({
+		agentSlug: plannerAgent.slug,
+		initialPrompt: plannerPrompt,
+		packDir: args.packDir,
+		model: args.model,
+		maxAttempts: args.maxAttemptsPerAgent,
+		totals,
+		validate: () => {
+			if (!existsSync(planPath)) {
 				return {
-					finalStatus: 'failed-validation',
-					failedAgent: agent.slug,
-					generationAttempts: totalGenerationAttempts,
-					autoFixAttempts: totalAutoFixAttempts,
+					scannedPacks: [],
+					skippedPacks: [],
+					warnings: [],
+					failures: [
+						{
+							file: planPath,
+							rule: 'plan-exists',
+							expected: 'plan JSON file written by the planner',
+							actual: 'missing',
+						},
+					],
 				};
 			}
-
-			lastReport = runValidator({
-				packId,
-				root: args.validatorRoot,
-				phase: agent.phase,
-			});
-
-			if (lastReport.failures.length === 0) {
-				console.log(
-					`generate: ✓ ${agent.slug} passed phase ${agent.phase}` +
-						(lastReport.warnings.length > 0
-							? ` (${lastReport.warnings.length} warnings)`
-							: ''),
-				);
-				break;
+			const raw = readFileSync(planPath, 'utf8');
+			const parsed = parsePlan(raw);
+			if (parsed.ok) {
+				plan = parsed.plan;
+				return {
+					scannedPacks: [],
+					skippedPacks: [],
+					warnings: [],
+					failures: [],
+				};
 			}
-
-			console.log(
-				`generate: ✗ ${agent.slug} failed validation (${lastReport.failures.length} failures)`,
-			);
-			if (attempt >= args.maxAttemptsPerAgent) break;
-
-			totalAutoFixAttempts += 1;
-			prompt = buildAutoFixPrompt({
-				originalPrompt: initialPrompt,
-				errorReport: JSON.stringify(lastReport.failures, null, 2),
-				packDir: args.packDir,
-				attemptNumber: attempt,
-				maxAttempts: args.maxAttemptsPerAgent - 1,
-			});
-		}
-
-		if (lastReport && lastReport.failures.length > 0) {
-			console.error(
-				`\ngenerate: gave up on ${agent.slug} after ${attempt} attempts; final report:\n${JSON.stringify(lastReport.failures, null, 2)}`,
-			);
 			return {
-				finalStatus: 'failed-validation',
-				failedAgent: agent.slug,
-				generationAttempts: totalGenerationAttempts,
-				autoFixAttempts: totalAutoFixAttempts,
+				scannedPacks: [],
+				skippedPacks: [],
+				warnings: [],
+				failures: parsed.problems.map(p => ({
+					file: planPath,
+					rule: 'plan-shape',
+					expected:
+						'JSON array of {slug,title,focus}, ≤ 3 entries, kebab-case unique slugs',
+					actual: p,
+				})),
 			};
+		},
+		onCrash: code => [
+			{
+				file: '(nanocoder)',
+				rule: 'nanocoder-exit',
+				expected: 'exit 0',
+				actual: `exit ${code}`,
+			},
+		],
+	});
+
+	// Clean up the plan file regardless of outcome — it's an orchestrator
+	// scratchpad, not pack output.
+	if (existsSync(planPath)) {
+		try {
+			rmSync(planPath, {force: true});
+		} catch {
+			/* best effort */
 		}
 	}
 
+	if (planOutcome.status === 'failed-validation') {
+		return {
+			finalStatus: 'failed-validation',
+			failedAgent: plannerAgent.slug,
+			generationAttempts: totals.generationAttempts,
+			autoFixAttempts: totals.autoFixAttempts,
+			articles: [],
+		};
+	}
+
+	const planned: PlannedArticle[] = plan ?? [];
+	console.log(
+		`generate: planner picked ${planned.length} article(s): ${planned.map(a => a.slug).join(', ') || '(none)'}`,
+	);
+
+	// ── Phase 3: per-article writers ─────────────────────────────────────────
+	const writerAgent = AGENTS.find(a => a.slug === 'article-write')!;
+	const writerTemplate = readFile(join(PROMPTS_DIR, writerAgent.promptFile));
+	const outcomes: ArticleOutcome[] = [];
+	for (const article of planned) {
+		console.log(
+			`\ngenerate: ━━━ agent: ${writerAgent.slug} [${article.slug}] (phase=articles) ━━━`,
+		);
+		const initialPrompt = buildArticleWritePrompt({
+			template: writerTemplate,
+			promptVars,
+			article,
+		});
+		const result = runRetryLoop({
+			agentSlug: `${writerAgent.slug}:${article.slug}`,
+			initialPrompt,
+			packDir: args.packDir,
+			model: args.model,
+			maxAttempts: args.maxAttemptsPerAgent,
+			totals,
+			validate: () =>
+				runValidator({
+					packId,
+					root: args.validatorRoot,
+					phase: 'articles',
+					articleSlugs: [article.slug],
+				}),
+			onCrash: code => [
+				{
+					file: '(nanocoder)',
+					rule: 'nanocoder-exit',
+					expected: 'exit 0',
+					actual: `exit ${code}`,
+				},
+			],
+		});
+		outcomes.push({
+			slug: article.slug,
+			title: article.title,
+			focus: article.focus,
+			final_status: result.status,
+			attempts: result.attempts,
+			failures: result.status === 'failed-validation' ? result.failures : [],
+		});
+	}
+
+	const anyArticleFailed = outcomes.some(
+		o => o.final_status === 'failed-validation',
+	);
 	return {
-		finalStatus: 'passed',
-		generationAttempts: totalGenerationAttempts,
-		autoFixAttempts: totalAutoFixAttempts,
+		finalStatus: anyArticleFailed ? 'failed-validation' : 'passed',
+		failedAgent: anyArticleFailed ? writerAgent.slug : undefined,
+		generationAttempts: totals.generationAttempts,
+		autoFixAttempts: totals.autoFixAttempts,
+		articles: outcomes,
 	};
 }
 
@@ -579,7 +880,21 @@ async function main() {
 			console.log(
 				`\n━━━━━━━━━━ ${agent.slug} (phase=${agent.phase}) ━━━━━━━━━━\n`,
 			);
-			console.log(buildAgentPrompt(agent, promptVars));
+			// The planner needs a plan-output path; the writer needs per-article
+			// vars chosen at runtime. Show representative placeholders in the
+			// dry-run output so the prompt is readable.
+			const vars =
+				agent.slug === 'article-plan'
+					? {...promptVars, PLAN_OUTPUT_PATH: '/tmp/cf-plan-<runtime>.json'}
+					: agent.slug === 'article-write'
+						? {
+								...promptVars,
+								ARTICLE_SLUG: '<planned-slug>',
+								ARTICLE_TITLE: '<planner-chosen title>',
+								ARTICLE_FOCUS: '<planner-chosen focus line>',
+							}
+						: promptVars;
+			console.log(buildAgentPrompt(agent, vars));
 		}
 		process.exit(0);
 	}
@@ -610,6 +925,7 @@ async function main() {
 		autoFixAttempts: result.autoFixAttempts,
 		finalStatus: result.finalStatus,
 		failedAgent: result.failedAgent,
+		articles: result.articles.length > 0 ? result.articles : undefined,
 	});
 
 	if (result.finalStatus === 'passed') {

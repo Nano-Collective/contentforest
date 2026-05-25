@@ -612,6 +612,65 @@ test('fail: release-tag URL in body → link-not-release', t => {
 	}
 });
 
+test('articleSlugs filter: scopes iteration to listed slugs and suppresses other failures', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		writeArticle(packDir, 'good');
+		// Sabotage a sibling: missing required `focus` in meta.json.
+		const badDir = writeArticle(packDir, 'bad');
+		writeFileSync(
+			join(badDir, 'meta.json'),
+			JSON.stringify(
+				{
+					slug: 'bad',
+					title: 'Title',
+					generated_at: '2026-05-01T00:00:00Z',
+					model: 'test',
+				},
+				null,
+				2,
+			),
+		);
+		const scoped = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'articles',
+			config: CONFIG,
+			articleSlugs: ['good'],
+		});
+		t.false(
+			scoped.failures.some(f => f.file.includes('articles/bad/')),
+			"bad article's failures must not surface when scoped to 'good'",
+		);
+		t.true(scoped.scannedPacks.includes(`${PACK_ID}#good`));
+		t.false(scoped.scannedPacks.includes(`${PACK_ID}#bad`));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('articleSlugs filter: suppresses articles-cap (pack-level rule)', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		writeArticle(packDir, 'one');
+		writeArticle(packDir, 'two');
+		writeArticle(packDir, 'three');
+		writeArticle(packDir, 'four');
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'articles',
+			config: CONFIG,
+			articleSlugs: ['one'],
+		});
+		t.false(report.failures.some(f => f.rule === 'articles-cap'));
+	} finally {
+		cleanup(root);
+	}
+});
+
 test('fail: more than 3 articles → articles-cap', t => {
 	const root = makeTmpRoot();
 	try {
