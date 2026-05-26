@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-25T22:03:00.677Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-05-26T21:04:27.853Z"
 ---
 
 get-md v1.5.0 is out. The biggest release since v1.0, with five substantial additions and a full bug sweep.
