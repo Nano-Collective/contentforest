@@ -5,6 +5,7 @@ channel: x
 generated_at: "2026-05-25T22:03:00.677Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-05-26T22:29:57.299Z"
 ---
 
 get-md v1.5.0 is out. Pluggable LLM backends, batch + sitemap crawling, RAG helpers, image localisation, HTTP retry/cache, and a 12-bug sweep. 528 tests.
