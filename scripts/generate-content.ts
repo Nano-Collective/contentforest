@@ -660,7 +660,8 @@ function runAgentPipeline(args: {
 
 	// ── Phase 1: release-channels ────────────────────────────────────────────
 	const releaseAgent = AGENTS.find(a => a.slug === 'release-channels');
-	if (!releaseAgent) throw new Error('release-channels agent not found in AGENTS');
+	if (!releaseAgent)
+		throw new Error('release-channels agent not found in AGENTS');
 	console.log(
 		`\ngenerate: ━━━ agent: ${releaseAgent.slug} (phase=channels) ━━━`,
 	);
