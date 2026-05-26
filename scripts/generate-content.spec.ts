@@ -9,9 +9,9 @@ import {
 	buildAutoFixPrompt,
 	buildPromptVars,
 	type JobSpec,
-	parsePlan,
 	type Product,
 	packDirFor,
+	parsePlan,
 	substitute,
 	validatorRootFor,
 } from './generate-content.js';
@@ -164,7 +164,8 @@ test('buildAgentPrompt: substitutes vars into the release-channels template', t 
 });
 
 test('buildAgentPrompt: substitutes vars into the article-plan template', t => {
-	const planner: AgentSpec = AGENTS.find(a => a.slug === 'article-plan')!;
+	const planner = AGENTS.find(a => a.slug === 'article-plan');
+	t.truthy(planner, 'article-plan agent should exist in AGENTS');
 	const vars = {
 		...buildPromptVars({
 			product: PRODUCT,
@@ -186,7 +187,8 @@ test('buildAgentPrompt: substitutes vars into the article-plan template', t => {
 });
 
 test('buildArticleWritePrompt: substitutes per-article vars on top of shared vars', t => {
-	const writer: AgentSpec = AGENTS.find(a => a.slug === 'article-write')!;
+	const writer = AGENTS.find(a => a.slug === 'article-write');
+	t.truthy(writer, 'article-write agent should exist in AGENTS');
 	const promptVars = buildPromptVars({
 		product: PRODUCT,
 		version: '1.25.2',

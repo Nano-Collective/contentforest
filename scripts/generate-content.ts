@@ -414,19 +414,27 @@ function runValidator(args: {
  * (suitable for feeding back to the model via the auto-fix prompt) on
  * failure. Never throws.
  */
-export function parsePlan(raw: string): {
-	ok: true;
-	plan: PlannedArticle[];
-} | {ok: false; problems: string[]} {
+export function parsePlan(raw: string):
+	| {
+			ok: true;
+			plan: PlannedArticle[];
+	  }
+	| {ok: false; problems: string[]} {
 	const problems: string[] = [];
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(raw);
 	} catch (e) {
-		return {ok: false, problems: [`plan file is not valid JSON: ${(e as Error).message}`]};
+		return {
+			ok: false,
+			problems: [`plan file is not valid JSON: ${(e as Error).message}`],
+		};
 	}
 	if (!Array.isArray(parsed)) {
-		return {ok: false, problems: ['plan must be a JSON array (use [] for zero articles)']};
+		return {
+			ok: false,
+			problems: ['plan must be a JSON array (use [] for zero articles)'],
+		};
 	}
 	if (parsed.length > MAX_ARTICLES_PER_PACK) {
 		problems.push(
@@ -536,7 +544,11 @@ type PhaseTotals = {
 
 type PhaseOutcome =
 	| {status: 'passed'; attempts: number}
-	| {status: 'failed-validation'; attempts: number; failures: ValidationFailure[]};
+	| {
+			status: 'failed-validation';
+			attempts: number;
+			failures: ValidationFailure[];
+	  };
 
 /**
  * Runs a single agent spawn with the auto-fix retry loop. Returns
@@ -607,7 +619,11 @@ function runRetryLoop(args: {
 	console.error(
 		`\ngenerate: gave up on ${args.agentSlug} after ${attempt} attempts; final failures:\n${JSON.stringify(lastFailures, null, 2)}`,
 	);
-	return {status: 'failed-validation', attempts: attempt, failures: lastFailures};
+	return {
+		status: 'failed-validation',
+		attempts: attempt,
+		failures: lastFailures,
+	};
 }
 
 type PipelineResult = {
@@ -643,8 +659,11 @@ function runAgentPipeline(args: {
 	const totals: PhaseTotals = {generationAttempts: 0, autoFixAttempts: 0};
 
 	// ── Phase 1: release-channels ────────────────────────────────────────────
-	const releaseAgent = AGENTS.find(a => a.slug === 'release-channels')!;
-	console.log(`\ngenerate: ━━━ agent: ${releaseAgent.slug} (phase=channels) ━━━`);
+	const releaseAgent = AGENTS.find(a => a.slug === 'release-channels');
+	if (!releaseAgent) throw new Error('release-channels agent not found in AGENTS');
+	console.log(
+		`\ngenerate: ━━━ agent: ${releaseAgent.slug} (phase=channels) ━━━`,
+	);
 	const releaseOutcome = runRetryLoop({
 		agentSlug: releaseAgent.slug,
 		initialPrompt: buildAgentPrompt(releaseAgent, promptVars),
@@ -674,8 +693,11 @@ function runAgentPipeline(args: {
 	}
 
 	// ── Phase 2: article-plan ────────────────────────────────────────────────
-	const plannerAgent = AGENTS.find(a => a.slug === 'article-plan')!;
-	console.log(`\ngenerate: ━━━ agent: ${plannerAgent.slug} (phase=articles) ━━━`);
+	const plannerAgent = AGENTS.find(a => a.slug === 'article-plan');
+	if (!plannerAgent) throw new Error('article-plan agent not found in AGENTS');
+	console.log(
+		`\ngenerate: ━━━ agent: ${plannerAgent.slug} (phase=articles) ━━━`,
+	);
 	const planPath = join(tmpdir(), `cf-plan-${Date.now()}.json`);
 	const plannerVars = {...promptVars, PLAN_OUTPUT_PATH: planPath};
 	const plannerPrompt = buildAgentPrompt(plannerAgent, plannerVars);
@@ -763,7 +785,8 @@ function runAgentPipeline(args: {
 	);
 
 	// ── Phase 3: per-article writers ─────────────────────────────────────────
-	const writerAgent = AGENTS.find(a => a.slug === 'article-write')!;
+	const writerAgent = AGENTS.find(a => a.slug === 'article-write');
+	if (!writerAgent) throw new Error('article-write agent not found in AGENTS');
 	const writerTemplate = readFile(join(PROMPTS_DIR, writerAgent.promptFile));
 	const outcomes: ArticleOutcome[] = [];
 	for (const article of planned) {
