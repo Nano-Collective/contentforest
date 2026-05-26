@@ -166,6 +166,7 @@ test('buildAgentPrompt: substitutes vars into the release-channels template', t 
 test('buildAgentPrompt: substitutes vars into the article-plan template', t => {
 	const planner = AGENTS.find(a => a.slug === 'article-plan');
 	t.truthy(planner, 'article-plan agent should exist in AGENTS');
+	if (!planner) return;
 	const vars = {
 		...buildPromptVars({
 			product: PRODUCT,
@@ -189,6 +190,7 @@ test('buildAgentPrompt: substitutes vars into the article-plan template', t => {
 test('buildArticleWritePrompt: substitutes per-article vars on top of shared vars', t => {
 	const writer = AGENTS.find(a => a.slug === 'article-write');
 	t.truthy(writer, 'article-write agent should exist in AGENTS');
+	if (!writer) return;
 	const promptVars = buildPromptVars({
 		product: PRODUCT,
 		version: '1.25.2',
