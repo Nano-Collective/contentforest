@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-25T22:03:00.677Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-05-26T23:33:05.744Z"
 ---
 
 We shipped get-md v1.5.0 today. This is the biggest release since we put it out on npm back at v1.0, and we wanted to walk through what is actually in it.
