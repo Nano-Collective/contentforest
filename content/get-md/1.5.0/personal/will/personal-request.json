@@ -1,0 +1,26 @@
+{
+  "issue_number": 78,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "product",
+  "base_pack_id": "get-md/1.5.0",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "agent_mode": "bundled",
+  "generated_at": "2026-05-26T22:37:33.190Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
