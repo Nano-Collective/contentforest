@@ -1,0 +1,7 @@
+{
+  "slug": "custom-tools-vs-mcp-vs-commands",
+  "title": "Choosing your Nanocoder extension point",
+  "focus": "Map the three extension surfaces — custom commands (prompt injection), Custom Tools (shell-quoted markdown), and MCP servers (external process + full protocol) — and give concrete guidance on which to reach for and when.",
+  "generated_at": "2026-05-26T22:38:17.346Z",
+  "model": "minimax-m2.7"
+}
