@@ -1,0 +1,36 @@
+{
+  "product": "nanocoder",
+  "version": "1.27.0",
+  "product_url": "https://github.com/Nano-Collective/nanocoder",
+  "generated_at": "2026-05-26T22:38:17.346Z",
+  "model": "minimax-m2.7",
+  "generation_attempts": 6,
+  "auto_fix_attempts": 1,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "daemon-event-triggered-runs",
+      "title": "How Nanocoder's daemon replaces the scheduler",
+      "focus": "Explain the daemon's architecture: Unix socket IPC, lockfile lifecycle, debounced file watching, per-subscription concurrency caps, and how headless mode differs from the removed scheduler mode.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "custom-tools-vs-mcp-vs-commands",
+      "title": "Choosing your Nanocoder extension point",
+      "focus": "Map the three extension surfaces — custom commands (prompt injection), Custom Tools (shell-quoted markdown), and MCP servers (external process + full protocol) — and give concrete guidance on which to reach for and when.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "llm-context-compaction-internals",
+      "title": "LLM-based compaction and its fallback chain",
+      "focus": "Describe how the summariser prompt produces a structured markdown summary (Context / Decisions / Files modified / Tools used / Open questions), when it falls back to mechanical truncation, and why the per-provider contextWindow override matters for the firing threshold.",
+      "final_status": "passed",
+      "attempts": 2,
+      "failures": []
+    }
+  ]
+}
