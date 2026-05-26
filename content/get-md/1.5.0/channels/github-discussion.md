@@ -6,6 +6,7 @@ title: "get-md v1.5.0: Pluggable LLMs, batch crawling, and RAG helpers"
 generated_at: "2026-05-25T22:03:00.677Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-05-26T21:00:26.189Z"
 ---
 
 get-md v1.5.0 is out. This is the biggest release since v1.0, with five new capabilities stacked on top of a full surface audit that fixed a dozen small issues. Here's what changed.
