@@ -7,6 +7,7 @@ version: "1.5.0"
 generated_at: "2026-05-26T22:37:33.190Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-05-27T13:56:11.646Z"
 ---
 
 get-md v1.5.0 is out - biggest release since v1.0. Pluggable LLM backends, batch and sitemap modes, RAG helpers, image localisation, HTTP retry and cache, 12-bug fix sweep. 528 tests. 100% open source by the Nano Collective.
