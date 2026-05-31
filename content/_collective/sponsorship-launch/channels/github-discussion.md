@@ -5,7 +5,7 @@ channel: github-discussion
 title: "The Nano Collective sponsorship program is now live"
 generated_at: "2026-05-14T22:50:59.866Z"
 model: "minimax-m2.7"
-char_count: 2373
+char_count: 2745
 ---
 
 The Nano Collective has launched its sponsorship program. The short version: organisations and individuals can now sponsor the collective directly, and all funds are managed transparently via Open Source Collective.
@@ -18,6 +18,8 @@ Sponsorship is recurring. There are three productised tiers plus a bespoke door:
 - **Supporter** ($250/month, for companies and indie teams that want a visible association)
 - **Builder** ($1,000/month, for infrastructure companies and aligned foundations that want sustained visibility)
 - **Bespoke**: for larger or custom arrangements; terms agreed and published before the relationship begins
+
+Sponsorship does not have to be cash. We also welcome non-cash support such as cloud and API credits, compute, software licenses, and hardware. In-kind contributions are recognised on the same basis as the cash tiers; because no money changes hands, there is no Open Collective sign-up for them, and the core team works out the equivalent value with the sponsor directly.
 
 All tier details, perk descriptions, and placement options are on the [sponsorship page](https://nanocollective.org/sponsor).
 
