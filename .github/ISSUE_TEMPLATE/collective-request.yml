@@ -25,6 +25,7 @@ body:
         - contentforest-launch
         - pi-versus-nanocoder
         - sponsorship-launch
+        - why-we-updated-how-we-describe-nanocoder
     validations:
       required: true
   # END AUTO-SLUGS
