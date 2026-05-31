@@ -1,3 +1,7 @@
+---
+wont_use_at: "2026-05-28T14:29:24.883Z"
+---
+
 <!-- angle: Why sustainable OSS funding requires architectural commitment, not goodwill - and what the Collective's model reveals about the structural barriers to making open-source work fundable in a way that doesn't corrupt it. The sponsorship program is the proof, not the subject. -->
 
 ---

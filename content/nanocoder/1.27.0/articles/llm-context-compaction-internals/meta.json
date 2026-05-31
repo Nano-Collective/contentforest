@@ -1,0 +1,7 @@
+{
+  "slug": "llm-context-compaction-internals",
+  "title": "LLM-based compaction and its fallback chain",
+  "focus": "Describe how the summariser prompt produces a structured markdown summary (Context / Decisions / Files modified / Tools used / Open questions), when it falls back to mechanical truncation, and why the per-provider contextWindow override matters for the firing threshold.",
+  "generated_at": "2026-05-26T22:38:17.346Z",
+  "model": "minimax-m2.7"
+}
