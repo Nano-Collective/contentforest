@@ -33,6 +33,7 @@ body:
       description: |
         Pick the existing pack to ground the personal-pack in. List is auto-generated from `content/` on `main`, sorted newest-first. `<product>/<version>` for release packs; `_collective/<slug>` for collective packs.
       options:
+        - _collective/why-we-updated-how-we-describe-nanocoder
         - nanocoder/1.27.0
         - get-md/1.5.0
         - _collective/sponsorship-launch
