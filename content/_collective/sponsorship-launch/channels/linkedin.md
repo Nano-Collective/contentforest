@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-14T22:50:59.866Z"
 model: "minimax-m2.7"
 char_count: 1274
+distributed_at: "2026-06-01T14:03:03.442Z"
 ---
 
 The Nano Collective has launched its sponsorship program. The program funds the community fund that pays bounties to open-source contributors.
