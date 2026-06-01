@@ -6,6 +6,7 @@ title: "The Nano Collective sponsorship program is now live"
 generated_at: "2026-05-14T22:50:59.866Z"
 model: "minimax-m2.7"
 char_count: 2745
+distributed_at: "2026-06-01T14:00:51.733Z"
 ---
 
 The Nano Collective has launched its sponsorship program. The short version: organisations and individuals can now sponsor the collective directly, and all funds are managed transparently via Open Source Collective.
