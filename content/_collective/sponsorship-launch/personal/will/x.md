@@ -6,6 +6,7 @@ slug: sponsorship-launch
 generated_at: "2026-05-25T21:27:12.149Z"
 model: "minimax-m2.7"
 char_count: 262
+wont_use_at: "2026-06-01T17:00:27.790Z"
 ---
 
 The NC sponsorship program is live. Three tiers plus bespoke, and we also take non-cash support: credits, compute, hardware. All funds flow to the community fund that pays OSS contributors via OSC. Nanocoder, Nanotune, get-md, json-up. https://nanocollective.org
