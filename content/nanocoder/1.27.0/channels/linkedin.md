@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-06-02T15:27:53.978Z"
 ---
 
 Nanocoder v1.27.0 is out. The headline: Skills, a unified extension surface that brings custom commands, subagents, and tools under one model. Also new in this release:
