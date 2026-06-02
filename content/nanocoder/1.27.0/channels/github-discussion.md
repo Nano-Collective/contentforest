@@ -6,6 +6,7 @@ title: "Nanocoder v1.27.0 - Skills, a daemon, and custom tools"
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m2.7"
 char_count: 0
+distributed_at: "2026-06-02T15:21:34.811Z"
 ---
 
 Nanocoder v1.27.0 is out. This release is the biggest extension surface the project has shipped: a unified extension primitive called Skills, a per-project background daemon for event-triggered runs, and a markdown-defined custom tools layer. Also: two OOM fixes, a startup config lint, and a reworked OpenRouter model picker.
