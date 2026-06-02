@@ -1,0 +1,49 @@
+{
+  "issue_number": 92,
+  "requester": "will-lamerton",
+  "member": "ben-parry",
+  "base_pack_kind": "product",
+  "base_pack_id": "nanocoder/1.27.0",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "linkedin-newsletter",
+    "substack"
+  ],
+  "agent_mode": "per-channel",
+  "generated_at": "2026-06-02T15:30:53.389Z",
+  "model": "minimax-m2.7",
+  "phases": [
+    {
+      "phase": "channels",
+      "channel_group": [
+        "linkedin",
+        "linkedin-newsletter"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "x"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "substack"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
