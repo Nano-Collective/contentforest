@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-05-14T22:50:59.866Z"
 model: "minimax-m2.7"
 char_count: 2225
+wont_use_at: "2026-06-02T10:17:00.485Z"
 ---
 
 The Nano Collective has launched its sponsorship program. If you've been using any of the shipped tools: Nanocoder, Nanotune, get-md, or json-up, and want to support the work, here's how.
