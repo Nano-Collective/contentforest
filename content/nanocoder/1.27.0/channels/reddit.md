@@ -5,7 +5,7 @@ channel: reddit
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m2.7"
 char_count: 0
-distributed_at: "2026-06-03T14:30:08.382Z"
+distributed_at: "2026-06-03T14:30:17.511Z"
 ---
 
 Nanocoder v1.27.0 is out. We shipped what is probably the most consequential extension story the project has had. Here is what changed and why.
