@@ -1,0 +1,14 @@
+{
+  "issue_number": 95,
+  "requester": "will-lamerton",
+  "mode": "create",
+  "scope": "whole-pack",
+  "file_path": null,
+  "request": "We just hit 2K stars on Nanocoder on Discord. Write a pack celebrating this. We began Nanocoder just under a year ago and I know we’re still small but the community has been incredible. On top of the stars we have over 10K downloads a month, a growing core team and some amazing contributors bring truly open and community-driven AI to the world.",
+  "context": null,
+  "generated_at": "2026-06-09T20:09:57.259Z",
+  "model": "minimax-m2.7",
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
