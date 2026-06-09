@@ -1813,3 +1813,313 @@ test('personal (count > 1): personalChannels filter scopes count check', t => {
 		cleanup(root);
 	}
 });
+
+// ---------------------------------------------------------------------------
+// X-daily buckets (content/_x-daily/<date>/)
+// ---------------------------------------------------------------------------
+
+const X_DAILY_DATE = '2026-06-09';
+const X_DAILY_PACK_ID = `_x-daily/${X_DAILY_DATE}`;
+
+// Product-sourced post: ≤280 chars, links to the product repo root.
+const X_PRODUCT_BODY = `Demo's tool registry is now indexed by name, so lookups stay constant-time as plugins pile on. Small change, real payoff in tool-heavy sessions. ${PRODUCT_REPO_URL}`;
+// Collective-sourced post: ≤280 chars, links to nanocollective.org.
+const X_COLLECTIVE_BODY = `The Nano Collective ships practical developer tools as a community, in the open, with the people who use them. https://nanocollective.org`;
+
+function buildXDailyMd(
+	source: string,
+	body: string,
+	overrides: Partial<{
+		kind: string;
+		date: string;
+		source: string;
+		channel: string;
+		angle: string;
+		generated_at: string;
+		model: string;
+		char_count: number;
+	}> = {},
+) {
+	const meta = {
+		kind: 'x-daily',
+		date: X_DAILY_DATE,
+		source,
+		channel: 'x',
+		angle: `angle for ${source}`,
+		generated_at: '2026-06-09T09:00:00Z',
+		model: 'test',
+		char_count: body.length,
+		...overrides,
+	};
+	const lines = Object.entries(meta).map(([k, v]) => {
+		if (v === undefined || v === null) return null;
+		if (typeof v === 'string') return `${k}: "${v}"`;
+		return `${k}: ${v}`;
+	});
+	const fmYaml = lines.filter(Boolean).join('\n');
+	return `---\n${fmYaml}\n---\n${body}\n`;
+}
+
+// Plan covering one product post + two collective posts.
+const X_DAILY_PLAN = [
+	{file: `${PRODUCT_SLUG}.md`, source: PRODUCT_SLUG, angle: 'angle for demo'},
+	{
+		file: 'collective-1.md',
+		source: 'collective',
+		angle: 'angle for collective',
+	},
+	{
+		file: 'collective-2.md',
+		source: 'collective',
+		angle: 'angle for collective',
+	},
+];
+
+function writeHappyXDailyPack(contentRoot: string): string {
+	const packDir = join(contentRoot, '_x-daily', X_DAILY_DATE);
+	mkdirSync(join(packDir, 'posts'), {recursive: true});
+	writeFileSync(
+		join(packDir, 'meta.json'),
+		JSON.stringify(
+			{
+				kind: 'x-daily',
+				date: X_DAILY_DATE,
+				generated_at: '2026-06-09T09:00:00Z',
+				model: 'test',
+				posts: X_DAILY_PLAN,
+			},
+			null,
+			2,
+		),
+	);
+	writeFileSync(
+		join(packDir, `posts/${PRODUCT_SLUG}.md`),
+		buildXDailyMd(PRODUCT_SLUG, X_PRODUCT_BODY),
+	);
+	writeFileSync(
+		join(packDir, 'posts/collective-1.md'),
+		buildXDailyMd('collective', X_COLLECTIVE_BODY),
+	);
+	writeFileSync(
+		join(packDir, 'posts/collective-2.md'),
+		buildXDailyMd('collective', X_COLLECTIVE_BODY),
+	);
+	return packDir;
+}
+
+test('x-daily: happy path passes when pack filter targets _x-daily/<date>', t => {
+	const root = makeTmpRoot();
+	try {
+		writeHappyXDailyPack(root);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
+		t.deepEqual(report.scannedPacks, [X_DAILY_PACK_ID]);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: included in default scan when no filter is set', t => {
+	const root = makeTmpRoot();
+	try {
+		writeHappyXDailyPack(root);
+		const report = runValidate({contentRoot: root, config: CONFIG});
+		t.deepEqual(report.failures, []);
+		t.true(report.scannedPacks.includes(X_DAILY_PACK_ID));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: over-length post → max-chars', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		const tooLong = `${'x'.repeat(300)} ${PRODUCT_REPO_URL}`;
+		writeFileSync(
+			join(packDir, `posts/${PRODUCT_SLUG}.md`),
+			buildXDailyMd(PRODUCT_SLUG, tooLong),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'max-chars'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: product post missing repo link → link-product-repo', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		const body = X_PRODUCT_BODY.replaceAll(PRODUCT_REPO_URL, '');
+		writeFileSync(
+			join(packDir, `posts/${PRODUCT_SLUG}.md`),
+			buildXDailyMd(PRODUCT_SLUG, body),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'link-product-repo'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: collective post missing collective URL → link-collective', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		const body = X_COLLECTIVE_BODY.replaceAll(COLLECTIVE_URL, '');
+		writeFileSync(
+			join(packDir, 'posts/collective-1.md'),
+			buildXDailyMd('collective', body),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'link-collective'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: unknown source → source-known', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		writeFileSync(
+			join(packDir, `posts/${PRODUCT_SLUG}.md`),
+			buildXDailyMd('not-a-product', X_PRODUCT_BODY, {
+				source: 'not-a-product',
+			}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'source-known'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: planned post missing on disk → file-exists', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		rmSync(join(packDir, 'posts/collective-2.md'));
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(
+				f => f.rule === 'file-exists' && f.expected === 'collective-2.md',
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: unplanned extra post → file-unexpected', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		writeFileSync(
+			join(packDir, 'posts/stray.md'),
+			buildXDailyMd('collective', X_COLLECTIVE_BODY),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'file-unexpected'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: em-dash in body → em-dash', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyXDailyPack(root);
+		const body = `Demo registry is faster now — constant-time lookups. ${PRODUCT_REPO_URL}`;
+		writeFileSync(
+			join(packDir, `posts/${PRODUCT_SLUG}.md`),
+			buildXDailyMd(PRODUCT_SLUG, body),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'em-dash'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: bad date dir name → x-daily-date-format', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = join(root, '_x-daily', 'not-a-date');
+		mkdirSync(join(packDir, 'posts'), {recursive: true});
+		writeFileSync(
+			join(packDir, 'meta.json'),
+			JSON.stringify({kind: 'x-daily', date: 'not-a-date', posts: []}),
+		);
+		const report = runValidate({contentRoot: root, config: CONFIG});
+		t.true(report.failures.some(f => f.rule === 'x-daily-date-format'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('x-daily: sample final_status skips the gate', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = join(root, '_x-daily', X_DAILY_DATE);
+		mkdirSync(join(packDir, 'posts'), {recursive: true});
+		writeFileSync(
+			join(packDir, 'meta.json'),
+			JSON.stringify({
+				kind: 'x-daily',
+				date: X_DAILY_DATE,
+				final_status: 'sample',
+				posts: [],
+			}),
+		);
+		// A deliberately broken post that would fail every rule if scanned.
+		writeFileSync(
+			join(packDir, 'posts/broken.md'),
+			buildXDailyMd('not-a-product', 'no link, way too '.repeat(40), {
+				source: 'not-a-product',
+			}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: X_DAILY_PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
+		t.true(report.skippedPacks.includes(X_DAILY_PACK_ID));
+	} finally {
+		cleanup(root);
+	}
+});

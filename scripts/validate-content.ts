@@ -33,7 +33,14 @@
  *   pnpm validate                          # all packs (full phase)
  *   pnpm validate -- --pack nanocoder/0.0.0
  *   pnpm validate -- --pack nanocoder/1.25.2 --phase channels
+ *   pnpm validate -- --pack _collective/some-slug
+ *   pnpm validate -- --pack _x-daily/2026-06-09
  *   pnpm validate -- --report validation-report.json
+ *
+ * X-daily buckets (content/_x-daily/<date>/) are validated independently of
+ * --phase: every post is the `x` channel, the expected file-set comes from
+ * meta.json's `posts` plan, and the link policy is source-aware (product repo
+ * for product posts, nanocollective.org for collective posts).
  */
 import {
 	existsSync,
@@ -172,6 +179,12 @@ const MAX_ARTICLES_PER_PACK = 3;
 
 const COLLECTIVE_DIR = '_collective';
 const COLLECTIVE_URL = 'https://nanocollective.org';
+
+const X_DAILY_DIR = '_x-daily';
+// The sentinel `source` value a post carries when it's about the collective
+// rather than a single product. Product-sourced posts carry the product slug.
+const X_DAILY_COLLECTIVE_SOURCE = 'collective';
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 type PackKind = 'release' | 'article';
 
@@ -1206,6 +1219,327 @@ function validateCollectivePack(args: {
 	return {failures, warnings, skipped: false};
 }
 
+type XDailyPlanEntry = {file: string; source: string; angle: string};
+
+/**
+ * Validates a daily X-post bucket at content/_x-daily/<date>/.
+ *
+ * An X-daily bucket is a flat set of standalone X posts — one per product
+ * plus N about the collective — written in a single scheduled run. Unlike
+ * release/collective packs there are no channels (every post is the `x`
+ * channel) and no personal subtree. The expected file-set is driven by the
+ * `posts` array in meta.json (the plan the generator committed): each entry
+ * names a file under posts/ and the `source` it speaks for. Per-file rules
+ * (≤ max_chars, forbidden terms, em-dash, placeholders) are the shared ones.
+ *
+ * Link policy is source-aware: a product-sourced post must link to that
+ * product's repo root (never a release URL); a collective-sourced post must
+ * link to nanocollective.org. This mirrors how release vs collective packs
+ * already differ.
+ */
+function validateXDailyPack(args: {
+	date: string;
+	packRoot: string;
+	channels: ChannelRule[];
+	products: Product[];
+}): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
+	const failures: Failure[] = [];
+	const warnings: Warning[] = [];
+	const productsBySlug = new Map(args.products.map(p => [p.slug, p]));
+
+	// meta.json — also the source of the expected file-set (its `posts` plan).
+	const metaPath = join(args.packRoot, 'meta.json');
+	let meta: Record<string, unknown> | null = null;
+	if (!existsSync(metaPath)) {
+		failures.push({
+			file: relative(ROOT, metaPath),
+			rule: 'meta-exists',
+			expected: 'meta.json present',
+			actual: 'missing',
+		});
+	} else {
+		try {
+			meta = readJson(metaPath);
+		} catch (e) {
+			failures.push({
+				file: relative(ROOT, metaPath),
+				rule: 'meta-parses',
+				expected: 'valid JSON',
+				actual: (e as Error).message,
+			});
+		}
+	}
+
+	if (
+		meta &&
+		typeof meta.final_status === 'string' &&
+		meta.final_status === 'sample'
+	) {
+		return {failures: [], warnings: [], skipped: true};
+	}
+
+	// Validate the plan shape and derive the expected file-set from it.
+	const plan: XDailyPlanEntry[] = [];
+	if (meta) {
+		if (meta.kind !== undefined && meta.kind !== 'x-daily') {
+			failures.push({
+				file: relative(ROOT, metaPath),
+				rule: 'meta-kind',
+				expected: 'x-daily',
+				actual: String(meta.kind),
+			});
+		}
+		if (meta.date !== undefined && meta.date !== args.date) {
+			failures.push({
+				file: relative(ROOT, metaPath),
+				rule: 'meta-date',
+				expected: args.date,
+				actual: String(meta.date),
+			});
+		}
+		if (!Array.isArray(meta.posts)) {
+			failures.push({
+				file: relative(ROOT, metaPath),
+				rule: 'meta-posts-shape',
+				expected: 'posts: array of {file, source, angle}',
+				actual: meta.posts === undefined ? 'missing' : typeof meta.posts,
+			});
+		} else {
+			meta.posts.forEach((raw, i) => {
+				const entry = raw as Record<string, unknown>;
+				if (
+					typeof entry.file !== 'string' ||
+					typeof entry.source !== 'string' ||
+					typeof entry.angle !== 'string'
+				) {
+					failures.push({
+						file: relative(ROOT, metaPath),
+						rule: 'meta-posts-shape',
+						expected: `posts[${i}] has string file, source, angle`,
+						actual: JSON.stringify(entry),
+					});
+					return;
+				}
+				plan.push({
+					file: entry.file,
+					source: entry.source,
+					angle: entry.angle,
+				});
+			});
+		}
+	}
+
+	const postsDir = join(args.packRoot, 'posts');
+
+	// Expected files: every planned post must be on disk.
+	for (const entry of plan) {
+		if (!existsSync(join(postsDir, entry.file))) {
+			failures.push({
+				file: relative(ROOT, join(postsDir, entry.file)),
+				rule: 'file-exists',
+				expected: entry.file,
+				actual: 'missing',
+			});
+		}
+	}
+
+	// Extra files: any .md under posts/ not named in the plan. Auto-fix must
+	// delete these by path, not rewrite them (mirrors the channel-extras rule).
+	const plannedFiles = new Set(plan.map(p => p.file));
+	const sourceByFile = new Map(plan.map(p => [p.file, p.source]));
+	if (existsSync(postsDir)) {
+		for (const entry of readdirSync(postsDir)) {
+			if (!entry.endsWith('.md')) continue;
+			if (!plannedFiles.has(entry)) {
+				failures.push({
+					file: relative(ROOT, join(postsDir, entry)),
+					rule: 'file-unexpected',
+					expected: `file listed in meta.json posts[] (${[...plannedFiles].join(', ') || 'none'})`,
+					actual: 'extra file (delete it, or add it to the plan)',
+				});
+			}
+		}
+	}
+
+	const xRule = findChannel(args.channels, 'x');
+
+	for (const file of listMarkdownRecursive(postsDir)) {
+		const fileRel = relative(ROOT, file);
+		const raw = readFileSync(file, 'utf8');
+		const parsed = matter(raw);
+		const fm = parsed.data as Record<string, unknown>;
+		const body = parsed.content;
+
+		const requiredFields = [
+			'kind',
+			'date',
+			'source',
+			'channel',
+			'angle',
+			'generated_at',
+			'model',
+			'char_count',
+		];
+		for (const field of requiredFields) {
+			if (fm[field] === undefined || fm[field] === null) {
+				failures.push({
+					file: fileRel,
+					rule: 'frontmatter-shape',
+					expected: `field "${field}" present`,
+					actual: 'missing',
+				});
+			}
+		}
+		if (fm.kind !== undefined && fm.kind !== 'x-daily') {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-kind',
+				expected: 'x-daily',
+				actual: String(fm.kind),
+			});
+		}
+		if (fm.date !== undefined && fm.date !== args.date) {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-date',
+				expected: args.date,
+				actual: String(fm.date),
+			});
+		}
+		if (fm.channel !== undefined && fm.channel !== 'x') {
+			failures.push({
+				file: fileRel,
+				rule: 'frontmatter-channel',
+				expected: 'x',
+				actual: String(fm.channel),
+			});
+		}
+
+		// Source must be a known product slug or the collective sentinel, and
+		// must agree with the plan entry for this file (when present).
+		const source = typeof fm.source === 'string' ? fm.source : undefined;
+		const fileName = relative(postsDir, file).replaceAll('\\', '/');
+		const plannedSource = sourceByFile.get(fileName);
+		if (source !== undefined) {
+			const known =
+				source === X_DAILY_COLLECTIVE_SOURCE || productsBySlug.has(source);
+			if (!known) {
+				failures.push({
+					file: fileRel,
+					rule: 'source-known',
+					expected: `"${X_DAILY_COLLECTIVE_SOURCE}" or a slug in config/products.json`,
+					actual: source,
+				});
+			}
+			if (plannedSource !== undefined && source !== plannedSource) {
+				failures.push({
+					file: fileRel,
+					rule: 'frontmatter-source',
+					expected: plannedSource,
+					actual: source,
+				});
+			}
+		}
+
+		// Length — every post is the X channel.
+		if (xRule?.max_chars !== undefined) {
+			const charCount = body.trim().length;
+			if (charCount > xRule.max_chars) {
+				failures.push({
+					file: fileRel,
+					rule: 'max-chars',
+					expected: `≤${xRule.max_chars}`,
+					actual: String(charCount),
+				});
+			}
+		}
+
+		for (const term of FORBIDDEN_HARD) {
+			const re = new RegExp(`\\b${term}\\b`, 'i');
+			if (re.test(body)) {
+				failures.push({
+					file: fileRel,
+					rule: 'forbidden-term',
+					expected: `no "${term}"`,
+					actual: 'present',
+				});
+			}
+		}
+		for (const term of FORBIDDEN_SOFT) {
+			const re = new RegExp(`\\b${term}\\b`, 'i');
+			if (re.test(body)) {
+				warnings.push({
+					file: fileRel,
+					rule: 'marketing-register',
+					message: `"${term}" — consider replacing with a plainer phrasing`,
+				});
+			}
+		}
+		if (body.includes('—')) {
+			failures.push({
+				file: fileRel,
+				rule: 'em-dash',
+				expected: 'no em-dash (use hyphen, comma, parenthesis, or full stop)',
+				actual: 'em-dash present',
+			});
+		}
+		for (const pattern of PLACEHOLDER_PATTERNS) {
+			if (pattern.test(body)) {
+				failures.push({
+					file: fileRel,
+					rule: 'no-placeholder',
+					expected: `no ${pattern.source}`,
+					actual: 'present',
+				});
+			}
+		}
+
+		// Source-aware link policy. Resolve the source we trust: frontmatter if
+		// valid, else the plan. Skip the link check entirely if we can't resolve
+		// a source (the source-known/shape failures above already flag it).
+		const effectiveSource = source ?? plannedSource;
+		if (effectiveSource === X_DAILY_COLLECTIVE_SOURCE) {
+			if (!body.includes(COLLECTIVE_URL)) {
+				failures.push({
+					file: fileRel,
+					rule: 'link-collective',
+					expected: `link to ${COLLECTIVE_URL}`,
+					actual: 'missing',
+				});
+			}
+		} else if (effectiveSource !== undefined) {
+			const product = productsBySlug.get(effectiveSource);
+			if (product) {
+				const repoUrl = `https://github.com/${product.repo}`;
+				// nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp -- repoUrl is sourced from config/products.json (our own config), not user input
+				const releaseTagPattern = new RegExp(
+					`${repoUrl.replaceAll('/', '\\/')}\\/releases\\/(tag|download)\\/`,
+					'i',
+				);
+				if (!body.includes(repoUrl)) {
+					failures.push({
+						file: fileRel,
+						rule: 'link-product-repo',
+						expected: `link to ${repoUrl}`,
+						actual: 'missing',
+					});
+				}
+				if (releaseTagPattern.test(body)) {
+					failures.push({
+						file: fileRel,
+						rule: 'link-not-release',
+						expected:
+							'link to repo root, never /releases/tag/* or /releases/download/*',
+						actual: 'release URL present',
+					});
+				}
+			}
+		}
+	}
+
+	return {failures, warnings, skipped: false};
+}
+
 /**
  * Programmatic entry point — used by the CLI `main()` and by `*.spec.ts`
  * tests. Returns the structured Report; never prints, never exits, never
@@ -1248,6 +1582,7 @@ export function runValidate(options: {
 
 	const packsToScan: {product: Product; version: string}[] = [];
 	const collectivePacksToScan: {slug: string}[] = [];
+	const xDailyPacksToScan: {date: string}[] = [];
 	if (options.packFilter) {
 		const [first, second] = options.packFilter.split('/');
 		if (first === COLLECTIVE_DIR) {
@@ -1257,6 +1592,11 @@ export function runValidate(options: {
 				);
 			}
 			collectivePacksToScan.push({slug: second});
+		} else if (first === X_DAILY_DIR) {
+			if (!second) {
+				throw new Error(`X-daily pack filter must be "${X_DAILY_DIR}/<date>"`);
+			}
+			xDailyPacksToScan.push({date: second});
 		} else {
 			const product = productsBySlug.get(first);
 			if (!product) {
@@ -1274,6 +1614,10 @@ export function runValidate(options: {
 		const collectiveDir = join(options.contentRoot, COLLECTIVE_DIR);
 		for (const slug of listDirs(collectiveDir)) {
 			collectivePacksToScan.push({slug});
+		}
+		const xDailyDir = join(options.contentRoot, X_DAILY_DIR);
+		for (const date of listDirs(xDailyDir)) {
+			xDailyPacksToScan.push({date});
 		}
 	}
 
@@ -1386,6 +1730,42 @@ export function runValidate(options: {
 			team: cfg.team ?? [],
 			phase,
 			personalChannels: options.personalChannels,
+		});
+		if (result.skipped) {
+			report.skippedPacks.push(id);
+			continue;
+		}
+		report.scannedPacks.push(id);
+		report.failures.push(...result.failures);
+		report.warnings.push(...result.warnings);
+	}
+
+	for (const {date} of xDailyPacksToScan) {
+		const packRoot = join(options.contentRoot, X_DAILY_DIR, date);
+		const id = `${X_DAILY_DIR}/${date}`;
+		if (!existsSync(packRoot)) {
+			report.failures.push({
+				file: relative(ROOT, packRoot),
+				rule: 'pack-exists',
+				expected: 'directory present',
+				actual: 'missing',
+			});
+			continue;
+		}
+		if (!DATE_RE.test(date)) {
+			report.failures.push({
+				file: relative(ROOT, packRoot),
+				rule: 'x-daily-date-format',
+				expected: 'YYYY-MM-DD',
+				actual: date,
+			});
+			continue;
+		}
+		const result = validateXDailyPack({
+			date,
+			packRoot,
+			channels: cfg.channels,
+			products: cfg.products,
 		});
 		if (result.skipped) {
 			report.skippedPacks.push(id);

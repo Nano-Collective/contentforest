@@ -1,0 +1,185 @@
+name: Daily X Posts
+
+on:
+  schedule:
+    # 09:00 UTC daily — one hour after the release-pack slot so the two big
+    # Nanocoder builds don't run head to head.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Bucket date YYYY-MM-DD (omit for today, UTC)"
+        required: false
+        type: string
+      dry_run:
+        description: "Write to content/_test/ instead of opening a PR"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: x-daily
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build and install Nanocoder from main
+        run: |
+          git clone --depth 1 https://github.com/Nano-Collective/nanocoder.git /tmp/nanocoder
+          cd /tmp/nanocoder
+          npm install
+          npm run build
+          npm link
+          which nanocoder
+          nanocoder --version || true
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Ensure PR labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create x-daily --color "1f6feb" --description "Automated daily X-post PR" --force
+          gh label create failed-validation --color "d93f0b" --description "Validator found hard-rule failures" --force
+
+      - name: Fetch reference docs
+        run: pnpm fetch-refs
+
+      - name: Resolve date
+        id: resolve
+        env:
+          INPUT_DATE: ${{ inputs.date }}
+        run: |
+          set -euo pipefail
+          if [ -n "${INPUT_DATE:-}" ]; then
+            DATE="$INPUT_DATE"
+          else
+            DATE=$(date -u +%F)
+          fi
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "Resolved date: $DATE"
+
+      - name: Generate, validate, and open a PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          DATE: ${{ steps.resolve.outputs.date }}
+          # Skip the model-context probe to models.dev for unknown providers.
+          NANOCODER_CONTEXT_LIMIT: "128000"
+        run: |
+          set -euo pipefail
+          BRANCH="auto/x-daily-${DATE}"
+          PACK_DIR="content/_x-daily/${DATE}"
+          POSTS_DIR="${PACK_DIR}/posts"
+
+          # Skip if a branch already exists for this date — prevents duplicate
+          # PRs on retried runs.
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "branch $BRANCH already exists on origin, skipping"
+            exit 0
+          fi
+
+          git checkout -B "$BRANCH" origin/main
+
+          if [ "${DRY_RUN:-false}" = "true" ]; then
+            pnpm x-daily --date "$DATE" --test
+            echo "dry_run: skipping PR open"
+            exit 0
+          fi
+
+          # Run generation. Validation failures (posts present but rules broken)
+          # are NOT system failures — we still open a PR with failed-validation.
+          # Generation crashes (Nanocoder error, network, etc.) ARE system
+          # failures — clean up and surface them as red workflow status.
+          set +e
+          pnpm x-daily --date "$DATE" --commit
+          GEN_STATUS=$?
+          set -e
+
+          # Discriminator: did the writers actually produce any post files?
+          POST_COUNT=$(find "$POSTS_DIR" -maxdepth 1 -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+          if [ "${POST_COUNT:-0}" -lt 1 ]; then
+            echo "::error::x-daily produced no post files for ${DATE} — system failure"
+            rm -rf "$PACK_DIR"
+            git checkout main
+            git branch -D "$BRANCH" 2>/dev/null || true
+            exit 1
+          fi
+
+          # Stage the bucket plus the ledger (the script appends to it on a
+          # clean pass) and commit.
+          git add content/_x-daily/
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "no content changes after add; skipping PR"
+            git checkout main
+            git branch -D "$BRANCH" 2>/dev/null || true
+            exit 0
+          fi
+          git commit -m "auto: x-daily posts ${DATE}"
+          git push --set-upstream origin "$BRANCH"
+
+          META_PATH="${PACK_DIR}/meta.json"
+          FINAL_STATUS=$(jq -r '.final_status // "unknown"' "$META_PATH" 2>/dev/null || echo "unknown")
+          ATTEMPTS=$(jq -r '.attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
+
+          LABELS="x-daily"
+          if [ "$FINAL_STATUS" != "passed" ] || [ "$GEN_STATUS" -ne 0 ]; then
+            LABELS="x-daily,failed-validation"
+          fi
+
+          BODY=$(printf 'Automated daily X posts for **%s**.\n\n- Final status: `%s`\n- Attempts: `%s`\n- Posts: `%s`\n\nValidation ran during generation; the `meta.json` in the bucket has the report. A reviewer should sanity-check the posts before merging.' \
+            "$DATE" "$FINAL_STATUS" "$ATTEMPTS" "$POST_COUNT")
+
+          # Try to open the PR. If creation fails, the branch on origin is
+          # orphaned — delete it so the next run isn't blocked by the guard.
+          set +e
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "X posts: ${DATE}" \
+            --body "$BODY" \
+            --label "$LABELS"
+          PR_STATUS=$?
+          set -e
+
+          if [ "$PR_STATUS" -ne 0 ]; then
+            echo "::error::pr creation failed for ${DATE} — deleting remote branch to unblock retries"
+            git push origin --delete "$BRANCH" 2>/dev/null || true
+            git checkout main
+            git branch -D "$BRANCH" 2>/dev/null || true
+            exit 1
+          fi
+
+          git checkout main
+          git branch -D "$BRANCH" 2>/dev/null || true

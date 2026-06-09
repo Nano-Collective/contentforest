@@ -1,4 +1,4 @@
-import {ArrowRight, Megaphone, Package} from 'lucide-react';
+import {ArrowRight, Megaphone, MessageSquare, Package} from 'lucide-react';
 import Link from 'next/link';
 import {
 	Card,
@@ -12,9 +12,14 @@ import type {ProductSummary} from '@/lib/content';
 type Props = {
 	products: ProductSummary[];
 	collectivePackCount: number;
+	xDailyBucketCount: number;
 };
 
-export function ProductGrid({products, collectivePackCount}: Props) {
+export function ProductGrid({
+	products,
+	collectivePackCount,
+	xDailyBucketCount,
+}: Props) {
 	return (
 		<section id="products" className="max-w-6xl mx-auto px-4 py-16">
 			<header className="mb-8">
@@ -72,6 +77,31 @@ export function ProductGrid({products, collectivePackCount}: Props) {
 									<span>
 										{collectivePackCount} pack
 										{collectivePackCount === 1 ? '' : 's'}
+									</span>
+									<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+								</div>
+							</CardContent>
+						</Card>
+					</Link>
+				</li>
+
+				<li key="_x-daily">
+					<Link href="/x" className="block group">
+						<Card className="h-full transition-colors group-hover:border-primary/50 card-hover-glow">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2">
+									<MessageSquare className="h-5 w-5 text-primary" />
+									Daily X posts
+								</CardTitle>
+								<CardDescription>
+									Daily X posts for the collective account
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<div className="flex items-center justify-between text-sm text-muted-foreground">
+									<span>
+										{xDailyBucketCount} day
+										{xDailyBucketCount === 1 ? '' : 's'}
 									</span>
 									<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
 								</div>

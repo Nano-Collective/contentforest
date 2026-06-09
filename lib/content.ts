@@ -43,7 +43,19 @@ export type CollectivePack = {
 	files: ContentFile[];
 };
 
+export type XDailyBucketSummary = {
+	date: string;
+	meta: Record<string, unknown> | null;
+};
+
+export type XDailyBucket = {
+	date: string;
+	meta: Record<string, unknown> | null;
+	files: ContentFile[];
+};
+
 const COLLECTIVE_DIR = '_collective';
+const X_DAILY_DIR = '_x-daily';
 
 function listDirs(path: string): string[] {
 	try {
@@ -251,4 +263,55 @@ export function readCollectivePack(
 	const files: ContentFile[] = [];
 	readChannelsAndPersonal(root, '', files);
 	return {slug, meta: readMetaJson(root), files};
+}
+
+/**
+ * Lists the daily X-post buckets at content/_x-daily/<date>/, newest first.
+ * Date dirs sort lexically, which is chronological for YYYY-MM-DD. The
+ * sibling ledger.json is a file, not a dir, so listDirs skips it.
+ */
+export function listXDailyBuckets(
+	contentDir: string = DEFAULT_CONTENT_DIR,
+): XDailyBucketSummary[] {
+	const root = join(contentDir, X_DAILY_DIR);
+	let entries: string[];
+	try {
+		entries = readdirSync(root).filter(entry => {
+			try {
+				return statSync(join(root, entry)).isDirectory();
+			} catch {
+				return false;
+			}
+		});
+	} catch {
+		return [];
+	}
+	const buckets = entries.map(date => ({
+		date,
+		meta: readMetaJson(join(root, date)),
+	}));
+	buckets.sort((a, b) => b.date.localeCompare(a.date));
+	return buckets;
+}
+
+export function readXDailyBucket(
+	date: string,
+	contentDir: string = DEFAULT_CONTENT_DIR,
+): XDailyBucket {
+	const root = join(contentDir, X_DAILY_DIR, date);
+	const files: ContentFile[] = [];
+	// Every post is a flat .md under posts/. The channel key is the filename
+	// stem (e.g. "nanocoder", "collective-1") — unique within a bucket.
+	const postsPath = join(root, 'posts');
+	try {
+		const entries = readdirSync(postsPath).filter(e => e.endsWith('.md'));
+		for (const entry of entries) {
+			const channel = entry.replace(/\.md$/, '');
+			files.push(readMarkdown(join(postsPath, entry), channel));
+		}
+	} catch {
+		// posts/ may not exist
+	}
+	files.sort((a, b) => a.channel.localeCompare(b.channel));
+	return {date, meta: readMetaJson(root), files};
 }

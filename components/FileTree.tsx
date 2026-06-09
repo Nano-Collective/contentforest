@@ -4,7 +4,7 @@ import {cn} from '@/lib/utils';
 export type FileTreeItem = {
 	channel: string;
 	label: string;
-	group: 'channels' | 'personal';
+	group: 'channels' | 'personal' | 'posts';
 	distributed?: boolean;
 	wontUse?: boolean;
 };
@@ -25,6 +25,7 @@ type Props = {
 const GROUP_LABELS: Record<FileTreeItem['group'], string> = {
 	channels: 'Channels',
 	personal: 'Personal',
+	posts: 'Posts',
 };
 
 export default function FileTree({sections, selected, onSelect}: Props) {

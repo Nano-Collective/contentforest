@@ -1,0 +1,39 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-08",
+  "generated_at": "2026-06-08T09:00:00.000Z",
+  "model": "minimax-m2.7",
+  "final_status": "sample",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "local-first coding agent"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "fine-tune without the boilerplate"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "any url to clean markdown"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "migrate json shapes safely"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "who the collective is for"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "how we ship in the open"
+    }
+  ]
+}
