@@ -6,6 +6,7 @@ slug: nanocoder-2k-stars
 generated_at: "2026-06-10T12:10:22.259Z"
 model: "minimax-m3"
 char_count: 432
+wont_use_at: "2026-06-10T19:29:14.873Z"
 ---
 
 A year ago this was an idea and a tiny Discord 🔥
