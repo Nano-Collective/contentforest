@@ -1,0 +1,41 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-10",
+  "generated_at": "2026-06-10T10:32:05.323Z",
+  "model": "minimax-m2.7",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "File explorer for context selection"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "LLM judge for open-ended evaluation"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Local LLM conversion for better markdown"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Type-safe JSON migrations with Zod"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Not-for-profit with a transparent public ledger"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Open contribution with no closed gate"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
