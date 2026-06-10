@@ -7,6 +7,7 @@ version: "1.27.0"
 generated_at: "2026-06-02T15:30:53.389Z"
 model: "minimax-m2.7"
 char_count: 5304
+wont_use_at: "2026-06-10T09:28:56.495Z"
 ---
 
 Most software runs when you tell it to. The model in v1.27.0 is different: it runs when something relevant happens.
