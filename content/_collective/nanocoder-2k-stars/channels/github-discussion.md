@@ -6,6 +6,7 @@ title: "Nanocoder hit 2,000 GitHub stars"
 generated_at: "2026-06-09T20:09:57.259Z"
 model: "minimax-m3"
 char_count: 3003
+distributed_at: "2026-06-10T17:42:45.406Z"
 ---
 
 Nanocoder just crossed 2,000 GitHub stars. We launched just under a year ago, so this feels like a reasonable moment to step back and say thank you, and to explain briefly why we think this matters beyond the vanity metric.
