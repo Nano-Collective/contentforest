@@ -4,7 +4,7 @@ slug: nanocoder-2k-stars
 channel: github-discussion
 title: "Nanocoder hit 2,000 GitHub stars"
 generated_at: "2026-06-09T20:09:57.259Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 3003
 ---
 

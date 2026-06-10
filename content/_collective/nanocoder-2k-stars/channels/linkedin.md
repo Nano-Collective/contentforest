@@ -3,7 +3,7 @@ kind: collective
 slug: nanocoder-2k-stars
 channel: linkedin
 generated_at: "2026-06-09T20:09:57.259Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 962
 ---
 

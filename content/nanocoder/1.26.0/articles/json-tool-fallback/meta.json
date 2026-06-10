@@ -3,5 +3,5 @@
   "title": "JSON tool calling for open-weights models",
   "focus": "How the new JSON tool fallback works for Qwen, Kimi, and GLM, and how it prevents ghost echo from leaking into output",
   "generated_at": "2026-05-10T17:10:04.461Z",
-  "model": "minimax-m2.7"
+  "model": "minimax-m3"
 }

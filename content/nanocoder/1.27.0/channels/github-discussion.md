@@ -4,7 +4,7 @@ version: "1.27.0"
 channel: github-discussion
 title: "Nanocoder v1.27.0 - Skills, a daemon, and custom tools"
 generated_at: "2026-05-26T22:38:17.346Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 distributed_at: "2026-06-02T15:21:34.811Z"
 ---

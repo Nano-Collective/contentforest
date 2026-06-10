@@ -4,7 +4,7 @@ member: will
 channel: linkedin
 slug: contentforest-launch
 generated_at: "2026-05-06T12:05:28.250Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1499
 distributed_at: "2026-05-08T12:55:04.597Z"
 ---

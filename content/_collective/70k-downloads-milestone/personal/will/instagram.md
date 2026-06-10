@@ -4,7 +4,7 @@ member: will
 channel: instagram
 slug: 70k-downloads-milestone
 generated_at: "2026-05-11T22:24:07.774Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 486
 wont_use_at: "2026-05-20T12:18:21.752Z"
 ---

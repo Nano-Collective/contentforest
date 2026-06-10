@@ -59,7 +59,7 @@ pnpm install
 
 Copy the `.env` keys you need from a maintainer. The minimum for local generation:
 
-- `MINIMAX_API_KEY` — Nanocoder is wired to MiniMax Coding via `agents.config.json` (provider `minimax-m2.7`). Same secret CI uses.
+- `MINIMAX_API_KEY` — Nanocoder is wired to MiniMax Coding via `agents.config.json` (provider `minimax-m3`). Same secret CI uses.
 - `GH_TOKEN` (or `GITHUB_TOKEN`) — needed for `pnpm detect-releases` against the live repos and for any flow that opens PRs locally.
 
 For UI-only work, no env vars are needed.

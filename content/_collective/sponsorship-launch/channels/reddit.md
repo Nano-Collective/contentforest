@@ -3,7 +3,7 @@ kind: collective
 slug: sponsorship-launch
 channel: reddit
 generated_at: "2026-05-14T22:50:59.866Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 2225
 wont_use_at: "2026-06-02T10:17:00.485Z"
 ---

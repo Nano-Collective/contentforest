@@ -4,7 +4,7 @@ version: "1.26.0"
 channel: github-discussion
 title: "Reasoning traces: streaming, rendering, and the fixes after first release"
 generated_at: "2026-05-10T17:10:04.461Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 wont_use_at: "2026-05-20T12:19:46.033Z"
 ---

@@ -4,7 +4,7 @@ slug: contentforest-launch
 channel: github-discussion
 title: "ContentForest: Automated Multi-Channel Release Content for the Nano Collective"
 generated_at: "2026-05-05T11:38:49.398Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 4153
 distributed_at: "2026-05-08T12:54:47.306Z"
 ---

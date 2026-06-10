@@ -3,7 +3,7 @@ product: nanocoder
 version: "1.25.0"
 channel: reddit
 generated_at: "2026-05-01T16:23:25.085Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 ---
 

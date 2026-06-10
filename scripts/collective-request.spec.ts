@@ -69,7 +69,7 @@ test('buildPrompt: substitutes core variables into the collective-request templa
 		mode: 'edit',
 		packDir: '/tmp/pack',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /economics-charter-explainer/);
 	t.regex(prompt, /Tighten the LinkedIn post about the economics charter\./);
@@ -88,7 +88,7 @@ test('buildPrompt: emits the create-mode scope target when mode=create', t => {
 		mode: 'create',
 		packDir: '/tmp/pack',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /generate the full pack/);
 });
@@ -99,7 +99,7 @@ test('buildPrompt: handles missing optional fields with explicit "(none)"', t =>
 		mode: 'edit',
 		packDir: '/tmp/pack',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /\(none\)/);
 });

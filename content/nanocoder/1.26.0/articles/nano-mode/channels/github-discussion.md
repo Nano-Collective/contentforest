@@ -4,7 +4,7 @@ version: "1.26.0"
 channel: github-discussion
 title: "How nano mode works and why we built it"
 generated_at: "2026-05-10T17:10:04.461Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 wont_use_at: "2026-05-20T12:19:35.192Z"
 ---

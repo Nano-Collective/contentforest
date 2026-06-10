@@ -3,7 +3,7 @@ product: get-md
 version: "1.5.0"
 channel: linkedin
 generated_at: "2026-05-25T22:03:00.677Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 ---
 

@@ -87,7 +87,7 @@ test('buildPrompt: substitutes core variables into the change-request template',
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	// Spot-check substituted values.
 	t.regex(prompt, /nanocoder/);
@@ -108,7 +108,7 @@ test('buildPrompt: includes the scope target derived from the job', t => {
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /any file under the pack root/);
 });
@@ -120,7 +120,7 @@ test('buildPrompt: handles missing optional fields with explicit "(none)"', t =>
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /\(none\)/);
 });

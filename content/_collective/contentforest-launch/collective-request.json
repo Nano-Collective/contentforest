@@ -7,7 +7,7 @@
   "request": "Angle the Reddit Post more around the guardrails and safety validations. Generally. Any multi-agent workflow is much more effective when it has \"measuring sticks\" robustly built. ContentForest, as a result, took a while to come to be, we had to actually write and record our brand guidelines, tone of voice etc, then, make use of llms.txt on our website so that it acts a source of truth that ContentForest can always access in markdown format. With this in place, you can construct solid measuring sticks and guidelines for a model to work within making it more effective and autonomous.",
   "context": null,
   "generated_at": "2026-05-08T14:39:33.385Z",
-  "model": "minimax-m2.7",
+  "model": "minimax-m3",
   "attempts": 1,
   "final_status": "passed",
   "failures": []

@@ -5,7 +5,7 @@ source: "nanocoder"
 channel: x
 angle: "File explorer for context selection"
 generated_at: "2026-06-10T10:32:05.323Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 211
 ---
 

@@ -3,7 +3,7 @@ kind: collective
 slug: pi-versus-nanocoder
 channel: reddit
 generated_at: "2026-05-13T22:34:48.445Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 2195
 distributed_at: "2026-05-18T13:29:07.275Z"
 ---

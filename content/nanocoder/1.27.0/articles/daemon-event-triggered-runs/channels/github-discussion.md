@@ -4,7 +4,7 @@ version: "1.27.0"
 channel: github-discussion
 title: "How Nanocoder's daemon replaces the scheduler"
 generated_at: "2026-05-26T22:38:17.346Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 ---
 

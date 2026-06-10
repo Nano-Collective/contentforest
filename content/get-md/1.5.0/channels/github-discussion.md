@@ -4,7 +4,7 @@ version: "1.5.0"
 channel: github-discussion
 title: "get-md v1.5.0: Pluggable LLMs, batch crawling, and RAG helpers"
 generated_at: "2026-05-25T22:03:00.677Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 distributed_at: "2026-05-26T21:00:26.189Z"
 ---

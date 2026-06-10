@@ -4,7 +4,7 @@ slug: sponsorship-launch
 channel: github-discussion
 title: "The Nano Collective sponsorship program is now live"
 generated_at: "2026-05-14T22:50:59.866Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 2745
 distributed_at: "2026-06-01T14:00:51.733Z"
 ---

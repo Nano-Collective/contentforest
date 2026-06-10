@@ -4,7 +4,7 @@ member: ben-parry
 channel: linkedin-newsletter
 slug: contentforest-launch
 generated_at: "2026-05-06T12:49:51.335Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 5641
 ---
 

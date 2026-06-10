@@ -871,7 +871,7 @@ async function main() {
 	const packDir = packDirFor(args.mode, product.slug, job.version);
 	const validatorRoot = validatorRootFor(args.mode);
 	const generatedAt = new Date().toISOString();
-	const model = 'minimax-m2.7';
+	const model = 'minimax-m3';
 	const productUrl = `https://github.com/${product.repo}`;
 
 	console.log(

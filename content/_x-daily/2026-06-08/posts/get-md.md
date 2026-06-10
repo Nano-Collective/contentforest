@@ -5,7 +5,7 @@ source: "get-md"
 channel: x
 angle: "any url to clean markdown"
 generated_at: "2026-06-08T09:00:00.000Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 179
 ---
 

@@ -2,7 +2,7 @@
   "kind": "x-daily",
   "date": "2026-06-10",
   "generated_at": "2026-06-10T10:32:05.323Z",
-  "model": "minimax-m2.7",
+  "model": "minimax-m3",
   "posts": [
     {
       "file": "nanocoder.md",

@@ -3,7 +3,7 @@ kind: collective
 slug: sponsorship-launch
 channel: linkedin
 generated_at: "2026-05-14T22:50:59.866Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1274
 distributed_at: "2026-06-01T14:03:03.442Z"
 ---

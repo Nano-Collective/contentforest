@@ -4,7 +4,7 @@ slug: why-we-updated-how-we-describe-nanocoder
 channel: github-discussion
 title: "Why we updated how we describe Nanocoder"
 generated_at: "2026-05-31T23:19:02.091Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 2943
 ---
 

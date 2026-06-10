@@ -3,7 +3,7 @@ product: nanocoder
 version: "1.27.0"
 channel: linkedin
 generated_at: "2026-05-26T22:38:17.346Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 distributed_at: "2026-06-02T15:27:53.978Z"
 ---

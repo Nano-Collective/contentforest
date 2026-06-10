@@ -3,5 +3,5 @@
   "title": "Reasoning traces: how they work and what was fixed",
   "focus": "The engineering behind real-time reasoning trace streaming and the follow-up fixes landed after the initial release",
   "generated_at": "2026-05-10T17:10:04.461Z",
-  "model": "minimax-m2.7"
+  "model": "minimax-m3"
 }

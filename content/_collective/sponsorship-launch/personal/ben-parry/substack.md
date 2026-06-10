@@ -10,7 +10,7 @@ member: ben-parry
 channel: substack
 slug: sponsorship-launch
 generated_at: "2026-05-25T21:28:16.554Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 7249
 ---
 

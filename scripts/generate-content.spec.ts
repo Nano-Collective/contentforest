@@ -93,7 +93,7 @@ test('buildPromptVars: produces every variable an agent prompt can need', t => {
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 		validatorRoot: 'content/_local',
 	});
 	t.is(vars.PRODUCT_SLUG, 'nanocoder');
@@ -107,7 +107,7 @@ test('buildPromptVars: produces every variable an agent prompt can need', t => {
 	);
 	t.regex(vars.RELEASE_BODY, /What changed/);
 	t.is(vars.GENERATED_AT, '2026-05-01T10:00:00Z');
-	t.is(vars.MODEL, 'minimax-m2.7');
+	t.is(vars.MODEL, 'minimax-m3');
 	t.is(vars.PACK_DIR, '/tmp/pack');
 	t.is(vars.PACK_ID, 'nanocoder/1.25.2');
 	t.is(vars.VALIDATOR_ROOT, 'content/_local');
@@ -121,7 +121,7 @@ test('buildPromptVars: defaults missing release fields to empty string', t => {
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 		validatorRoot: 'content',
 	});
 	t.is(vars.RELEASE_BODY, '');
@@ -136,7 +136,7 @@ test('buildPromptVars: includes channels.json content', t => {
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 		validatorRoot: 'content',
 	});
 	t.true(vars.CHANNELS_JSON.length > 0);
@@ -153,7 +153,7 @@ test('buildAgentPrompt: substitutes vars into the release-channels template', t 
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 		validatorRoot: 'content/_local',
 	});
 	const prompt = buildAgentPrompt(agent, vars);
@@ -175,7 +175,7 @@ test('buildAgentPrompt: substitutes vars into the article-plan template', t => {
 			packDir: '/tmp/pack',
 			repoPath: '/tmp/repo',
 			generatedAt: '2026-05-01T10:00:00Z',
-			model: 'minimax-m2.7',
+			model: 'minimax-m3',
 			validatorRoot: 'content/_local',
 		}),
 		PLAN_OUTPUT_PATH: '/tmp/cf-plan-test.json',
@@ -198,7 +198,7 @@ test('buildArticleWritePrompt: substitutes per-article vars on top of shared var
 		packDir: '/tmp/pack',
 		repoPath: '/tmp/repo',
 		generatedAt: '2026-05-01T10:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 		validatorRoot: 'content/_local',
 	});
 	// Read the writer template the same way the orchestrator does.

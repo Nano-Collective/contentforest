@@ -4,7 +4,7 @@ member: ben-parry
 channel: substack
 slug: 70k-downloads-milestone
 generated_at: "2026-05-12T11:06:28.191Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 9118
 distributed_at: "2026-05-19T12:42:14.610Z"
 ---

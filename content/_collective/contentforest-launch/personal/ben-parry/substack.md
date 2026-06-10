@@ -4,7 +4,7 @@ member: ben-parry
 channel: substack
 slug: contentforest-launch
 generated_at: "2026-05-06T12:49:51.335Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 status: BLOCKED_PENDING_INPUT
 block_reason: "Substack essays require a supplied title, at least 3 key points from Ben, and a target word count. None were provided in the request. Do not generate — flag this to the orchestrator."

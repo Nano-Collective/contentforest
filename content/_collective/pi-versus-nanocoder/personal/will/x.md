@@ -4,7 +4,7 @@ member: will
 channel: x
 slug: pi-versus-nanocoder
 generated_at: "2026-05-18T13:31:57.508Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 397
 distributed_at: "2026-05-20T10:56:58.142Z"
 ---

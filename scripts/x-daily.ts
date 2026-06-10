@@ -471,7 +471,7 @@ async function main() {
 	const packDir = join(ROOT, contentRoot, X_DAILY_DIR, args.date);
 	const packId = `${X_DAILY_DIR}/${args.date}`;
 	const generatedAt = new Date().toISOString();
-	const model = 'minimax-m2.7';
+	const model = 'minimax-m3';
 
 	const channelsJson = readFile(join(CONFIG_DIR, 'channels.json'));
 	const channels = JSON.parse(channelsJson) as {

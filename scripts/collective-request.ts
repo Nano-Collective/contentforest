@@ -276,7 +276,7 @@ async function main() {
 	}
 
 	const generatedAt = new Date().toISOString();
-	const model = 'minimax-m2.7';
+	const model = 'minimax-m3';
 
 	console.log(
 		`collective-request: ${job.slug} (mode=${mode}, scope=${job.scope}) — issue #${job.issueNumber} from @${job.requester} (max-attempts=${args.maxAttempts})`,

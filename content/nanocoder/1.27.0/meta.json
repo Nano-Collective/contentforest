@@ -3,7 +3,7 @@
   "version": "1.27.0",
   "product_url": "https://github.com/Nano-Collective/nanocoder",
   "generated_at": "2026-05-26T22:38:17.346Z",
-  "model": "minimax-m2.7",
+  "model": "minimax-m3",
   "generation_attempts": 6,
   "auto_fix_attempts": 1,
   "final_status": "passed",

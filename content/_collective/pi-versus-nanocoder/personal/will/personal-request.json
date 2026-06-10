@@ -14,7 +14,7 @@
   ],
   "agent_mode": "bundled",
   "generated_at": "2026-05-18T13:31:57.508Z",
-  "model": "minimax-m2.7",
+  "model": "minimax-m3",
   "phases": [
     {
       "phase": "channels",

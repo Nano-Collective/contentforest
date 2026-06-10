@@ -3,7 +3,7 @@ kind: collective
 slug: contentforest-launch
 channel: reddit
 generated_at: "2026-05-08T14:39:33.385Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 6074
 distributed_at: "2026-05-08T15:46:12.519Z"
 ---

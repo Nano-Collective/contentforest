@@ -4,7 +4,7 @@ version: "1.5.0"
 channel: github-discussion
 title: "Bulk URL conversion — how to crawl an entire site with get-md"
 generated_at: "2026-05-25T22:03:00.677Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 ---
 

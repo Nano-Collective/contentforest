@@ -4,7 +4,7 @@ slug: 70k-downloads-milestone
 channel: github-discussion
 title: "70,000 downloads — a milestone worth noting"
 generated_at: "2026-05-11T11:13:20.409Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1828
 distributed_at: "2026-05-13T22:41:53.040Z"
 ---

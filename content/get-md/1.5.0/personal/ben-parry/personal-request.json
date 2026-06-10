@@ -15,7 +15,7 @@
   ],
   "agent_mode": "per-channel",
   "generated_at": "2026-05-26T22:37:51.060Z",
-  "model": "minimax-m2.7",
+  "model": "minimax-m3",
   "phases": [
     {
       "phase": "channels",

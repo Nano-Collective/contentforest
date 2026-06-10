@@ -3,7 +3,7 @@ kind: collective
 slug: 70k-downloads-milestone
 channel: reddit
 generated_at: "2026-05-11T11:13:20.409Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1109
 distributed_at: "2026-05-14T22:37:00.697Z"
 ---

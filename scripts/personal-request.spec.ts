@@ -111,7 +111,7 @@ test('buildChannelsPrompt: substitutes member voice and channel split (product)'
 		mirrored: [MEMBER.channels[0]],
 		additional: [MEMBER.channels[2]],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	// Member-specific
 	t.regex(prompt, /Will Lamerton/);
@@ -141,7 +141,7 @@ test('buildChannelsPrompt: collective pack substitutes slug-based frontmatter hi
 		mirrored: [MEMBER.channels[0]],
 		additional: [],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /slug: contentforest-launch/);
 	t.notRegex(prompt, /product:/);
@@ -159,7 +159,7 @@ test('buildChannelsPrompt: substitutes CONTEXT when present', t => {
 		mirrored: [MEMBER.channels[0]],
 		additional: [],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /Tighten the LinkedIn post — drop the closing CTA\./);
 	t.notRegex(prompt, /\{\{CONTEXT\}\}/);
@@ -174,7 +174,7 @@ test('buildChannelsPrompt: defaults CONTEXT to "(none)" when null', t => {
 		mirrored: [MEMBER.channels[0]],
 		additional: [],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	// "(none)" appears at least in the change-request block.
 	t.regex(prompt, /Additional context \/ change request:[\s\S]*\(none\)/);
@@ -190,7 +190,7 @@ test('buildChannelsPrompt: empty additional list renders "(none)"', t => {
 		mirrored: [MEMBER.channels[0]],
 		additional: [],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /Channels to add[^\n]*\(none\)/);
 });
@@ -206,7 +206,7 @@ test('buildChannelsEditPrompt: leads with the change request as a directive', t 
 		packDir: '/tmp/pack',
 		packId: 'nanocoder/1.25.0',
 		generatedAt: '2026-05-06T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	// Change request is present and prominent (in the "non-negotiable" section).
 	t.regex(prompt, /Why write it yourself when your agents can handle it\?/);
@@ -317,7 +317,7 @@ test('buildChannelsPrompt: inScopeChannels filters MEMBER_CHANNELS_JSON to the s
 		additional: [],
 		inScopeChannels: [MEMBER.channels[0]],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	// In-scope channel is present; out-of-scope channels are not.
 	t.regex(prompt, /"slug": "linkedin"/);
@@ -337,7 +337,7 @@ test('buildChannelsPrompt: default inScopeChannels covers all member channels (b
 		mirrored: [MEMBER.channels[0]],
 		additional: [MEMBER.channels[1], MEMBER.channels[2]],
 		generatedAt: '2026-05-05T00:00:00Z',
-		model: 'minimax-m2.7',
+		model: 'minimax-m3',
 	});
 	t.regex(prompt, /"slug": "linkedin"/);
 	t.regex(prompt, /"slug": "x"/);

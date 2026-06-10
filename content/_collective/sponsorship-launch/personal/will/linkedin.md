@@ -4,7 +4,7 @@ member: will
 channel: linkedin
 slug: sponsorship-launch
 generated_at: "2026-05-25T21:27:12.149Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1373
 wont_use_at: "2026-06-01T18:35:10.421Z"
 ---

@@ -4,7 +4,7 @@ member: ben-parry
 channel: linkedin
 slug: sponsorship-launch
 generated_at: "2026-05-25T21:28:16.554Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1392
 wont_use_at: "2026-05-28T13:24:01.806Z"
 ---

@@ -4,7 +4,7 @@ member: will
 channel: linkedin
 slug: pi-versus-nanocoder
 generated_at: "2026-05-18T13:31:57.508Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 1727
 wont_use_at: "2026-05-22T12:18:00.817Z"
 ---

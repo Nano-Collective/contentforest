@@ -3,7 +3,7 @@ kind: collective
 slug: 70k-downloads-milestone
 channel: x
 generated_at: "2026-05-11T11:13:20.409Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 229
 distributed_at: "2026-05-13T22:42:17.860Z"
 ---

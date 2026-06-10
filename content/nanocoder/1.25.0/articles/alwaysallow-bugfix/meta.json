@@ -3,5 +3,5 @@
   "title": "The three bugs that broke alwaysAllow for bash",
   "focus": "How three interconnected config-loading bugs prevented alwaysAllow from working for bash, and how they were tracked down",
   "generated_at": "2026-05-01T16:23:25.085Z",
-  "model": "minimax-m2.7"
+  "model": "minimax-m3"
 }

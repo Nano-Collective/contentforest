@@ -529,7 +529,7 @@ async function main() {
 	const {mirrored, additional} = expandChannels(member, baseChannelSlugs);
 
 	const generatedAt = new Date().toISOString();
-	const model = 'minimax-m2.7';
+	const model = 'minimax-m3';
 
 	console.log(
 		`personal-request: ${packId} for @${member.slug} (kind=${job.basePackKind}) — issue #${job.issueNumber} from @${job.requester} (max-attempts=${args.maxAttempts})`,

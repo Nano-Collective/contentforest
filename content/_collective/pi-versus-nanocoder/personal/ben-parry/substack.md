@@ -4,7 +4,7 @@ member: ben-parry
 channel: substack
 slug: pi-versus-nanocoder
 generated_at: "2026-05-19T19:51:41.293Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 12582
 wont_use_at: "2026-05-20T16:50:52.092Z"
 ---

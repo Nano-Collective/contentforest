@@ -4,7 +4,7 @@ version: "1.26.0"
 channel: github-discussion
 title: "Nanocoder v1.26.0: nano mode, reasoning traces, and non-interactive --plain"
 generated_at: "2026-05-10T17:10:04.461Z"
-model: "minimax-m2.7"
+model: "minimax-m3"
 char_count: 0
 distributed_at: "2026-05-11T22:25:21.002Z"
 ---
