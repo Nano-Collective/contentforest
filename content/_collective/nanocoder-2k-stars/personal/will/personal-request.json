@@ -1,0 +1,26 @@
+{
+  "issue_number": 100,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "nanocoder-2k-stars",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "agent_mode": "bundled",
+  "generated_at": "2026-06-10T12:10:22.259Z",
+  "model": "minimax-m3",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
