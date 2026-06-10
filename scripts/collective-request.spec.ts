@@ -73,7 +73,7 @@ test('buildPrompt: substitutes core variables into the collective-request templa
 	});
 	t.regex(prompt, /economics-charter-explainer/);
 	t.regex(prompt, /Tighten the LinkedIn post about the economics charter\./);
-	t.regex(prompt, /minimax-m2\.7/);
+	t.regex(prompt, /minimax-m3/);
 	t.regex(prompt, /https:\/\/nanocollective\.org/);
 	t.notRegex(prompt, /\{\{SLUG\}\}/);
 	t.notRegex(prompt, /\{\{REQUEST\}\}/);

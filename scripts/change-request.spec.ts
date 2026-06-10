@@ -93,7 +93,7 @@ test('buildPrompt: substitutes core variables into the change-request template',
 	t.regex(prompt, /nanocoder/);
 	t.regex(prompt, /1\.25\.2/);
 	t.regex(prompt, /Tighten the LinkedIn post\./);
-	t.regex(prompt, /minimax-m2\.7/);
+	t.regex(prompt, /minimax-m3/);
 	// Verify the placeholders this function owns are resolved.
 	t.notRegex(prompt, /\{\{PRODUCT_SLUG\}\}/);
 	t.notRegex(prompt, /\{\{VERSION\}\}/);
