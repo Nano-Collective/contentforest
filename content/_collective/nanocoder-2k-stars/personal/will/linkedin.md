@@ -6,6 +6,7 @@ slug: nanocoder-2k-stars
 generated_at: "2026-06-10T12:10:22.259Z"
 model: "minimax-m3"
 char_count: 1173
+distributed_at: "2026-06-10T19:25:11.607Z"
 ---
 
 A year ago Nanocoder was just an idea and a tiny Discord. This week we crossed 2,000 GitHub stars. 🔥
