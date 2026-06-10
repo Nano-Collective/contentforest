@@ -1,0 +1,38 @@
+[
+  {
+    "date": "2026-06-10",
+    "source": "nanocoder",
+    "angle": "File explorer for context selection",
+    "preview": "Nanocoder's file explorer shows your project tree, lets you select files with Space, and tells you e"
+  },
+  {
+    "date": "2026-06-10",
+    "source": "nanotune",
+    "angle": "LLM judge for open-ended evaluation",
+    "preview": "When your benchmark relies on simple string matching, it misses what matters most. Nanotune's LLM ju"
+  },
+  {
+    "date": "2026-06-10",
+    "source": "get-md",
+    "angle": "Local LLM conversion for better markdown",
+    "preview": "get-md can convert HTML through a local LLM model instead of the rule-based engine. It downloads the"
+  },
+  {
+    "date": "2026-06-10",
+    "source": "json-up",
+    "angle": "Type-safe JSON migrations with Zod",
+    "preview": "Each migration step in json-up validates through a Zod schema. Bad data is caught before it spreads,"
+  },
+  {
+    "date": "2026-06-10",
+    "source": "collective",
+    "angle": "Not-for-profit with a transparent public ledger",
+    "preview": "The Nano Collective is a not-for-profit, not a company. Fiscally hosted by Open Source Collective, a"
+  },
+  {
+    "date": "2026-06-10",
+    "source": "collective",
+    "angle": "Open contribution with no closed gate",
+    "preview": "PRs are open to all, no agreement required. Volunteer work comes first. Bounties sit alongside it, n"
+  }
+]
