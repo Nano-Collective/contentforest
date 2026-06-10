@@ -1,0 +1,49 @@
+{
+  "issue_number": 101,
+  "requester": "will-lamerton",
+  "member": "ben-parry",
+  "base_pack_kind": "collective",
+  "base_pack_id": "nanocoder-2k-stars",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "linkedin-newsletter",
+    "substack"
+  ],
+  "agent_mode": "per-channel",
+  "generated_at": "2026-06-10T14:23:49.887Z",
+  "model": "minimax-m3",
+  "phases": [
+    {
+      "phase": "channels",
+      "channel_group": [
+        "linkedin",
+        "linkedin-newsletter"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "x"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "substack"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
