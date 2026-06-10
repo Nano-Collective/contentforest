@@ -7,6 +7,7 @@ version: "1.5.0"
 generated_at: "2026-05-26T22:37:51.060Z"
 model: "minimax-m2.7"
 char_count: 1942
+distributed_at: "2026-06-10T11:10:55.749Z"
 ---
 
 A hospital tried to buy its way to better outcomes. New equipment, new software, new dashboards. The outcomes didn't change. The problem wasn't the tools. The problem was that the tools were designed around what the hospital thought it needed, not around how care actually flows.
