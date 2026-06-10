@@ -7,6 +7,7 @@ version: "1.27.0"
 generated_at: "2026-06-02T15:30:53.389Z"
 model: "minimax-m2.7"
 char_count: 11012
+wont_use_at: "2026-06-10T09:29:15.728Z"
 ---
 
 <!-- angle: The architecture of responsiveness - event-based systems vs command-based systems, and why the shift matters more than any individual feature. The daemon is the proof of concept; the principle generalises to AI tooling, hospitals, law firms, and any system where timing affects outcomes. -->
