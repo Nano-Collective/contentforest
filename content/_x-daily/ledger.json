@@ -34,5 +34,41 @@
     "source": "collective",
     "angle": "Open contribution with no closed gate",
     "preview": "PRs are open to all, no agreement required. Volunteer work comes first. Bounties sit alongside it, n"
+  },
+  {
+    "date": "2026-06-11",
+    "source": "nanocoder",
+    "angle": "Skills: one umbrella for extensions",
+    "preview": "Nanocoder's Skills model folds custom commands, subagents, tools, and event subscriptions (file.chan"
+  },
+  {
+    "date": "2026-06-11",
+    "source": "nanotune",
+    "angle": "Fine-tune small models on your laptop",
+    "preview": "Nanotune is a CLI for LoRA fine-tuning small models (0.5B-1.5B) on Apple Silicon via MLX. Guided pro"
+  },
+  {
+    "date": "2026-06-11",
+    "source": "get-md",
+    "angle": "One command to crawl a sitemap",
+    "preview": "get-md v1.5.0: --sitemap walks a sitemap.xml (including nested indexes) and converts every URL to Ma"
+  },
+  {
+    "date": "2026-06-11",
+    "source": "json-up",
+    "angle": "Async migrations for real-world data",
+    "preview": "Migrating real-world data sometimes means I/O. json-up's createAsyncMigrations() / migrateAsync() le"
+  },
+  {
+    "date": "2026-06-11",
+    "source": "collective",
+    "angle": "From idea to shipped project in five stages",
+    "preview": "From idea to shipped project in five stages: a sanity-check, a merged whitepaper, a 30-day public re"
+  },
+  {
+    "date": "2026-06-11",
+    "source": "collective",
+    "angle": "No investors, no equity, by design",
+    "preview": "No company, no investors, no equity. The Nano Collective is fiscally hosted by Open Source Collectiv"
   }
 ]
