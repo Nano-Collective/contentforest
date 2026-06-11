@@ -1,0 +1,41 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-11",
+  "generated_at": "2026-06-11T09:36:05.774Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "Skills: one umbrella for extensions"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Fine-tune small models on your laptop"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "One command to crawl a sitemap"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Async migrations for real-world data"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "From idea to shipped project in five stages"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "No investors, no equity, by design"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
