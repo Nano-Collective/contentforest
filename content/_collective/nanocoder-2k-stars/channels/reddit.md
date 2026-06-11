@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-06-09T20:09:57.259Z"
 model: "minimax-m3"
 char_count: 2302
+distributed_at: "2026-06-10T19:40:37.501Z"
 ---
 
 Nanocoder just crossed 2,000 GitHub stars. We launched just under a year ago, so this felt like a good moment to mark it, and to talk briefly about what the number actually represents.

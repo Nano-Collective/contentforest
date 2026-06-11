@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-06-09T20:09:57.259Z"
 model: "minimax-m3"
 char_count: 962
+distributed_at: "2026-06-10T19:24:34.153Z"
 ---
 
 Nanocoder just crossed 2,000 GitHub stars, a year in, with over 10,000 downloads a month, and a community that keeps showing up.
