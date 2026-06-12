@@ -70,5 +70,41 @@
     "source": "collective",
     "angle": "No investors, no equity, by design",
     "preview": "No company, no investors, no equity. The Nano Collective is fiscally hosted by Open Source Collectiv"
+  },
+  {
+    "date": "2026-06-12",
+    "source": "nanocoder",
+    "angle": "Plan mode for safe exploration",
+    "preview": "Shift+Tab into Plan mode in Nanocoder. The model gets read-only tools, investigates your codebase, a"
+  },
+  {
+    "date": "2026-06-12",
+    "source": "nanotune",
+    "angle": "Benchmark, then fix the failures",
+    "preview": "`nanotune benchmark` runs your tests and writes a JSON + markdown report: pass rate, latency, TTFT, "
+  },
+  {
+    "date": "2026-06-12",
+    "source": "get-md",
+    "angle": "Bounded-concurrency batch with cache",
+    "preview": "`get-md`'s batch API runs an async iterator with bounded concurrency, exponential-backoff retries, a"
+  },
+  {
+    "date": "2026-06-12",
+    "source": "json-up",
+    "angle": "Three error types tell you what broke",
+    "preview": "json-up's migrate() throws three named errors you can branch on: ValidationError (schema mismatch, e"
+  },
+  {
+    "date": "2026-06-12",
+    "source": "collective",
+    "angle": "Brand guardrails are public",
+    "preview": "Our Brand Guidelines are public. They fix the tagline, voice (operational, understated, honest), pro"
+  },
+  {
+    "date": "2026-06-12",
+    "source": "collective",
+    "angle": "Maintainers join by invitation",
+    "preview": "No application form. Maintainers at the Nano Collective are added by invitation: consistent contribu"
   }
 ]
