@@ -106,5 +106,41 @@
     "source": "collective",
     "angle": "Maintainers join by invitation",
     "preview": "No application form. Maintainers at the Nano Collective are added by invitation: consistent contribu"
+  },
+  {
+    "date": "2026-06-14",
+    "source": "nanocoder",
+    "angle": "Three tool-calling paths, with repair",
+    "preview": "Nanocoder ships three tool-calling paths: native function calling, an XML fallback, and a JSON fallb"
+  },
+  {
+    "date": "2026-06-14",
+    "source": "nanotune",
+    "angle": "Export a quantized GGUF after training",
+    "preview": "`nanotune export` ends a fine-tune: fuse the LoRA adapter, convert to GGUF, quantize to q4_k_m, q8_0"
+  },
+  {
+    "date": "2026-06-14",
+    "source": "get-md",
+    "angle": "Pluggable LLM backend, point at any provider",
+    "preview": "get-md v1.5.0 ships a pluggable LLM backend. Set llm.sdkProvider to openai-compatible, anthropic, go"
+  },
+  {
+    "date": "2026-06-14",
+    "source": "json-up",
+    "angle": "Use your own version field name",
+    "preview": "json-up defaults to _version, but the `key` option lets you point at any field. Data tracked as vers"
+  },
+  {
+    "date": "2026-06-14",
+    "source": "collective",
+    "angle": "Bounty scope agreed before money moves",
+    "preview": "Bounty terms belong in the issue, not the invoice. Nano Collective's Economics Charter says it: deli"
+  },
+  {
+    "date": "2026-06-14",
+    "source": "collective",
+    "angle": "Sponsors fund, they do not direct",
+    "preview": "Sponsorship buys a logo on the wall, not a vote on the roadmap. No input on what gets built. No inpu"
   }
 ]
