@@ -108,6 +108,42 @@
     "preview": "No application form. Maintainers at the Nano Collective are added by invitation: consistent contribu"
   },
   {
+    "date": "2026-06-13",
+    "source": "nanocoder",
+    "angle": "Zero telemetry, full local loop",
+    "preview": "Nanocoder runs your data, models, and processing on your machine. Pair it with a local model and the"
+  },
+  {
+    "date": "2026-06-13",
+    "source": "nanotune",
+    "angle": "Export to GGUF for local use",
+    "preview": "Trained a LoRA with nanotune? `nanotune export` fuses it back into the base model and writes a GGUF "
+  },
+  {
+    "date": "2026-06-13",
+    "source": "get-md",
+    "angle": "Pluggable LLM backend in config",
+    "preview": "get-md v1.5.0: the new `llm` config block routes `--use-llm` through a chosen backend. Local ReaderL"
+  },
+  {
+    "date": "2026-06-13",
+    "source": "json-up",
+    "angle": "Custom version key for existing data",
+    "preview": "json-up's `key` option points the version tracker at any field you choose: `version`, `schemaVersion"
+  },
+  {
+    "date": "2026-06-13",
+    "source": "collective",
+    "angle": "Sponsors do not steer the roadmap",
+    "preview": "Sponsorship funds the work, it does not direct it. That is the rule: no influence over what gets bui"
+  },
+  {
+    "date": "2026-06-13",
+    "source": "collective",
+    "angle": "One tagline in every project README",
+    "preview": "Every Nano Collective project README opens with the same single sentence and the same link to the co"
+  },
+  {
     "date": "2026-06-14",
     "source": "nanocoder",
     "angle": "Three tool-calling paths, with repair",
