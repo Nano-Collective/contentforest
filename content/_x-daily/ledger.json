@@ -178,5 +178,41 @@
     "source": "collective",
     "angle": "Sponsors fund, they do not direct",
     "preview": "Sponsorship buys a logo on the wall, not a vote on the roadmap. No input on what gets built. No inpu"
+  },
+  {
+    "date": "2026-06-15",
+    "source": "nanocoder",
+    "angle": "Save points you can roll back to",
+    "preview": "Want to try a risky refactor without losing what works? Nanocoder's `/checkpoint create` and `/check"
+  },
+  {
+    "date": "2026-06-15",
+    "source": "nanotune",
+    "angle": "Five ways to score a benchmark answer",
+    "preview": "Nanotune benchmarks use five match modes: semantic, startsWith, contains, exact, and llm-judge. Pick"
+  },
+  {
+    "date": "2026-06-15",
+    "source": "get-md",
+    "angle": "Strip what you do not need, keep what you do",
+    "preview": "get-md ships filter flags for cleanup. --no-images, --no-links, --no-tables drop the noise. --no-fro"
+  },
+  {
+    "date": "2026-06-15",
+    "source": "json-up",
+    "angle": "Migrate data that has no version yet",
+    "preview": "Old JSON files with no `_version` field are treated as version 0. `json-up` runs the full migration "
+  },
+  {
+    "date": "2026-06-15",
+    "source": "collective",
+    "angle": "No application, just open the PR",
+    "preview": "Contributing to a Nano Collective project has no application process. Small, self-contained work (a "
+  },
+  {
+    "date": "2026-06-15",
+    "source": "collective",
+    "angle": "Privacy, local-first, open for all",
+    "preview": "Every tool we ship is privacy-respecting, local-first, open for all. In that order, as a filter for "
   }
 ]
