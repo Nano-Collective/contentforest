@@ -1,0 +1,29 @@
+# CODEOWNERS
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Order matters: later rules override earlier ones. The last matching rule wins.
+# Place broader rules first and more specific rules below.
+
+# Default: Will reviews everything incoming.
+* @will-lamerton
+
+# Prompt and agent definitions — content generation pipeline.
+# Bump these only when deliberately changing how the agents reason.
+/prompts/ @will-lamerton
+/agents/ @will-lamerton
+/agents.config.json @will-lamerton
+
+# Orchestrator scripts — release pipeline + side flows.
+/scripts/ @will-lamerton
+
+# Config that wires the pipeline to GitHub repos.
+/config/ @will-lamerton
+
+# CI / release workflows.
+/.github/workflows/ @will-lamerton
+
+# Operator docs (keep honest with the code).
+/docs/ @will-lamerton
+
+# Generated release packs are owned by the release pipeline, not by reviewers.
+/content/ @will-lamerton
