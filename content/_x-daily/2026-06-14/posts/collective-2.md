@@ -7,6 +7,7 @@ angle: "Sponsors fund, they do not direct"
 generated_at: "2026-06-12T13:35:06.840Z"
 model: "minimax-m3"
 char_count: 240
+distributed_at: "2026-06-15T16:41:17.988Z"
 ---
 
 Sponsorship buys a logo on the wall, not a vote on the roadmap. No input on what gets built. No input on who gets paid. No exclusivity, no early access to unshipped work. Same rule for $5 tiers and bespoke deals. https://nanocollective.org
