@@ -157,6 +157,29 @@ function readMarkdown(filePath: string, channel: string): ContentFile {
 }
 
 /**
+ * True when the pack has at least one file AND every file has either a
+ * `distributed_at` or `wont_use_at` ISO string in its frontmatter. Mirrors
+ * the per-file checks the detail pages use to decide whether to strike
+ * individual posts in the file tree. Empty packs are not "dealt with" — a
+ * pack with no files has no work to mark, so we leave it un-striked.
+ */
+export function isPackDealtWith(files: ContentFile[]): boolean {
+	if (files.length === 0) return false;
+	for (const f of files) {
+		const distributedAt =
+			typeof f.frontmatter.distributed_at === 'string'
+				? (f.frontmatter.distributed_at as string)
+				: null;
+		const wontUseAt =
+			typeof f.frontmatter.wont_use_at === 'string'
+				? (f.frontmatter.wont_use_at as string)
+				: null;
+		if (!distributedAt && !wontUseAt) return false;
+	}
+	return true;
+}
+
+/**
  * Reads channels/*.md and personal/<member>/<channel>.md from the given root,
  * pushing each as a ContentFile. Channel slug is prefixed with `prefix` so we
  * can disambiguate top-level files from per-article files.

@@ -3,10 +3,18 @@ import type {GetStaticProps} from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {type CollectivePackSummary, listCollectivePacks} from '@/lib/content';
+import {
+	type CollectivePackSummary,
+	isPackDealtWith,
+	listCollectivePacks,
+	readCollectivePack,
+} from '@/lib/content';
+import {cn} from '@/lib/utils';
+
+type PackEntry = CollectivePackSummary & {allMarked: boolean};
 
 type Props = {
-	packs: CollectivePackSummary[];
+	packs: PackEntry[];
 };
 
 function formatDate(meta: Record<string, unknown> | null): string | null {
@@ -60,10 +68,20 @@ export default function CollectiveIndexPage({packs}: Props) {
 							return (
 								<li key={pack.slug}>
 									<Link href={`/c/${pack.slug}`} className="block group">
-										<Card className="transition-colors group-hover:border-primary/50">
+										<Card
+											className={cn(
+												'transition-colors group-hover:border-primary/50',
+												pack.allMarked && 'opacity-60',
+											)}
+										>
 											<CardHeader>
 												<CardTitle className="flex items-center justify-between text-base font-mono">
-													<span className="flex items-center gap-2">
+													<span
+														className={cn(
+															'flex items-center gap-2',
+															pack.allMarked && 'line-through',
+														)}
+													>
 														<Megaphone className="h-4 w-4 text-primary" />
 														{pack.slug}
 													</span>
@@ -87,5 +105,12 @@ export default function CollectiveIndexPage({packs}: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-	return {props: {packs: listCollectivePacks()}};
+	return {
+		props: {
+			packs: listCollectivePacks().map(pack => ({
+				...pack,
+				allMarked: isPackDealtWith(readCollectivePack(pack.slug).files),
+			})),
+		},
+	};
 };

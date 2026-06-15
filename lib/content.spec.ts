@@ -3,7 +3,9 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'ava';
 import {
+	type ContentFile,
 	compareVersionsDesc,
+	isPackDealtWith,
 	listCollectivePacks,
 	listProducts,
 	listVersions,
@@ -293,5 +295,118 @@ test('readCollectivePack: returns empty files when pack dir is missing', t => {
 	const pack = readCollectivePack('does-not-exist', tmp);
 	t.deepEqual(pack.files, []);
 	t.is(pack.meta, null);
+	rmSync(tmp, {recursive: true});
+});
+
+function mkFile(
+	channel: string,
+	frontmatter: Record<string, unknown>,
+): ContentFile {
+	return {
+		path: `/content/${channel}.md`,
+		repoPath: `content/${channel}.md`,
+		channel,
+		raw: '',
+		body: '',
+		frontmatter,
+	};
+}
+
+test('isPackDealtWith: empty pack is not dealt with', t => {
+	t.false(isPackDealtWith([]));
+});
+
+test('isPackDealtWith: single file with no marks is not dealt with', t => {
+	t.false(isPackDealtWith([mkFile('linkedin', {channel: 'linkedin'})]));
+});
+
+test('isPackDealtWith: single file marked distributed is dealt with', t => {
+	t.true(
+		isPackDealtWith([
+			mkFile('linkedin', {
+				channel: 'linkedin',
+				distributed_at: '2026-05-08T10:00:00Z',
+			}),
+		]),
+	);
+});
+
+test('isPackDealtWith: single file marked wont_use is dealt with', t => {
+	t.true(
+		isPackDealtWith([
+			mkFile('linkedin', {
+				channel: 'linkedin',
+				wont_use_at: '2026-05-08T10:00:00Z',
+			}),
+		]),
+	);
+});
+
+test('isPackDealtWith: all files distributed is dealt with', t => {
+	t.true(
+		isPackDealtWith([
+			mkFile('linkedin', {distributed_at: '2026-05-08T10:00:00Z'}),
+			mkFile('x', {distributed_at: '2026-05-08T10:05:00Z'}),
+		]),
+	);
+});
+
+test('isPackDealtWith: all files wont_use is dealt with', t => {
+	t.true(
+		isPackDealtWith([
+			mkFile('linkedin', {wont_use_at: '2026-05-08T10:00:00Z'}),
+			mkFile('x', {wont_use_at: '2026-05-08T10:05:00Z'}),
+		]),
+	);
+});
+
+test('isPackDealtWith: mixed distributed and wont_use is dealt with', t => {
+	t.true(
+		isPackDealtWith([
+			mkFile('linkedin', {distributed_at: '2026-05-08T10:00:00Z'}),
+			mkFile('x', {wont_use_at: '2026-05-08T10:05:00Z'}),
+		]),
+	);
+});
+
+test('isPackDealtWith: any single unmarked file means not dealt with', t => {
+	t.false(
+		isPackDealtWith([
+			mkFile('linkedin', {distributed_at: '2026-05-08T10:00:00Z'}),
+			mkFile('x', {channel: 'x'}),
+		]),
+	);
+});
+
+test('isPackDealtWith: non-string distributed_at is treated as unmarked', t => {
+	// Defense in depth: readVersionPack round-trips dates through JSON, but if
+	// a caller ever hand-builds a ContentFile with a Date object, we still
+	// want a stable boolean instead of a crash.
+	const date = new Date('2026-05-08T10:00:00Z');
+	t.false(
+		isPackDealtWith([mkFile('x', {distributed_at: date as unknown as string})]),
+	);
+});
+
+test('isPackDealtWith: integrates with readVersionPack on real files', t => {
+	const tmp = makeTempContentDir();
+	const root = join(tmp, 'nanocoder', '1.0.0');
+	writeFile(
+		join(root, 'channels/linkedin.md'),
+		'---\nchannel: linkedin\ndistributed_at: "2026-05-08T10:00:00Z"\n---\n\nDone.',
+	);
+	writeFile(
+		join(root, 'channels/x.md'),
+		'---\nchannel: x\nwont_use_at: "2026-05-08T10:05:00Z"\n---\n\nSkipped.',
+	);
+	t.true(isPackDealtWith(readVersionPack('nanocoder', '1.0.0', tmp).files));
+
+	// Now unmark one of them and re-check.
+	writeFile(
+		join(root, 'channels/x.md'),
+		'---\nchannel: x\n---\n\nBack to unmarked.',
+	);
+	t.false(isPackDealtWith(readVersionPack('nanocoder', '1.0.0', tmp).files));
+
 	rmSync(tmp, {recursive: true});
 });
