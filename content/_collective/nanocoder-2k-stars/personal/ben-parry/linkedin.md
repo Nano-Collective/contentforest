@@ -6,6 +6,7 @@ slug: nanocoder-2k-stars
 generated_at: "2026-06-10T14:23:49.887Z"
 model: "minimax-m3"
 char_count: 1602
+distributed_at: "2026-06-15T12:35:30.118Z"
 ---
 
 Most open-source projects don't die from lack of talent. They die from incentives.
