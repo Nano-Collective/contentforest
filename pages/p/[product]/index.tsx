@@ -3,11 +3,19 @@ import type {GetStaticPaths, GetStaticProps} from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {listProducts, listVersions} from '@/lib/content';
+import {
+	isPackDealtWith,
+	listProducts,
+	listVersions,
+	readVersionPack,
+} from '@/lib/content';
+import {cn} from '@/lib/utils';
+
+type VersionEntry = {version: string; allMarked: boolean};
 
 type Props = {
 	product: string;
-	versions: string[];
+	versions: VersionEntry[];
 };
 
 export default function ProductPage({product, versions}: Props) {
@@ -37,13 +45,23 @@ export default function ProductPage({product, versions}: Props) {
 					<p className="text-muted-foreground">No versions yet.</p>
 				) : (
 					<ul className="flex flex-col gap-3">
-						{versions.map(version => (
+						{versions.map(({version, allMarked}) => (
 							<li key={version}>
 								<Link href={`/p/${product}/${version}`} className="block group">
-									<Card className="transition-colors group-hover:border-primary/50">
+									<Card
+										className={cn(
+											'transition-colors group-hover:border-primary/50',
+											allMarked && 'opacity-60',
+										)}
+									>
 										<CardHeader>
 											<CardTitle className="flex items-center justify-between text-base font-mono">
-												<span className="flex items-center gap-2">
+												<span
+													className={cn(
+														'flex items-center gap-2',
+														allMarked && 'line-through',
+													)}
+												>
 													<GitBranch className="h-4 w-4 text-primary" />v
 													{version}
 												</span>
@@ -74,7 +92,10 @@ export const getStaticProps: GetStaticProps<Props> = async ({params}) => {
 	return {
 		props: {
 			product,
-			versions: listVersions(product),
+			versions: listVersions(product).map(version => ({
+				version,
+				allMarked: isPackDealtWith(readVersionPack(product, version).files),
+			})),
 		},
 	};
 };

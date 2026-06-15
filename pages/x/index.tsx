@@ -3,10 +3,18 @@ import type {GetStaticProps} from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import {Card, CardHeader, CardTitle} from '@/components/ui/card';
-import {listXDailyBuckets, type XDailyBucketSummary} from '@/lib/content';
+import {
+	isPackDealtWith,
+	listXDailyBuckets,
+	readXDailyBucket,
+	type XDailyBucketSummary,
+} from '@/lib/content';
+import {cn} from '@/lib/utils';
+
+type BucketEntry = XDailyBucketSummary & {allMarked: boolean};
 
 type Props = {
-	buckets: XDailyBucketSummary[];
+	buckets: BucketEntry[];
 };
 
 function postCount(meta: Record<string, unknown> | null): number | null {
@@ -49,10 +57,20 @@ export default function XDailyIndexPage({buckets}: Props) {
 							return (
 								<li key={bucket.date}>
 									<Link href={`/x/${bucket.date}`} className="block group">
-										<Card className="transition-colors group-hover:border-primary/50">
+										<Card
+											className={cn(
+												'transition-colors group-hover:border-primary/50',
+												bucket.allMarked && 'opacity-60',
+											)}
+										>
 											<CardHeader>
 												<CardTitle className="flex items-center justify-between text-base font-mono">
-													<span className="flex items-center gap-2">
+													<span
+														className={cn(
+															'flex items-center gap-2',
+															bucket.allMarked && 'line-through',
+														)}
+													>
 														<MessageSquare className="h-4 w-4 text-primary" />
 														{bucket.date}
 													</span>
@@ -79,5 +97,12 @@ export default function XDailyIndexPage({buckets}: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-	return {props: {buckets: listXDailyBuckets()}};
+	return {
+		props: {
+			buckets: listXDailyBuckets().map(bucket => ({
+				...bucket,
+				allMarked: isPackDealtWith(readXDailyBucket(bucket.date).files),
+			})),
+		},
+	};
 };
