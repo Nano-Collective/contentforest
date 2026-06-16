@@ -214,5 +214,41 @@
     "source": "collective",
     "angle": "Privacy, local-first, open for all",
     "preview": "Every tool we ship is privacy-respecting, local-first, open for all. In that order, as a filter for "
+  },
+  {
+    "date": "2026-06-16",
+    "source": "nanocoder",
+    "angle": "Markdown-defined custom tools",
+    "preview": "Nanocoder custom tools: a markdown file in .nanocoder/tools/ with a YAML schema and a shell body. Th"
+  },
+  {
+    "date": "2026-06-16",
+    "source": "nanotune",
+    "angle": "Multi-turn training data, validated",
+    "preview": "Build multi-turn chat training data interactively in Nanotune, turn by turn in the TUI. Then `nanotu"
+  },
+  {
+    "date": "2026-06-16",
+    "source": "get-md",
+    "angle": "Optional LLM dependency, smaller install",
+    "preview": "get-md v1.4.0: `node-llama-cpp` is now an optional peer dep. The standard HTML→Markdown path ships l"
+  },
+  {
+    "date": "2026-06-16",
+    "source": "json-up",
+    "angle": "Zod issues come back with the error",
+    "preview": "When a migration's output doesn't match its schema, json-up's ValidationError hands you the full Zod"
+  },
+  {
+    "date": "2026-06-16",
+    "source": "collective",
+    "angle": "Whitepaper to shipped project, in public",
+    "preview": "How a Nano Collective project gets built: Spark the idea, draft a whitepaper, 30-day public review, "
+  },
+  {
+    "date": "2026-06-16",
+    "source": "collective",
+    "angle": "Every dollar on a public ledger",
+    "preview": "The Nano Collective is fiscally hosted by Open Source Collective. Every incoming payment and every p"
   }
 ]
