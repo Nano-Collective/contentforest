@@ -7,7 +7,7 @@ angle: "Markdown-defined custom tools"
 generated_at: "2026-06-16T11:03:07.780Z"
 model: "minimax-m3"
 char_count: 176
-distributed_at: "2026-06-16T15:45:38.396Z"
+distributed_at: "2026-06-16T15:46:27.313Z"
 ---
 
 Nanocoder custom tools: a markdown file in .nanocoder/tools/ with a YAML schema and a shell body. The model can call it, you confirm, the script runs. No MCP process, no build. https://github.com/Nano-Collective/nanocoder
