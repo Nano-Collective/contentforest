@@ -250,5 +250,41 @@
     "source": "collective",
     "angle": "Every dollar on a public ledger",
     "preview": "The Nano Collective is fiscally hosted by Open Source Collective. Every incoming payment and every p"
+  },
+  {
+    "date": "2026-06-17",
+    "source": "nanocoder",
+    "angle": "Run mode for CI and scripts",
+    "preview": "Nanocoder's run subcommand takes a prompt, auto-accepts tool calls, and exits. --mode overrides the "
+  },
+  {
+    "date": "2026-06-17",
+    "source": "nanotune",
+    "angle": "Validate data before you train",
+    "preview": "Before a fine-tune run, `nanotune data validate` checks your training set: JSON shape, required fiel"
+  },
+  {
+    "date": "2026-06-17",
+    "source": "get-md",
+    "angle": "Sitemap crawl with globs and caps",
+    "preview": "get-md's --sitemap mode walks sitemap.xml (including nested indexes), with --include/--exclude globs"
+  },
+  {
+    "date": "2026-06-17",
+    "source": "json-up",
+    "angle": "Mix sync and async in one chain",
+    "preview": "json-up lets sync and async `up()` live in the same chain. `createAsyncMigrations` + `migrateAsync` "
+  },
+  {
+    "date": "2026-06-17",
+    "source": "collective",
+    "angle": "Thirty days of public review",
+    "preview": "Every whitepaper the Nano Collective merges enters a 30-day public review window before a build/decl"
+  },
+  {
+    "date": "2026-06-17",
+    "source": "collective",
+    "angle": "Maintainers step back when they need to",
+    "preview": "Maintainership in the Nano Collective is by invitation, with no fixed shift. Stepping back, going qu"
   }
 ]
