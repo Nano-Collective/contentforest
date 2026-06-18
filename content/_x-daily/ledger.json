@@ -286,5 +286,41 @@
     "source": "collective",
     "angle": "Maintainers step back when they need to",
     "preview": "Maintainership in the Nano Collective is by invitation, with no fixed shift. Stepping back, going qu"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "nanocoder",
+    "angle": "Subagents that run in parallel",
+    "preview": "Nanocoder's main agent can call the `agent` tool up to five times in a single response. The built-in"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "nanotune",
+    "angle": "The train benchmark fix loop",
+    "preview": "Nanotune's loop: run `nanotune benchmark`, open the markdown report, find the failed tests, add trai"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "get-md",
+    "angle": "Chunk markdown for RAG ingestion",
+    "preview": "get-md's chunkMarkdown splits at heading boundaries, keeps a heading trail on each chunk, and suppor"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "json-up",
+    "angle": "Type inference across the migration chain",
+    "preview": "Each `up` function in json-up is typed from the previous step output. Rename a field in v2 and downs"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "collective",
+    "angle": "Five stages from idea to shipped repo",
+    "preview": "How a Nano Collective project actually comes to life: Spark, Whitepaper draft, Public review (30 day"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "collective",
+    "angle": "What sponsorship does not buy",
+    "preview": "Sponsorship funds the Nano Collective. It does not buy roadmap influence, early access to unshipped "
   }
 ]
