@@ -6,6 +6,7 @@ slug: nanocoder-2k-stars
 generated_at: "2026-06-10T14:23:49.887Z"
 model: "minimax-m3"
 char_count: 4495
+wont_use_at: "2026-06-18T09:59:24.944Z"
 ---
 
 ## The signal that isn't a number
