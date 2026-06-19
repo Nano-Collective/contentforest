@@ -7,6 +7,7 @@ version: "1.27.0"
 generated_at: "2026-06-02T15:30:53.389Z"
 model: "minimax-m3"
 char_count: 1887
+wont_use_at: "2026-06-19T14:01:33.502Z"
 ---
 
 Most developer tools wait to be called. You open a terminal, you invoke a command, the tool does a thing, you get a result. This is fine when the work maps neatly onto that interaction pattern. It stops being fine when the work is continuous.
