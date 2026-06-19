@@ -7,6 +7,7 @@ version: "1.5.0"
 generated_at: "2026-05-26T22:37:51.060Z"
 model: "minimax-m3"
 char_count: 4320
+wont_use_at: "2026-06-19T14:01:59.068Z"
 ---
 
 Every tool makes a bet about the world and locks it in. The question isn't whether a tool makes those bets. It's whether you can change them when the bet turns out to be wrong.
