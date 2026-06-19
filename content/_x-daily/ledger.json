@@ -322,5 +322,41 @@
     "source": "collective",
     "angle": "What sponsorship does not buy",
     "preview": "Sponsorship funds the Nano Collective. It does not buy roadmap influence, early access to unshipped "
+  },
+  {
+    "date": "2026-06-19",
+    "source": "nanocoder",
+    "angle": "A nano profile for 1B-parameter models",
+    "preview": "Nanocoder's /tune adds a \"nano\" tool profile for 1B-class models: ~150-250 token system prompt, no s"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "nanotune",
+    "angle": "Read the loss curve, then tune",
+    "preview": "Read the loss curve, then tune. Nanotune defaults: 150 iters, 5e-5 LR, batch 4. Train and val should"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "get-md",
+    "angle": "Stream JSONL from a batch run",
+    "preview": "getmd --batch urls.txt --json streams one JSON object per line, so the output pipes straight into jq"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "json-up",
+    "angle": "Build the chain from standalone pieces",
+    "preview": "json-up: when migrations live in their own files, wrap each in `createMigration` (or `createAsyncMig"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "collective",
+    "angle": "Merging a whitepaper is not approval",
+    "preview": "Merging a Nano Collective whitepaper only opens a 30-day public review window. The build / decline /"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "collective",
+    "angle": "Scope before money, never retrospective",
+    "preview": "From the Nano Collective Economics Charter: deliverable, acceptance criteria, and amount are agreed "
   }
 ]

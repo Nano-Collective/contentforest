@@ -1,0 +1,41 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-19",
+  "generated_at": "2026-06-19T05:22:36.439Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "A nano profile for 1B-parameter models"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Read the loss curve, then tune"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Stream JSONL from a batch run"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Build the chain from standalone pieces"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merging a whitepaper is not approval"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Scope before money, never retrospective"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
