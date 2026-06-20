@@ -358,5 +358,41 @@
     "source": "collective",
     "angle": "Scope before money, never retrospective",
     "preview": "From the Nano Collective Economics Charter: deliverable, acceptance criteria, and amount are agreed "
+  },
+  {
+    "date": "2026-06-20",
+    "source": "nanocoder",
+    "angle": "VS Code live diffs and active editor context",
+    "preview": "nanocoder --vscode wires your editor into the CLI. Focus a file and an \"In App.tsx\" pill appears on "
+  },
+  {
+    "date": "2026-06-20",
+    "source": "nanotune",
+    "angle": "LLM as judge for open-ended answers",
+    "preview": "`nanotune judge configure` sets up an LLM judge for tests where string-match fails. Mark a test `mat"
+  },
+  {
+    "date": "2026-06-20",
+    "source": "get-md",
+    "angle": "Same API in Node, React Native, and browser",
+    "preview": "One convertToMarkdown call, three runtimes: Node, React Native, and the browser. get-md uses happy-d"
+  },
+  {
+    "date": "2026-06-20",
+    "source": "json-up",
+    "angle": "Zod schema checks what the up function returns",
+    "preview": "Each json-up migration pairs up() with a Zod schema. If the output doesn't match the next version's "
+  },
+  {
+    "date": "2026-06-20",
+    "source": "collective",
+    "angle": "No application process to contribute",
+    "preview": "There's no application to join the Nano Collective. Pick a project at github.com/Nano-Collective, re"
+  },
+  {
+    "date": "2026-06-20",
+    "source": "collective",
+    "angle": "Anyone can propose a project",
+    "preview": "Anyone can propose a Nano Collective project. No contribution history, no maintainer status required"
   }
 ]
