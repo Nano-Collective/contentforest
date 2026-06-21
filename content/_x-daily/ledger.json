@@ -394,5 +394,41 @@
     "source": "collective",
     "angle": "Anyone can propose a project",
     "preview": "Anyone can propose a Nano Collective project. No contribution history, no maintainer status required"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "nanocoder",
+    "angle": "Plan mode before you let the AI touch anything",
+    "preview": "Before Nanocoder touches a file: Shift+Tab into plan mode. The AI investigates the codebase and writ"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "nanotune",
+    "angle": "No YAML, no flags - guided prompts instead",
+    "preview": "Nanotune fine-tunes small models on Apple Silicon without you writing a config file. Each step is an"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "get-md",
+    "angle": "See Turndown and LLM output side by side",
+    "preview": "get-md's `--compare` runs the same URL through both conversion paths (fast Turndown, local LLM) and "
+  },
+  {
+    "date": "2026-06-21",
+    "source": "json-up",
+    "angle": "Three error types you can actually catch",
+    "preview": "`migrate()` and `migrateAsync()` throw three distinct error types: `ValidationError` (output vs sche"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "collective",
+    "angle": "Every dollar in, every dollar out - in real time",
+    "preview": "The Nano Collective is fiscally hosted by Open Source Collective. Every incoming and outgoing paymen"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "collective",
+    "angle": "Bounties sit alongside volunteer work, not above it",
+    "preview": "The collective is volunteer-led. Bounties sit alongside that work, not above it. For any paid piece:"
   }
 ]
