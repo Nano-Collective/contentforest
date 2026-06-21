@@ -1,0 +1,7 @@
+{
+  "slug": "acp-server-zed-integration",
+  "title": "Nanocoder as an ACP agent - driving it from Zed",
+  "focus": "A walkthrough of what changes when Nanocoder becomes an Agent Client Protocol server: how JSON-RPC replaces the terminal UI, which editor affordances (streaming, diffs, permission prompts, ask_user buttons, session modes) come for free, and how it compares to the existing WebSocket-based VS Code integration.",
+  "generated_at": "2026-06-21T18:38:50.510Z",
+  "model": "minimax-m3"
+}

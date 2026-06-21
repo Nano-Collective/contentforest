@@ -1,0 +1,7 @@
+{
+  "slug": "auto-tune-tool-consolidation",
+  "title": "Tune, auto-detected - how the new tool profiles pick themselves",
+  "focus": "The mechanics behind the 33-to-19 tool consolidation and the new auto tune profile that infers full, minimal, or nano from the active model's parameter count, including how it interacts with development modes, the 5-layer config hierarchy, and what local-model workflows gain from a profile that re-resolves on model switch.",
+  "generated_at": "2026-06-21T18:38:50.510Z",
+  "model": "minimax-m3"
+}
