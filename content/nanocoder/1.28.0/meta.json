@@ -1,0 +1,28 @@
+{
+  "product": "nanocoder",
+  "version": "1.28.0",
+  "product_url": "https://github.com/Nano-Collective/nanocoder",
+  "generated_at": "2026-06-21T18:38:50.510Z",
+  "model": "minimax-m3",
+  "generation_attempts": 4,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "acp-server-zed-integration",
+      "title": "Nanocoder as an ACP agent - driving it from Zed",
+      "focus": "A walkthrough of what changes when Nanocoder becomes an Agent Client Protocol server: how JSON-RPC replaces the terminal UI, which editor affordances (streaming, diffs, permission prompts, ask_user buttons, session modes) come for free, and how it compares to the existing WebSocket-based VS Code integration.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "auto-tune-tool-consolidation",
+      "title": "Tune, auto-detected - how the new tool profiles pick themselves",
+      "focus": "The mechanics behind the 33-to-19 tool consolidation and the new auto tune profile that infers full, minimal, or nano from the active model's parameter count, including how it interacts with development modes, the 5-layer config hierarchy, and what local-model workflows gain from a profile that re-resolves on model switch.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
