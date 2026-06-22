@@ -1,0 +1,41 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-22",
+  "generated_at": "2026-06-22T05:28:23.488Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "Skills unify commands, subagents, tools, and subscriptions"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Fine-tuning runs locally on a Mac"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Stats tell you the token cost before you prompt"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Rename a field without losing the value"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Maintainership is offered, not applied for"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "The community fund is a mechanism, not a balance"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}

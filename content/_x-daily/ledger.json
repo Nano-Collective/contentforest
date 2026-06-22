@@ -430,5 +430,41 @@
     "source": "collective",
     "angle": "Bounties sit alongside volunteer work, not above it",
     "preview": "The collective is volunteer-led. Bounties sit alongside that work, not above it. For any paid piece:"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "nanocoder",
+    "angle": "Skills unify commands, subagents, tools, and subscriptions",
+    "preview": "Nanocoder skills: one .md for a quick command or subagent, or a .nanocoder/skills/<name>/ bundle (sk"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "nanotune",
+    "angle": "Fine-tuning runs locally on a Mac",
+    "preview": "Fine-tune a HuggingFace model on a Mac with Apple Silicon, MLX, and LoRA. No cluster, no cloud. Trai"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "get-md",
+    "angle": "Stats tell you the token cost before you prompt",
+    "preview": "convertToMarkdown() returns the markdown and a stats block: estimatedTokens (chars/4), readingTime, "
+  },
+  {
+    "date": "2026-06-22",
+    "source": "json-up",
+    "angle": "Rename a field without losing the value",
+    "preview": "Renaming a field without losing it: v2 schema is z.object({ username: z.string() }), and up() maps t"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "collective",
+    "angle": "Maintainership is offered, not applied for",
+    "preview": "Maintainership at the Nano Collective isn't applied for. It's offered, based on consistent contribut"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "collective",
+    "angle": "The community fund is a mechanism, not a balance",
+    "preview": "The Nano Collective's community fund is a mechanism, not a balance. Structure is live (OSC fiscal ho"
   }
 ]
