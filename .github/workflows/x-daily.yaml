@@ -11,7 +11,7 @@ on:
         required: false
         type: string
       dry_run:
-        description: "Write to content/_test/ instead of opening a PR"
+        description: "Write to content/_test/ instead of committing to main"
         required: false
         type: boolean
         default: false
@@ -27,7 +27,6 @@ jobs:
 
     permissions:
       contents: write
-      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -64,13 +63,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Ensure PR labels exist
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh label create x-daily --color "1f6feb" --description "Automated daily X-post PR" --force
-          gh label create failed-validation --color "d93f0b" --description "Validator found hard-rule failures" --force
-
       - name: Fetch reference docs
         run: pnpm fetch-refs
 
@@ -88,7 +80,7 @@ jobs:
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
           echo "Resolved date: $DATE"
 
-      - name: Generate, validate, and open a PR
+      - name: Generate, validate, and commit to main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
@@ -98,29 +90,31 @@ jobs:
           NANOCODER_CONTEXT_LIMIT: "128000"
         run: |
           set -euo pipefail
-          BRANCH="auto/x-daily-${DATE}"
           PACK_DIR="content/_x-daily/${DATE}"
           POSTS_DIR="${PACK_DIR}/posts"
 
-          # Skip if a branch already exists for this date — prevents duplicate
-          # PRs on retried runs.
-          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-            echo "branch $BRANCH already exists on origin, skipping"
+          git fetch origin main
+
+          # Idempotency: skip if this date's bucket already landed on main —
+          # prevents a retried run from regenerating posts.
+          if git ls-tree -d "origin/main" "$PACK_DIR" | grep -q "$PACK_DIR"; then
+            echo "$PACK_DIR already exists on main, skipping"
             exit 0
           fi
 
-          git checkout -B "$BRANCH" origin/main
+          git checkout -B main origin/main
 
           if [ "${DRY_RUN:-false}" = "true" ]; then
             pnpm x-daily --date "$DATE" --test
-            echo "dry_run: skipping PR open"
+            echo "dry_run: skipping commit"
             exit 0
           fi
 
           # Run generation. Validation failures (posts present but rules broken)
-          # are NOT system failures — we still open a PR with failed-validation.
-          # Generation crashes (Nanocoder error, network, etc.) ARE system
-          # failures — clean up and surface them as red workflow status.
+          # are NOT system failures — the posts still land on main and the
+          # distribution step in the web UI is the human gate. Generation
+          # crashes (Nanocoder error, network, etc.) ARE system failures —
+          # clean up and surface them as red workflow status.
           set +e
           pnpm x-daily --date "$DATE" --commit
           GEN_STATUS=$?
@@ -131,8 +125,6 @@ jobs:
           if [ "${POST_COUNT:-0}" -lt 1 ]; then
             echo "::error::x-daily produced no post files for ${DATE} — system failure"
             rm -rf "$PACK_DIR"
-            git checkout main
-            git branch -D "$BRANCH" 2>/dev/null || true
             exit 1
           fi
 
@@ -140,45 +132,28 @@ jobs:
           # clean pass) and commit.
           git add content/_x-daily/
           if [ -z "$(git diff --cached --name-only)" ]; then
-            echo "no content changes after add; skipping PR"
-            git checkout main
-            git branch -D "$BRANCH" 2>/dev/null || true
+            echo "no content changes after add; skipping commit"
             exit 0
           fi
-          git commit -m "auto: x-daily posts ${DATE}"
-          git push --set-upstream origin "$BRANCH"
 
           META_PATH="${PACK_DIR}/meta.json"
           FINAL_STATUS=$(jq -r '.final_status // "unknown"' "$META_PATH" 2>/dev/null || echo "unknown")
-          ATTEMPTS=$(jq -r '.attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
-
-          LABELS="x-daily"
           if [ "$FINAL_STATUS" != "passed" ] || [ "$GEN_STATUS" -ne 0 ]; then
-            LABELS="x-daily,failed-validation"
+            echo "::warning::x-daily for ${DATE} did not pass validation (final_status=${FINAL_STATUS}); committing anyway — sanity-check before distributing"
           fi
 
-          BODY=$(printf 'Automated daily X posts for **%s**.\n\n- Final status: `%s`\n- Attempts: `%s`\n- Posts: `%s`\n\nValidation ran during generation; the `meta.json` in the bucket has the report. A reviewer should sanity-check the posts before merging.' \
-            "$DATE" "$FINAL_STATUS" "$ATTEMPTS" "$POST_COUNT")
+          git commit -m "auto: x-daily posts ${DATE}"
 
-          # Try to open the PR. If creation fails, the branch on origin is
-          # orphaned — delete it so the next run isn't blocked by the guard.
-          set +e
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "X posts: ${DATE}" \
-            --body "$BODY" \
-            --label "$LABELS"
-          PR_STATUS=$?
-          set -e
+          # Push straight to main. A distribute commit (or another job) may have
+          # landed while we generated, so rebase and retry the push race.
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "pushed x-daily posts for ${DATE} to main"
+              exit 0
+            fi
+            echo "push attempt ${attempt} failed (main moved?), retrying"
+            sleep 3
+          done
 
-          if [ "$PR_STATUS" -ne 0 ]; then
-            echo "::error::pr creation failed for ${DATE} — deleting remote branch to unblock retries"
-            git push origin --delete "$BRANCH" 2>/dev/null || true
-            git checkout main
-            git branch -D "$BRANCH" 2>/dev/null || true
-            exit 1
-          fi
-
-          git checkout main
-          git branch -D "$BRANCH" 2>/dev/null || true
+          echo "::error::failed to push x-daily posts for ${DATE} to main after retries"
+          exit 1
