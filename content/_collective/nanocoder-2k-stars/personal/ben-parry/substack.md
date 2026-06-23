@@ -6,6 +6,7 @@ slug: nanocoder-2k-stars
 generated_at: "2026-06-10T14:23:49.887Z"
 model: "minimax-m3"
 char_count: 13918
+wont_use_at: "2026-06-18T10:00:08.567Z"
 ---
 
 <!-- angle: 2K stars is structural proof that an open, community-funded, non-corporate model of building AI tooling can produce software people genuinely want. The essay is about what the architecture of "the commons" is doing that the architecture of the venture-backed default cannot. -->

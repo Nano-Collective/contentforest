@@ -286,5 +286,221 @@
     "source": "collective",
     "angle": "Maintainers step back when they need to",
     "preview": "Maintainership in the Nano Collective is by invitation, with no fixed shift. Stepping back, going qu"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "nanocoder",
+    "angle": "Subagents that run in parallel",
+    "preview": "Nanocoder's main agent can call the `agent` tool up to five times in a single response. The built-in"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "nanotune",
+    "angle": "The train benchmark fix loop",
+    "preview": "Nanotune's loop: run `nanotune benchmark`, open the markdown report, find the failed tests, add trai"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "get-md",
+    "angle": "Chunk markdown for RAG ingestion",
+    "preview": "get-md's chunkMarkdown splits at heading boundaries, keeps a heading trail on each chunk, and suppor"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "json-up",
+    "angle": "Type inference across the migration chain",
+    "preview": "Each `up` function in json-up is typed from the previous step output. Rename a field in v2 and downs"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "collective",
+    "angle": "Five stages from idea to shipped repo",
+    "preview": "How a Nano Collective project actually comes to life: Spark, Whitepaper draft, Public review (30 day"
+  },
+  {
+    "date": "2026-06-18",
+    "source": "collective",
+    "angle": "What sponsorship does not buy",
+    "preview": "Sponsorship funds the Nano Collective. It does not buy roadmap influence, early access to unshipped "
+  },
+  {
+    "date": "2026-06-19",
+    "source": "nanocoder",
+    "angle": "A nano profile for 1B-parameter models",
+    "preview": "Nanocoder's /tune adds a \"nano\" tool profile for 1B-class models: ~150-250 token system prompt, no s"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "nanotune",
+    "angle": "Read the loss curve, then tune",
+    "preview": "Read the loss curve, then tune. Nanotune defaults: 150 iters, 5e-5 LR, batch 4. Train and val should"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "get-md",
+    "angle": "Stream JSONL from a batch run",
+    "preview": "getmd --batch urls.txt --json streams one JSON object per line, so the output pipes straight into jq"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "json-up",
+    "angle": "Build the chain from standalone pieces",
+    "preview": "json-up: when migrations live in their own files, wrap each in `createMigration` (or `createAsyncMig"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "collective",
+    "angle": "Merging a whitepaper is not approval",
+    "preview": "Merging a Nano Collective whitepaper only opens a 30-day public review window. The build / decline /"
+  },
+  {
+    "date": "2026-06-19",
+    "source": "collective",
+    "angle": "Scope before money, never retrospective",
+    "preview": "From the Nano Collective Economics Charter: deliverable, acceptance criteria, and amount are agreed "
+  },
+  {
+    "date": "2026-06-20",
+    "source": "nanocoder",
+    "angle": "VS Code live diffs and active editor context",
+    "preview": "nanocoder --vscode wires your editor into the CLI. Focus a file and an \"In App.tsx\" pill appears on "
+  },
+  {
+    "date": "2026-06-20",
+    "source": "nanotune",
+    "angle": "LLM as judge for open-ended answers",
+    "preview": "`nanotune judge configure` sets up an LLM judge for tests where string-match fails. Mark a test `mat"
+  },
+  {
+    "date": "2026-06-20",
+    "source": "get-md",
+    "angle": "Same API in Node, React Native, and browser",
+    "preview": "One convertToMarkdown call, three runtimes: Node, React Native, and the browser. get-md uses happy-d"
+  },
+  {
+    "date": "2026-06-20",
+    "source": "json-up",
+    "angle": "Zod schema checks what the up function returns",
+    "preview": "Each json-up migration pairs up() with a Zod schema. If the output doesn't match the next version's "
+  },
+  {
+    "date": "2026-06-20",
+    "source": "collective",
+    "angle": "No application process to contribute",
+    "preview": "There's no application to join the Nano Collective. Pick a project at github.com/Nano-Collective, re"
+  },
+  {
+    "date": "2026-06-20",
+    "source": "collective",
+    "angle": "Anyone can propose a project",
+    "preview": "Anyone can propose a Nano Collective project. No contribution history, no maintainer status required"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "nanocoder",
+    "angle": "Plan mode before you let the AI touch anything",
+    "preview": "Before Nanocoder touches a file: Shift+Tab into plan mode. The AI investigates the codebase and writ"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "nanotune",
+    "angle": "No YAML, no flags - guided prompts instead",
+    "preview": "Nanotune fine-tunes small models on Apple Silicon without you writing a config file. Each step is an"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "get-md",
+    "angle": "See Turndown and LLM output side by side",
+    "preview": "get-md's `--compare` runs the same URL through both conversion paths (fast Turndown, local LLM) and "
+  },
+  {
+    "date": "2026-06-21",
+    "source": "json-up",
+    "angle": "Three error types you can actually catch",
+    "preview": "`migrate()` and `migrateAsync()` throw three distinct error types: `ValidationError` (output vs sche"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "collective",
+    "angle": "Every dollar in, every dollar out - in real time",
+    "preview": "The Nano Collective is fiscally hosted by Open Source Collective. Every incoming and outgoing paymen"
+  },
+  {
+    "date": "2026-06-21",
+    "source": "collective",
+    "angle": "Bounties sit alongside volunteer work, not above it",
+    "preview": "The collective is volunteer-led. Bounties sit alongside that work, not above it. For any paid piece:"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "nanocoder",
+    "angle": "Skills unify commands, subagents, tools, and subscriptions",
+    "preview": "Nanocoder skills: one .md for a quick command or subagent, or a .nanocoder/skills/<name>/ bundle (sk"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "nanotune",
+    "angle": "Fine-tuning runs locally on a Mac",
+    "preview": "Fine-tune a HuggingFace model on a Mac with Apple Silicon, MLX, and LoRA. No cluster, no cloud. Trai"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "get-md",
+    "angle": "Stats tell you the token cost before you prompt",
+    "preview": "convertToMarkdown() returns the markdown and a stats block: estimatedTokens (chars/4), readingTime, "
+  },
+  {
+    "date": "2026-06-22",
+    "source": "json-up",
+    "angle": "Rename a field without losing the value",
+    "preview": "Renaming a field without losing it: v2 schema is z.object({ username: z.string() }), and up() maps t"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "collective",
+    "angle": "Maintainership is offered, not applied for",
+    "preview": "Maintainership at the Nano Collective isn't applied for. It's offered, based on consistent contribut"
+  },
+  {
+    "date": "2026-06-22",
+    "source": "collective",
+    "angle": "The community fund is a mechanism, not a balance",
+    "preview": "The Nano Collective's community fund is a mechanism, not a balance. Structure is live (OSC fiscal ho"
+  },
+  {
+    "date": "2026-06-23",
+    "source": "nanocoder",
+    "angle": "MCP servers through one config file",
+    "preview": "MCP servers through one config: .mcp.json in the project root. stdio, HTTP, or WebSocket per entry, "
+  },
+  {
+    "date": "2026-06-23",
+    "source": "nanotune",
+    "angle": "Quantize your fine-tune on the way out",
+    "preview": "nanotune export fuses your LoRA adapter with the base model and writes GGUF in f16, q8_0, q4_k_m, or"
+  },
+  {
+    "date": "2026-06-23",
+    "source": "get-md",
+    "angle": "Chunk markdown with heading context and overlap",
+    "preview": "get-md's chunkMarkdown splits a converted doc at heading boundaries and prepends the heading trail t"
+  },
+  {
+    "date": "2026-06-23",
+    "source": "json-up",
+    "angle": "Use your own field name for the version key",
+    "preview": "migrate() reads and writes _version by default, but the `key` option lets you point it at any field "
+  },
+  {
+    "date": "2026-06-23",
+    "source": "collective",
+    "angle": "If the proposer disappears, the work keeps going",
+    "preview": "Whitepaper proposers go dark sometimes. The collective's answer: anyone can pick up an in-flight whi"
+  },
+  {
+    "date": "2026-06-23",
+    "source": "collective",
+    "angle": "Three principles, in that order, are the filter",
+    "preview": "Every project the Nano Collective ships has passed the same three checks, in order: privacy-respecti"
   }
 ]

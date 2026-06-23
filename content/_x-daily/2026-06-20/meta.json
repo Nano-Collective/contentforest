@@ -1,0 +1,41 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-20",
+  "generated_at": "2026-06-20T04:39:51.008Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "VS Code live diffs and active editor context"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "LLM as judge for open-ended answers"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Same API in Node, React Native, and browser"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Zod schema checks what the up function returns"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "No application process to contribute"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Anyone can propose a project"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
