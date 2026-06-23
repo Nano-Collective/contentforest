@@ -12,8 +12,8 @@
  *
  *   1. Build the slots (products + N collective).
  *   2. Plan agent (prompts/agents/x-daily-plan.md): writes a JSON file with
- *      one {file, angle, focus} per slot. Retried until it parses + covers
- *      every slot, up to --max-retries.
+ *      one {file, angle, archetype, focus} per slot. Retried until it parses +
+ *      covers every slot, up to --max-retries.
  *   3. Write meta.json (the plan) so the validator knows the expected files.
  *   4. Writer agent (prompts/agents/x-daily-write.md) once per slot, each
  *      producing posts/<file>.md and self-checking only its own file.
@@ -59,14 +59,87 @@ export type Slot = {
 	sourceKind: 'product' | 'collective';
 };
 
-export type PlanEntry = {file: string; angle: string; focus: string};
+export type PlanEntry = {
+	file: string;
+	angle: string;
+	focus: string;
+	archetype: string;
+};
 
 export type LedgerEntry = {
 	date: string;
 	source: string;
 	angle: string;
+	archetype?: string;
 	preview: string;
 };
+
+/**
+ * Post archetypes — the *shape* of a post, independent of its topic. The
+ * planner assigns one per slot and rotates them (steered by the ledger, which
+ * records the archetype it used) so the daily feed varies in structure, not
+ * just subject. The writer is handed the chosen archetype's guidance. Keep the
+ * ids stable: they are written to the ledger and matched on read.
+ */
+export type Archetype = {id: string; label: string; guidance: string};
+
+export const ARCHETYPES: Archetype[] = [
+	{
+		id: 'problem-relief',
+		label: 'Problem, then relief',
+		guidance:
+			'Open with a specific, real annoyance a developer feels - concrete enough that they nod. The next sentence is the fix. Never open with the product or feature name.',
+	},
+	{
+		id: 'sharp-take',
+		label: 'Sharp take',
+		guidance:
+			'One opinionated line about how things should be done, then a sentence of why the product backs it up. Have a stance. Keep it short - this archetype should not fill the character budget.',
+	},
+	{
+		id: 'til',
+		label: 'Non-obvious detail',
+		guidance:
+			'Lead with a surprising or easy-to-miss behaviour or fact - something a casual user would not expect. Then say why it matters. No "did you know" phrasing.',
+	},
+	{
+		id: 'origin',
+		label: 'Why it exists',
+		guidance:
+			'Explain the motivation - the problem or principle the thing was built around - not a feature list. Closer to a design note than a spec.',
+	},
+	{
+		id: 'one-tip',
+		label: 'One concrete tip',
+		guidance:
+			'A single actionable thing the reader can do today, stated plainly. One tip, not three. End on what they get for it.',
+	},
+	{
+		id: 'by-the-numbers',
+		label: 'Lead with a number',
+		guidance:
+			'Open with a concrete number, limit, or measurement that reframes the thing (a size, a count, a default, a threshold). Let the number carry the hook.',
+	},
+	{
+		id: 'contrarian',
+		label: 'Against the default',
+		guidance:
+			'Name a common default or habit, then show how the product deliberately does the opposite and why that is better. Do not name or attack specific competitors.',
+	},
+];
+
+const ARCHETYPE_IDS = new Set(ARCHETYPES.map(a => a.id));
+
+export function archetypeById(id: string): Archetype | undefined {
+	return ARCHETYPES.find(a => a.id === id);
+}
+
+/** Markdown bullet list of the archetype menu, for the planner prompt. */
+export function archetypesCatalogue(): string {
+	return ARCHETYPES.map(a => `- \`${a.id}\` (${a.label}): ${a.guidance}`).join(
+		'\n',
+	);
+}
 
 type Args = {
 	date: string;
@@ -193,6 +266,10 @@ export function parseXDailyPlan(
 		}
 		const obj = entry as Record<string, unknown>;
 		const {file, angle, focus} = obj;
+		// archetype is steering, not structure: a missing or unknown value is
+		// coerced to a deterministic fallback below rather than failing the plan
+		// (a whole nanocoder run is too expensive to discard over it).
+		const archetype = typeof obj.archetype === 'string' ? obj.archetype : '';
 		if (typeof file !== 'string' || file.length === 0) {
 			problems.push(`entry ${i}: "file" must be a non-empty string`);
 			continue;
@@ -208,7 +285,7 @@ export function parseXDailyPlan(
 			continue;
 		}
 		if (typeof angle === 'string' && typeof focus === 'string') {
-			byFile.set(file, {file, angle, focus});
+			byFile.set(file, {file, angle, focus, archetype});
 		}
 	}
 
@@ -225,8 +302,19 @@ export function parseXDailyPlan(
 	}
 
 	if (problems.length > 0) return {ok: false, problems};
-	// Re-order to slot order so downstream is deterministic.
-	return {ok: true, plan: slots.map(s => byFile.get(s.file) as PlanEntry)};
+	// Re-order to slot order so downstream is deterministic, and coerce any
+	// missing/unknown archetype to a deterministic per-slot fallback so the
+	// daily set still spans different shapes even if the planner omits them.
+	return {
+		ok: true,
+		plan: slots.map((s, i) => {
+			const entry = byFile.get(s.file) as PlanEntry;
+			const archetype = ARCHETYPE_IDS.has(entry.archetype)
+				? entry.archetype
+				: ARCHETYPES[i % ARCHETYPES.length].id;
+			return {...entry, archetype};
+		}),
+	};
 }
 
 /**
@@ -251,7 +339,8 @@ export function summarizeRecentAngles(
 		}
 		lines.push(`${source}:`);
 		for (const e of recent) {
-			lines.push(`  - [${e.date}] ${e.angle}`);
+			const shape = e.archetype ? ` (${e.archetype})` : '';
+			lines.push(`  - [${e.date}]${shape} ${e.angle}`);
 		}
 	}
 	return lines.join('\n');
@@ -290,6 +379,7 @@ export function buildPlanPrompt(args: {
 		PRODUCTS_JSON: args.productsJson.trim(),
 		CHANNELS_JSON: args.channelsJson.trim(),
 		RECENT_ANGLES: args.recentAngles,
+		ARCHETYPES_CATALOGUE: archetypesCatalogue(),
 		PLAN_OUTPUT_PATH: args.planOutputPath,
 	});
 }
@@ -317,6 +407,7 @@ export function buildWritePrompt(args: {
 		? '_refs/collective/**'
 		: `_refs/${args.slot.source}/docs/**`;
 	const sourceLabel = isCollective ? 'the Nano Collective' : args.slot.source;
+	const archetype = archetypeById(args.plan.archetype);
 	return substitute(template, {
 		DATE: args.date,
 		FILE: args.slot.file,
@@ -325,6 +416,8 @@ export function buildWritePrompt(args: {
 		SOURCE_LABEL: sourceLabel,
 		ANGLE: args.plan.angle,
 		FOCUS: args.plan.focus,
+		ARCHETYPE: archetype ? archetype.label : args.plan.archetype,
+		ARCHETYPE_GUIDANCE: archetype ? archetype.guidance : '',
 		POST_PATH: join(args.packDir, 'posts', args.slot.file),
 		PACK_ID: args.packId,
 		VALIDATOR_ROOT: args.validatorRoot,
@@ -417,6 +510,7 @@ function writeMeta(args: {
 		file: p.file,
 		source: sourceByFile.get(p.file) ?? COLLECTIVE_SOURCE,
 		angle: p.angle,
+		archetype: p.archetype,
 	}));
 	const meta = {
 		kind: 'x-daily',
@@ -457,6 +551,7 @@ function appendLedger(args: {
 		date: args.date,
 		source: sourceByFile.get(p.file) ?? COLLECTIVE_SOURCE,
 		angle: p.angle,
+		archetype: p.archetype,
 		preview: previewOf(args.packDir, p.file),
 	}));
 	mkdirSync(join(ROOT, 'content', X_DAILY_DIR), {recursive: true});

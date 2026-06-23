@@ -11,6 +11,9 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'ava';
 import {
+	ARCHETYPES,
+	archetypeById,
+	archetypesCatalogue,
 	buildSlots,
 	contentRootFor,
 	type LedgerEntry,
@@ -75,6 +78,33 @@ test('parseXDailyPlan: accepts a plan covering every slot exactly once', t => {
 			result.plan.map(p => p.file),
 			['nanocoder.md', 'get-md.md', 'collective-1.md'],
 		);
+	}
+});
+
+test('parseXDailyPlan: keeps a valid archetype from the plan', t => {
+	const plan = JSON.parse(validPlanJson());
+	plan[0].archetype = 'sharp-take';
+	const result = parseXDailyPlan(JSON.stringify(plan), SLOTS);
+	t.true(result.ok);
+	if (result.ok) {
+		const entry = result.plan.find(p => p.file === 'nanocoder.md');
+		t.is(entry?.archetype, 'sharp-take');
+	}
+});
+
+test('parseXDailyPlan: coerces a missing/unknown archetype to a known id', t => {
+	const plan = JSON.parse(validPlanJson());
+	plan[1].archetype = 'not-a-real-archetype';
+	// plan[0] and plan[2] have no archetype field at all.
+	const result = parseXDailyPlan(JSON.stringify(plan), SLOTS);
+	t.true(result.ok);
+	if (result.ok) {
+		for (const entry of result.plan) {
+			t.true(
+				ARCHETYPES.some(a => a.id === entry.archetype),
+				`${entry.file} got a known archetype (${entry.archetype})`,
+			);
+		}
 	}
 });
 
@@ -144,6 +174,32 @@ test('summarizeRecentAngles: groups by source, newest first', t => {
 	t.true(summary.indexOf('recent angle') < summary.indexOf('old angle'));
 	// a source with no history is labelled
 	t.true(summary.includes('get-md: (no recent posts)'));
+});
+
+test('summarizeRecentAngles: shows the archetype when present', t => {
+	const summary = summarizeRecentAngles(
+		[
+			{
+				date: '2026-06-08',
+				source: 'nanocoder',
+				angle: 'recent angle',
+				archetype: 'sharp-take',
+				preview: '',
+			},
+		],
+		SLOTS,
+	);
+	t.true(summary.includes('(sharp-take) recent angle'));
+});
+
+test('archetypeById: resolves a known id and misses an unknown one', t => {
+	t.is(archetypeById('sharp-take')?.id, 'sharp-take');
+	t.is(archetypeById('nope'), undefined);
+});
+
+test('archetypesCatalogue: lists every archetype id', t => {
+	const catalogue = archetypesCatalogue();
+	for (const a of ARCHETYPES) t.true(catalogue.includes(a.id));
 });
 
 test('summarizeRecentAngles: caps entries per source', t => {
