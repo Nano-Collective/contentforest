@@ -20,6 +20,9 @@ body:
       description: |
         Pick what to edit. `<product>/<version>` targets the release pack itself (channels, meta, or a single file under it). `<product>/<version>/articles/<slug>` targets one article inside a pack. List is auto-generated from `content/` on `main`, sorted newest-first.
       options:
+        - nanocoder/1.28.0
+        - nanocoder/1.28.0/articles/acp-server-zed-integration
+        - nanocoder/1.28.0/articles/auto-tune-tool-consolidation
         - nanocoder/1.27.0
         - nanocoder/1.27.0/articles/custom-tools-vs-mcp-vs-commands
         - nanocoder/1.27.0/articles/daemon-event-triggered-runs
