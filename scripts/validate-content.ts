@@ -1494,46 +1494,16 @@ function validateXDailyPack(args: {
 			}
 		}
 
-		// Source-aware link policy. Resolve the source we trust: frontmatter if
-		// valid, else the plan. Skip the link check entirely if we can't resolve
-		// a source (the source-known/shape failures above already flag it).
-		const effectiveSource = source ?? plannedSource;
-		if (effectiveSource === X_DAILY_COLLECTIVE_SOURCE) {
-			if (!body.includes(COLLECTIVE_URL)) {
-				failures.push({
-					file: fileRel,
-					rule: 'link-collective',
-					expected: `link to ${COLLECTIVE_URL}`,
-					actual: 'missing',
-				});
-			}
-		} else if (effectiveSource !== undefined) {
-			const product = productsBySlug.get(effectiveSource);
-			if (product) {
-				const repoUrl = `https://github.com/${product.repo}`;
-				// nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp -- repoUrl is sourced from config/products.json (our own config), not user input
-				const releaseTagPattern = new RegExp(
-					`${repoUrl.replaceAll('/', '\\/')}\\/releases\\/(tag|download)\\/`,
-					'i',
-				);
-				if (!body.includes(repoUrl)) {
-					failures.push({
-						file: fileRel,
-						rule: 'link-product-repo',
-						expected: `link to ${repoUrl}`,
-						actual: 'missing',
-					});
-				}
-				if (releaseTagPattern.test(body)) {
-					failures.push({
-						file: fileRel,
-						rule: 'link-not-release',
-						expected:
-							'link to repo root, never /releases/tag/* or /releases/download/*',
-						actual: 'release URL present',
-					});
-				}
-			}
+		// No link. X de-ranks posts that carry a link and they look spammy in
+		// the feed, so x-daily posts include no URL at all - regardless of
+		// source. The post is plain text; distribution happens by hand.
+		if (/https?:\/\//i.test(body)) {
+			failures.push({
+				file: fileRel,
+				rule: 'no-link',
+				expected: 'no URL (x-daily posts link nowhere)',
+				actual: 'link present',
+			});
 		}
 	}
 

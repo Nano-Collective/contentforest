@@ -19,7 +19,6 @@
     {{POST_PATH}}          absolute path of the .md file you must write
     {{PACK_ID}}            "_x-daily/{{DATE}}" — for the validator
     {{VALIDATOR_ROOT}}     content root for the validator (e.g. "content")
-    {{LINK_TARGET}}        the URL this post must link to
     {{DOCS_GLOB}}          where to read substance for this source
     {{MAX_CHARS}}          hard character ceiling for the body
     {{GENERATED_AT}}       ISO-8601 timestamp the orchestrator started
@@ -63,7 +62,7 @@ Boring (a spec dump — do not write like this):
 
 Better (hook first, one idea, leads with the stake):
 
-> A fine-tune is useless if it won't fit the GPU you deploy to. nanotune export fuses your LoRA into the base and writes GGUF down to q4, so you size the model to the hardware, not the other way round. {{LINK_TARGET}}
+> A fine-tune is useless if it won't fit the GPU you deploy to. nanotune export fuses your LoRA into the base and writes GGUF down to q4, so you size the model to the hardware, not the other way round.
 
 Boring:
 
@@ -71,7 +70,7 @@ Boring:
 
 Better (one idea, a mild stance, the spec dump gone):
 
-> Your MCP keys don't belong in the repo. nanocoder reads env vars over anything in .mcp.json, so the config commits clean and the secrets stay in your shell. {{LINK_TARGET}}
+> Your MCP keys don't belong in the repo. nanocoder reads env vars over anything in .mcp.json, so the config commits clean and the secrets stay in your shell.
 
 # Voice
 
@@ -99,8 +98,8 @@ Ground the post in real material from `{{DOCS_GLOB}}`. Do not invent features or
 
 # Hard rules
 
-- **Length:** the body must be **≤ {{MAX_CHARS}} characters**, including the link. This is X. Be tight — and often well under the ceiling.
-- **Link:** the body must include exactly this URL: **{{LINK_TARGET}}**. Do not link to a release/tag/download URL.
+- **Length:** the body must be **≤ {{MAX_CHARS}} characters**. This is X. Be tight — and often well under the ceiling.
+- **No link.** Do not include any URL or link — no GitHub repo, no nanocollective.org, nothing. Links look spammy in the feed and X de-ranks them. The post is plain text.
 - No placeholders (`{{TODO}}`, `TODO`, etc.). The post must be final, postable text.
 
 # Frontmatter (required, exactly this shape)

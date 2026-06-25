@@ -1821,10 +1821,10 @@ test('personal (count > 1): personalChannels filter scopes count check', t => {
 const X_DAILY_DATE = '2026-06-09';
 const X_DAILY_PACK_ID = `_x-daily/${X_DAILY_DATE}`;
 
-// Product-sourced post: ≤280 chars, links to the product repo root.
-const X_PRODUCT_BODY = `Demo's tool registry is now indexed by name, so lookups stay constant-time as plugins pile on. Small change, real payoff in tool-heavy sessions. ${PRODUCT_REPO_URL}`;
-// Collective-sourced post: ≤280 chars, links to nanocollective.org.
-const X_COLLECTIVE_BODY = `The Nano Collective ships practical developer tools as a community, in the open, with the people who use them. https://nanocollective.org`;
+// Product-sourced post: ≤280 chars, no link (x-daily posts carry no URL).
+const X_PRODUCT_BODY = `Demo's tool registry is now indexed by name, so lookups stay constant-time as plugins pile on. Small change, real payoff in tool-heavy sessions.`;
+// Collective-sourced post: ≤280 chars, no link.
+const X_COLLECTIVE_BODY = `The Nano Collective ships practical developer tools as a community, in the open, with the people who use them.`;
 
 function buildXDailyMd(
 	source: string,
@@ -1955,11 +1955,11 @@ test('x-daily: over-length post → max-chars', t => {
 	}
 });
 
-test('x-daily: product post missing repo link → link-product-repo', t => {
+test('x-daily: product post with a link → no-link', t => {
 	const root = makeTmpRoot();
 	try {
 		const packDir = writeHappyXDailyPack(root);
-		const body = X_PRODUCT_BODY.replaceAll(PRODUCT_REPO_URL, '');
+		const body = `${X_PRODUCT_BODY} ${PRODUCT_REPO_URL}`;
 		writeFileSync(
 			join(packDir, `posts/${PRODUCT_SLUG}.md`),
 			buildXDailyMd(PRODUCT_SLUG, body),
@@ -1969,17 +1969,17 @@ test('x-daily: product post missing repo link → link-product-repo', t => {
 			packFilter: X_DAILY_PACK_ID,
 			config: CONFIG,
 		});
-		t.true(report.failures.some(f => f.rule === 'link-product-repo'));
+		t.true(report.failures.some(f => f.rule === 'no-link'));
 	} finally {
 		cleanup(root);
 	}
 });
 
-test('x-daily: collective post missing collective URL → link-collective', t => {
+test('x-daily: collective post with a link → no-link', t => {
 	const root = makeTmpRoot();
 	try {
 		const packDir = writeHappyXDailyPack(root);
-		const body = X_COLLECTIVE_BODY.replaceAll(COLLECTIVE_URL, '');
+		const body = `${X_COLLECTIVE_BODY} ${COLLECTIVE_URL}`;
 		writeFileSync(
 			join(packDir, 'posts/collective-1.md'),
 			buildXDailyMd('collective', body),
@@ -1989,7 +1989,7 @@ test('x-daily: collective post missing collective URL → link-collective', t =>
 			packFilter: X_DAILY_PACK_ID,
 			config: CONFIG,
 		});
-		t.true(report.failures.some(f => f.rule === 'link-collective'));
+		t.true(report.failures.some(f => f.rule === 'no-link'));
 	} finally {
 		cleanup(root);
 	}

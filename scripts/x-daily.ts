@@ -42,7 +42,6 @@ import {parseArgs} from 'node:util';
 const ROOT = process.cwd();
 const PROMPTS_DIR = join(ROOT, 'prompts');
 const CONFIG_DIR = join(ROOT, 'config');
-const COLLECTIVE_URL = 'https://nanocollective.org';
 const COLLECTIVE_SOURCE = 'collective';
 const X_DAILY_DIR = '_x-daily';
 // How many recent angles per source to show the planner. Enough to steer it
@@ -399,10 +398,6 @@ export function buildWritePrompt(args: {
 }): string {
 	const template = readFile(join(PROMPTS_DIR, 'agents', 'x-daily-write.md'));
 	const isCollective = args.slot.sourceKind === 'collective';
-	const product = args.products.find(p => p.slug === args.slot.source);
-	const linkTarget = isCollective
-		? COLLECTIVE_URL
-		: `https://github.com/${product?.repo ?? args.slot.source}`;
 	const docsGlob = isCollective
 		? '_refs/collective/**'
 		: `_refs/${args.slot.source}/docs/**`;
@@ -421,7 +416,6 @@ export function buildWritePrompt(args: {
 		POST_PATH: join(args.packDir, 'posts', args.slot.file),
 		PACK_ID: args.packId,
 		VALIDATOR_ROOT: args.validatorRoot,
-		LINK_TARGET: linkTarget,
 		DOCS_GLOB: docsGlob,
 		MAX_CHARS: String(args.maxChars),
 		GENERATED_AT: args.generatedAt,
