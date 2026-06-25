@@ -502,5 +502,47 @@
     "source": "collective",
     "angle": "Three principles, in that order, are the filter",
     "preview": "Every project the Nano Collective ships has passed the same three checks, in order: privacy-respecti"
+  },
+  {
+    "date": "2026-06-25",
+    "source": "nanocoder",
+    "angle": "Sessions persist for 30 days",
+    "archetype": "til",
+    "preview": "Close the terminal at 6pm, open it at 9am, and the model picks up mid-thought. Nanocoder saves every"
+  },
+  {
+    "date": "2026-06-25",
+    "source": "nanotune",
+    "angle": "Five timing metrics per test",
+    "archetype": "by-the-numbers",
+    "preview": "5 numbers per test, not just pass/fail. nanotune benchmark reports total latency, TTFT, generation t"
+  },
+  {
+    "date": "2026-06-25",
+    "source": "get-md",
+    "angle": "Compare Turndown vs LLM output",
+    "archetype": "one-tip",
+    "preview": "Picking `--use-llm` is a guess unless you can see what Turndown would have done. get-md's `--compare"
+  },
+  {
+    "date": "2026-06-25",
+    "source": "json-up",
+    "angle": "Legacy data is treated as v0",
+    "archetype": "problem-relief",
+    "preview": "Adopting a migration library? The worst part is the pre-step: special-casing old data with no versio"
+  },
+  {
+    "date": "2026-06-25",
+    "source": "collective",
+    "angle": "Merge is not endorsement",
+    "archetype": "sharp-take",
+    "preview": "A merge is not a promise to build. A Nano Collective whitepaper merges when the thinking is good eno"
+  },
+  {
+    "date": "2026-06-25",
+    "source": "collective",
+    "angle": "Whitepaper statuses on a timer",
+    "archetype": "origin",
+    "preview": "A whitepapers section that accumulates ghost pages stops being a record of what was decided and why."
   }
 ]

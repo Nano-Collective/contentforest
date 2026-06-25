@@ -1,0 +1,47 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-25",
+  "generated_at": "2026-06-25T14:05:50.027Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "Sessions persist for 30 days",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Five timing metrics per test",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Compare Turndown vs LLM output",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Legacy data is treated as v0",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merge is not endorsement",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Whitepaper statuses on a timer",
+      "archetype": "origin"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
