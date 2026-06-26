@@ -7,6 +7,7 @@ angle: "Maintainers step back, the project survives"
 generated_at: "2026-06-26T04:38:11.642Z"
 model: "minimax-m3"
 char_count: 187
+distributed_at: "2026-06-26T14:44:23.037Z"
 ---
 
 Open source projects usually die when their proposer quits. The Nano Collective plans for it instead: a 60-day clock on the whitepaper, anyone can pick it up, otherwise Paused, not Deleted.
