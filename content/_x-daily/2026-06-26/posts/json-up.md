@@ -7,6 +7,7 @@ angle: "TypeScript refuses to migrate"
 generated_at: "2026-06-26T04:38:11.642Z"
 model: "minimax-m3"
 char_count: 234
+distributed_at: "2026-06-26T14:43:05.986Z"
 ---
 
 A migration is a refactor you're shipping to your own users. If the chain breaks in production, the data is gone. json-up types each step's up against the previous version's Zod schema, so the compiler fails the build before it ships.
