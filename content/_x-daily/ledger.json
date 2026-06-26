@@ -544,5 +544,47 @@
     "angle": "Whitepaper statuses on a timer",
     "archetype": "origin",
     "preview": "A whitepapers section that accumulates ghost pages stops being a record of what was decided and why."
+  },
+  {
+    "date": "2026-06-26",
+    "source": "nanocoder",
+    "angle": "A scheduler without a TUI open",
+    "archetype": "contrarian",
+    "preview": "Default cron lives inside your editor. If the TUI isn't open, the run doesn't happen. Nanocoder's da"
+  },
+  {
+    "date": "2026-06-26",
+    "source": "nanotune",
+    "angle": "Your migration is the test",
+    "archetype": "til",
+    "preview": "The match mode in tests.json is the only assertion you write. Pick semantic, startsWith, contains, e"
+  },
+  {
+    "date": "2026-06-26",
+    "source": "get-md",
+    "angle": "Turndown is the floor, LLM is the ceiling",
+    "archetype": "til",
+    "preview": "A 1000-page batch can survive a dead LLM call. get-md's local model takes 5-10s per page and will fa"
+  },
+  {
+    "date": "2026-06-26",
+    "source": "json-up",
+    "angle": "TypeScript refuses to migrate",
+    "archetype": "sharp-take",
+    "preview": "A migration is a refactor you're shipping to your own users. If the chain breaks in production, the "
+  },
+  {
+    "date": "2026-06-26",
+    "source": "collective",
+    "angle": "The timer on the charter",
+    "archetype": "contrarian",
+    "preview": "Most open projects change financial terms whenever they want, and apply them to work you've already "
+  },
+  {
+    "date": "2026-06-26",
+    "source": "collective",
+    "angle": "Maintainers step back, the project survives",
+    "archetype": "til",
+    "preview": "Open source projects usually die when their proposer quits. The Nano Collective plans for it instead"
   }
 ]
