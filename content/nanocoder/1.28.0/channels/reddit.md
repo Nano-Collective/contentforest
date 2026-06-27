@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-06-27T21:54:33.743Z"
 ---
 
 We just shipped Nanocoder v1.28.0, and this one felt worth writing up properly. The three big additions are an Agent Client Protocol server, a much slimmer built-in tool surface, and session resume that actually replays the conversation. Underneath those there is a fair amount of plumbing work that small local models in particular should benefit from.
