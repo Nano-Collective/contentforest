@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-06-27T21:24:00.563Z"
 ---
 
 Nanocoder v1.28.0 is out. The release lands three big things and a long tail of fixes.
