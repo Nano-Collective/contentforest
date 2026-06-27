@@ -33,6 +33,7 @@
 		"personal-request": "tsx scripts/personal-request.ts",
 		"parse-personal-request": "tsx scripts/parse-personal-request.ts",
 		"x-daily": "tsx scripts/x-daily.ts",
+		"weekly-pack": "tsx scripts/weekly-pack.ts",
 		"sync-team-members": "tsx scripts/sync-team-members.ts",
 		"sync-pack-options": "tsx scripts/sync-pack-options.ts",
 		"sync-change-targets": "tsx scripts/sync-change-targets.ts"

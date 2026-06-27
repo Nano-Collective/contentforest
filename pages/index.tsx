@@ -5,6 +5,7 @@ import {ProductGrid} from '@/components/home/ProductGrid';
 import {
 	listCollectivePacks,
 	listProducts,
+	listWeeklyPacks,
 	listXDailyBuckets,
 	type ProductSummary,
 } from '@/lib/content';
@@ -13,12 +14,14 @@ type Props = {
 	products: ProductSummary[];
 	collectivePackCount: number;
 	xDailyBucketCount: number;
+	weeklyPackCount: number;
 };
 
 export default function Home({
 	products,
 	collectivePackCount,
 	xDailyBucketCount,
+	weeklyPackCount,
 }: Props) {
 	return (
 		<>
@@ -30,6 +33,7 @@ export default function Home({
 				products={products}
 				collectivePackCount={collectivePackCount}
 				xDailyBucketCount={xDailyBucketCount}
+				weeklyPackCount={weeklyPackCount}
 			/>
 		</>
 	);
@@ -41,6 +45,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 			products: listProducts(),
 			collectivePackCount: listCollectivePacks().length,
 			xDailyBucketCount: listXDailyBuckets().length,
+			weeklyPackCount: listWeeklyPacks().length,
 		},
 	};
 };

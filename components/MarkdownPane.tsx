@@ -14,8 +14,10 @@ type Props = {
 	wontUseAt: string | null;
 	marking: boolean;
 	markError: string | null;
-	onMarkDistributed: () => void;
-	onMarkWontUse: () => void;
+	// Omit both handlers to render the pane read-only (no mark controls) — used
+	// for reference docs like the weekly digest that aren't distributed here.
+	onMarkDistributed?: () => void;
+	onMarkWontUse?: () => void;
 };
 
 type Mode = 'preview' | 'raw';
@@ -39,6 +41,7 @@ export default function MarkdownPane({
 }: Props) {
 	const [mode, setMode] = useState<Mode>('preview');
 	const [copied, setCopied] = useState(false);
+	const markable = !!onMarkDistributed && !!onMarkWontUse;
 
 	const rendered = useMemo(() => marked.parse(body) as string, [body]);
 
@@ -100,7 +103,7 @@ export default function MarkdownPane({
 						<span className="text-xs text-destructive">
 							Won't use · {formatMarkedAt(wontUseAt)}
 						</span>
-					) : (
+					) : markable ? (
 						<>
 							<Button
 								variant="outline"
@@ -121,7 +124,7 @@ export default function MarkdownPane({
 								Won't use
 							</Button>
 						</>
-					)}
+					) : null}
 					<Button variant="outline" size="sm" onClick={onCopy}>
 						{copied ? (
 							<>

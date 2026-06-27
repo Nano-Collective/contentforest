@@ -1,4 +1,10 @@
-import {ArrowRight, Megaphone, MessageSquare, Package} from 'lucide-react';
+import {
+	ArrowRight,
+	CalendarRange,
+	Megaphone,
+	MessageSquare,
+	Package,
+} from 'lucide-react';
 import Link from 'next/link';
 import {
 	Card,
@@ -13,12 +19,14 @@ type Props = {
 	products: ProductSummary[];
 	collectivePackCount: number;
 	xDailyBucketCount: number;
+	weeklyPackCount: number;
 };
 
 export function ProductGrid({
 	products,
 	collectivePackCount,
 	xDailyBucketCount,
+	weeklyPackCount,
 }: Props) {
 	return (
 		<section id="products" className="max-w-6xl mx-auto px-4 py-16">
@@ -102,6 +110,31 @@ export function ProductGrid({
 									<span>
 										{xDailyBucketCount} day
 										{xDailyBucketCount === 1 ? '' : 's'}
+									</span>
+									<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+								</div>
+							</CardContent>
+						</Card>
+					</Link>
+				</li>
+
+				<li key="_weekly">
+					<Link href="/w" className="block group">
+						<Card className="h-full transition-colors group-hover:border-primary/50 card-hover-glow">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2">
+									<CalendarRange className="h-5 w-5 text-primary" />
+									Weekly pack
+								</CardTitle>
+								<CardDescription>
+									Weekly picks of unused content, one per channel
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<div className="flex items-center justify-between text-sm text-muted-foreground">
+									<span>
+										{weeklyPackCount} week
+										{weeklyPackCount === 1 ? '' : 's'}
 									</span>
 									<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
 								</div>
