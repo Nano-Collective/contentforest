@@ -586,5 +586,47 @@
     "angle": "Maintainers step back, the project survives",
     "archetype": "til",
     "preview": "Open source projects usually die when their proposer quits. The Nano Collective plans for it instead"
+  },
+  {
+    "date": "2026-06-27",
+    "source": "nanocoder",
+    "angle": "Nano tool profile prompt size",
+    "archetype": "by-the-numbers",
+    "preview": "600 tokens of system prompt, and a 1B local model never gets to its first file. `nano` profile in Na"
+  },
+  {
+    "date": "2026-06-27",
+    "source": "nanotune",
+    "angle": "Fine-tuning on a MacBook",
+    "archetype": "contrarian",
+    "preview": "Fine-tuning usually means a rented GPU, a YAML config, and a half-day job. Nanotune runs LoRA over M"
+  },
+  {
+    "date": "2026-06-27",
+    "source": "get-md",
+    "angle": "One sitemap, whole docs site",
+    "archetype": "problem-relief",
+    "preview": "Converting a docs site to markdown is not the HTML. It's the crawler: sitemap indexes, recursive glo"
+  },
+  {
+    "date": "2026-06-27",
+    "source": "json-up",
+    "angle": "Sync and async freely mixed",
+    "archetype": "til",
+    "preview": "Most migration libraries make you pick a side: all sync, or all async, for the whole chain."
+  },
+  {
+    "date": "2026-06-27",
+    "source": "collective",
+    "angle": "60 days to a paused whitepaper",
+    "archetype": "by-the-numbers",
+    "preview": "60 days is the silence limit on a Nano Collective whitepaper. After that it's labelled Paused and an"
+  },
+  {
+    "date": "2026-06-27",
+    "source": "collective",
+    "angle": "Build decisions on the page",
+    "archetype": "problem-relief",
+    "preview": "Every \"why was this built\" thread on an open source repo dies in someone's DMs. At the Nano Collecti"
   }
 ]
