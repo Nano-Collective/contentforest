@@ -1,0 +1,14 @@
+{
+  "issue_number": 127,
+  "requester": "will-lamerton",
+  "mode": "create",
+  "scope": "whole-pack",
+  "file_path": null,
+  "request": "Nano Collective has relaunched its website with a complete redesign that reflects what the collective actually builds: privacy-respecting, local-first AI tools made for the developers who use them. We moved away from the previous soft, colourful look toward a bold, high-contrast \"developer terminal\" aesthetic — clean black-and-white layouts, sharp edges, monospace detailing, an electric-blue accent, and an animated ASCII-art backdrop — paired with fresh editorial typography. The new homepage tells a clearer story, leading with our core principles (Privacy First, Open Source, Local First), showcasing our flagship tools Nanocoder and Nanotune on dedicated landing pages, and surfacing live proof of a growing community through real-time GitHub, Discord, and Reddit stats and a feed of the latest discussions. Behind the scenes we added website analytics and a public growth page, a branded asset generator for consistent social imagery, smooth entrance animations, and a tightened, leaner codebase. The result is a site that looks and feels like the open-source, community-built, local-first movement it represents — and a strong foundation for announcing what comes next.\n\nhttps://nanocollective.com",
+  "context": null,
+  "generated_at": "2026-06-27T21:04:36.123Z",
+  "model": "minimax-m3",
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
