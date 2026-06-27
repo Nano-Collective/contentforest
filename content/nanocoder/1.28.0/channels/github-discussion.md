@@ -6,6 +6,7 @@ title: "Nanocoder v1.28.0 - ACP for Zed, slimmer tool surface, session resume"
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-06-27T21:12:54.899Z"
 ---
 
 Nanocoder v1.28.0 is out. Headline additions: an Agent Client Protocol server so editors like Zed can drive Nanocoder natively, a consolidation of the built-in tool surface from 33 tools down to 19 with automatic profile selection, and session resume that replays the full message and tool-call history into the chat view. Underneath: structured tool-result validation, API-reported context usage, a skill linter, two new first-class providers, and a long list of fixes for local-model workflows.
