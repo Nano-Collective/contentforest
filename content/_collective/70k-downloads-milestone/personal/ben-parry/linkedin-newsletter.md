@@ -6,6 +6,7 @@ slug: 70k-downloads-milestone
 generated_at: "2026-05-12T11:06:28.191Z"
 model: "minimax-m3"
 char_count: 2890
+wont_use_at: "2026-06-28T20:42:46.127Z"
 ---
 
 There's a structural difference between a tool that succeeds because it was built well, and one that succeeds because it has to.
