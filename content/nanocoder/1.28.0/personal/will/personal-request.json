@@ -1,0 +1,26 @@
+{
+  "issue_number": 133,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "product",
+  "base_pack_id": "nanocoder/1.28.0",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "agent_mode": "bundled",
+  "generated_at": "2026-06-28T19:50:25.972Z",
+  "model": "minimax-m3",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
