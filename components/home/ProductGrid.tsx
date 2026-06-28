@@ -127,7 +127,7 @@ export function ProductGrid({
 									Weekly pack
 								</CardTitle>
 								<CardDescription>
-									Weekly picks of unused content, one per channel
+									Weekly picks of unused content
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
