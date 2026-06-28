@@ -1,0 +1,47 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-28",
+  "generated_at": "2026-06-28T04:47:49.980Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "Save a checkpoint before the AI rewrites the file",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Read the failure list, then train",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "95% of users do not need the LLM dep",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Zod validates at every step",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "The economics charter exists so no one builds on assumptions",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Spark before whitepaper, every time",
+      "archetype": "sharp-take"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}

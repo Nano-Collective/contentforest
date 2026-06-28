@@ -628,5 +628,47 @@
     "angle": "Build decisions on the page",
     "archetype": "problem-relief",
     "preview": "Every \"why was this built\" thread on an open source repo dies in someone's DMs. At the Nano Collecti"
+  },
+  {
+    "date": "2026-06-28",
+    "source": "nanocoder",
+    "angle": "Save a checkpoint before the AI rewrites the file",
+    "archetype": "problem-relief",
+    "preview": "You can't un-ask for a refactor. Nanocoder treats sessions like save points - /checkpoint create bef"
+  },
+  {
+    "date": "2026-06-28",
+    "source": "nanotune",
+    "angle": "Read the failure list, then train",
+    "archetype": "one-tip",
+    "preview": "More training data is rarely the fix for a fine-tune that fails. After `nanotune benchmark`, open th"
+  },
+  {
+    "date": "2026-06-28",
+    "source": "get-md",
+    "angle": "95% of users do not need the LLM dep",
+    "archetype": "by-the-numbers",
+    "preview": "95% of users only need convertToMarkdown. get-md keeps node-llama-cpp an optional peer dep so the st"
+  },
+  {
+    "date": "2026-06-28",
+    "source": "json-up",
+    "angle": "Zod validates at every step",
+    "archetype": "contrarian",
+    "preview": "Most JSON migration tools validate the final shape and give you a diff with no clue where it broke. "
+  },
+  {
+    "date": "2026-06-28",
+    "source": "collective",
+    "angle": "The economics charter exists so no one builds on assumptions",
+    "archetype": "origin",
+    "preview": "Don't invest weeks on assumptions. The Nano Collective's economics charter is plain language, versio"
+  },
+  {
+    "date": "2026-06-28",
+    "source": "collective",
+    "angle": "Spark before whitepaper, every time",
+    "archetype": "sharp-take",
+    "preview": "Before you write a whitepaper, ask. The Nano Collective's Stage 0 is a sanity check on purpose: a ma"
   }
 ]
