@@ -1,0 +1,26 @@
+{
+  "issue_number": 134,
+  "requester": "will-lamerton",
+  "member": "will",
+  "base_pack_kind": "collective",
+  "base_pack_id": "new-website-launch",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "instagram"
+  ],
+  "agent_mode": "bundled",
+  "generated_at": "2026-06-28T19:50:58.468Z",
+  "model": "minimax-m3",
+  "phases": [
+    {
+      "phase": "channels",
+      "attempts": 1,
+      "final_status": "failed-validation",
+      "failures": []
+    }
+  ]
+}
