@@ -6,6 +6,7 @@ slug: contentforest-launch
 generated_at: "2026-05-06T12:49:51.335Z"
 model: "minimax-m3"
 char_count: 5641
+wont_use_at: "2026-06-28T20:42:51.540Z"
 ---
 
 # Why ContentForest Looks the Way It Does
