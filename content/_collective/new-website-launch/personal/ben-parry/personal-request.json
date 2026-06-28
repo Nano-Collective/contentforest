@@ -1,0 +1,49 @@
+{
+  "issue_number": 135,
+  "requester": "will-lamerton",
+  "member": "ben-parry",
+  "base_pack_kind": "collective",
+  "base_pack_id": "new-website-launch",
+  "context": null,
+  "mirrored_channels": [
+    "linkedin",
+    "x"
+  ],
+  "additional_channels": [
+    "linkedin-newsletter",
+    "substack"
+  ],
+  "agent_mode": "per-channel",
+  "generated_at": "2026-06-28T19:51:18.455Z",
+  "model": "minimax-m3",
+  "phases": [
+    {
+      "phase": "channels",
+      "channel_group": [
+        "linkedin",
+        "linkedin-newsletter"
+      ],
+      "attempts": 1,
+      "final_status": "failed-validation",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "x"
+      ],
+      "attempts": 1,
+      "final_status": "failed-validation",
+      "failures": []
+    },
+    {
+      "phase": "channels",
+      "channel_group": [
+        "substack"
+      ],
+      "attempts": 1,
+      "final_status": "passed",
+      "failures": []
+    }
+  ]
+}
