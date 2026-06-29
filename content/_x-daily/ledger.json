@@ -670,5 +670,47 @@
     "angle": "Spark before whitepaper, every time",
     "archetype": "sharp-take",
     "preview": "Before you write a whitepaper, ask. The Nano Collective's Stage 0 is a sanity check on purpose: a ma"
+  },
+  {
+    "date": "2026-06-29",
+    "source": "nanocoder",
+    "angle": "The newline shortcut that is not Shift+Enter",
+    "archetype": "til",
+    "preview": "You hit Enter to add a line. Nanocoder sends the prompt. Half your thought is gone. The newline shor"
+  },
+  {
+    "date": "2026-06-29",
+    "source": "nanotune",
+    "angle": "100 examples on a MacBook is enough",
+    "archetype": "sharp-take",
+    "preview": "Fine-tuning isn't bottlenecked on GPUs anymore. Nanotune runs LoRA on MLX with 100 to 500 examples f"
+  },
+  {
+    "date": "2026-06-29",
+    "source": "get-md",
+    "angle": "Why get-md ships two conversion engines on purpose",
+    "archetype": "origin",
+    "preview": "Most HTML→MD libs ship one engine and call LLM an \"optional upgrade\". `get-md` ships Turndown and Re"
+  },
+  {
+    "date": "2026-06-29",
+    "source": "json-up",
+    "angle": "Validate what each up function returns, not what it received",
+    "archetype": "origin",
+    "preview": "Your migration's `up` function said it returned v2. It didn't. Most libraries trust the call. json-u"
+  },
+  {
+    "date": "2026-06-29",
+    "source": "collective",
+    "angle": "Merging a whitepaper is not the approval gate",
+    "archetype": "til",
+    "preview": "A merged Nano Collective whitepaper is not a green light. It is a 30-day clock. The build or decline"
+  },
+  {
+    "date": "2026-06-29",
+    "source": "collective",
+    "angle": "A 30-day default for whitepaper review",
+    "archetype": "by-the-numbers",
+    "preview": "30 days is the review window on every Nano Collective whitepaper, set on purpose. Long enough to sur"
   }
 ]
