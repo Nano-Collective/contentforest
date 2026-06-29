@@ -7,6 +7,7 @@ version: "1.28.0"
 generated_at: "2026-06-28T19:50:25.972Z"
 model: "minimax-m3"
 char_count: 1810
+distributed_at: "2026-06-29T13:27:05.029Z"
 ---
 
 Despite a busy week, we shipped Nanocoder v1.28.0 🔥
