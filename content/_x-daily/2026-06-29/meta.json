@@ -1,0 +1,47 @@
+{
+  "kind": "x-daily",
+  "date": "2026-06-29",
+  "generated_at": "2026-06-29T04:57:52.338Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "The newline shortcut that is not Shift+Enter",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "100 examples on a MacBook is enough",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Why get-md ships two conversion engines on purpose",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Validate what each up function returns, not what it received",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merging a whitepaper is not the approval gate",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "A 30-day default for whitepaper review",
+      "archetype": "by-the-numbers"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
