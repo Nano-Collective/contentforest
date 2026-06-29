@@ -7,6 +7,7 @@ angle: "Sync and async freely mixed"
 generated_at: "2026-06-27T04:14:52.613Z"
 model: "minimax-m3"
 char_count: 258
+distributed_at: "2026-06-29T09:40:08.219Z"
 ---
 
 Most migration libraries make you pick a side: all sync, or all async, for the whole chain.
