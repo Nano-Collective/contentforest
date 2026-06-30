@@ -7,6 +7,7 @@ version: "1.28.0"
 generated_at: "2026-06-28T20:19:16.083Z"
 model: "minimax-m3"
 char_count: 5739
+wont_use_at: "2026-06-30T11:23:39.432Z"
 ---
 
 # Mind & Machine, Issue 21: The placement problem
