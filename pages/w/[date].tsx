@@ -50,6 +50,7 @@ export default function WeeklyPackPage({pack}: Props) {
 						wontUseAt={null}
 						marking={false}
 						markError={null}
+						openLinksInNewTab
 					/>
 				) : (
 					<p className="text-muted-foreground">

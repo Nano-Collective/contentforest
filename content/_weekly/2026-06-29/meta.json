@@ -1,7 +1,7 @@
 {
   "kind": "weekly",
   "date": "2026-06-29",
-  "generated_at": "2026-06-29T04:57:45.267Z",
+  "generated_at": "2026-06-30T11:15:19.784Z",
   "model": "minimax-m3",
   "picks": [
     {
@@ -10,7 +10,7 @@
       "source_label": "nanocoder v1.28.0",
       "pack_path": "/p/nanocoder/1.28.0",
       "title": "Nanocoder as an ACP agent: driving it from Zed",
-      "why": "Most substantive recent deep-dive at 8 days old, and ACP for Zed is the kind of architectural change that rewards a long-form GitHub Discussion post explaining how the agent surface actually differs from the VS Code WebSocket extension."
+      "why": "The most substantive piece in the backlog: it explains what nanocoder --acp actually ships, how the editor-as-UI model differs from the VS Code extension, and what the agent boundary looks like in practice, which is the kind of architectural write-up a GitHub Discussion audience rewards."
     },
     {
       "channel": "reddit",
@@ -18,23 +18,23 @@
       "source_label": "nanocoder v1.28.0",
       "pack_path": "/p/nanocoder/1.28.0",
       "title": null,
-      "why": "Reddit rewards practical wins for self-hosters, and the auto-tune profile story (33 to 19 tools, model-size detection, live re-resolution) is a meaty real-world improvement that small-local-model runners will actually want to read about."
+      "why": "Reddit rewards concrete before/after stories with a clear technical hook, and 33 tools collapsed to 19 plus an auto profile that picks itself from the model name is exactly that, especially for the small-local-model crowd that drives r/LocalLLaMA traffic."
     },
     {
       "channel": "linkedin",
-      "repoPath": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/linkedin.md",
-      "source_label": "nanocoder v1.28.0",
-      "pack_path": "/p/nanocoder/1.28.0",
+      "repoPath": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/linkedin.md",
+      "source_label": "collective: why-we-updated-how-we-describe-nanocoder",
+      "pack_path": "/c/why-we-updated-how-we-describe-nanocoder",
       "title": null,
-      "why": "Editor-as-UI for a coding agent is a strong professional-facing narrative for LinkedIn, and this post frames the ACP server as a deliberate step beyond the terminal panel rather than a feature dump."
+      "why": "A positioning story rather than a feature post: it explains why 'local-first CLI coding agent' was the wrong frame for the audience Nanocoder actually serves, giving LinkedIn readers a concrete take on collective-built software they can quote or push back on."
     },
     {
       "channel": "x",
-      "repoPath": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/x.md",
+      "repoPath": "content/nanocoder/1.28.0/articles/auto-tune-tool-consolidation/channels/x.md",
       "source_label": "nanocoder v1.28.0",
       "pack_path": "/p/nanocoder/1.28.0",
       "title": null,
-      "why": "The strongest 280-character hook in the catalogue right now - 'nanocoder --acp runs headless, editor becomes the UI' lands the whole ACP-for-Zed story in one line with concrete deliverables (streaming, tool cards, diffs, permissions)."
+      "why": "A sharp, self-contained hook for the small-model crowd: the auto profile infers full/minimal/nano from the model name and re-resolves live mid-session, which is the kind of one-liner X actually re-shares."
     }
   ],
   "candidate_counts": {

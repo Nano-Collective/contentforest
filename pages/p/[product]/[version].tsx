@@ -10,6 +10,7 @@ import FileTree, {
 	type FileTreeSection,
 } from '@/components/FileTree';
 import MarkdownPane from '@/components/MarkdownPane';
+import {useFileQueryParam} from '@/hooks/useFileQueryParam';
 import {
 	listProducts,
 	listVersions,
@@ -146,6 +147,10 @@ export default function VersionPage({pack}: Props) {
 	const sections = buildSections(pack, distributedMap, wontUseMap);
 	const firstChannel = sections.flatMap(s => s.items)[0]?.channel ?? '';
 	const [selected, setSelected] = useState(firstChannel);
+	useFileQueryParam(
+		pack.files.map(f => f.channel),
+		setSelected,
+	);
 	const [marking, setMarking] = useState(false);
 	const [markError, setMarkError] = useState<{
 		channel: string;

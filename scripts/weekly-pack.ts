@@ -58,6 +58,10 @@ export type RunMode = 'commit' | 'local' | 'test';
 
 export type Candidate = {
 	channel: string;
+	// The full prefixed channel key from the reader (e.g.
+	// "article:acp-server-zed-integration:github-discussion"). Used to deep-link
+	// the digest straight to this exact file on its pack page.
+	channelKey: string;
 	repoPath: string;
 	sourceLabel: string;
 	packPath: string;
@@ -65,6 +69,8 @@ export type Candidate = {
 	generatedAt: string;
 	charCount: number;
 	excerpt: string;
+	// True when this is an article deep-dive rather than a top-level channel.
+	isArticle: boolean;
 };
 
 export type Pick = {
@@ -224,6 +230,7 @@ function candidateFromFile(
 			: 0;
 	return {
 		channel: base,
+		channelKey: file.channel,
 		repoPath: file.repoPath,
 		sourceLabel,
 		packPath,
@@ -231,7 +238,17 @@ function candidateFromFile(
 		generatedAt,
 		charCount,
 		excerpt: excerptOf(file.body),
+		isArticle: file.channel.startsWith('article:'),
 	};
+}
+
+/**
+ * The in-app URL that opens this exact file on its pack page (the pack page
+ * reads ?file=<channel> and preselects it). Encoded so the colon-delimited
+ * article keys survive as a query value.
+ */
+export function deepLinkFor(candidate: Candidate): string {
+	return `${candidate.packPath}?file=${encodeURIComponent(candidate.channelKey)}`;
 }
 
 /**
@@ -406,7 +423,7 @@ export function renderDigest(args: {
 	lines.push(`# Weekly content pack — ${args.date}`);
 	lines.push('');
 	lines.push(
-		"Unused content from across the packs (excludes Daily X posts), one recommended pick per channel. Mark a piece distributed or won't-use on its own pack page.",
+		"Unused content from across the packs (excludes Daily X posts), one recommended pick per channel. Click **Open this post** to read the full content, then mark it distributed or won't-use on that page.",
 	);
 	lines.push('');
 
@@ -414,12 +431,19 @@ export function renderDigest(args: {
 		const pick = pickByChannel.get(channel);
 		if (!pick) continue;
 		const c = pick.candidate;
-		lines.push(`## ${channelLabel(channel)}`);
+		// Heading reads like a human would say it: the channel, plus the post's
+		// own title where it has one (else the pack it came from).
+		const heading = c.title
+			? `${channelLabel(channel)} — ${c.title}`
+			: `${channelLabel(channel)} — ${c.sourceLabel}`;
+		lines.push(`## ${heading}`);
 		lines.push('');
-		const titlePart = c.title ? ` — "${c.title}"` : '';
-		lines.push(`**From:** ${c.sourceLabel}${titlePart}`);
+		const kind = c.isArticle
+			? 'Deep-dive article'
+			: 'Release / announcement post';
+		lines.push(`**What:** ${kind} from ${c.sourceLabel}`);
 		lines.push('');
-		lines.push(`**Source:** \`${c.repoPath}\` · [open pack](${c.packPath})`);
+		lines.push(`👉 [**Open this post**](${deepLinkFor(c)})`);
 		lines.push('');
 		lines.push(`**Why this one:** ${pick.why}`);
 		lines.push('');
@@ -427,6 +451,8 @@ export function renderDigest(args: {
 			lines.push(`> ${c.excerpt}`);
 			lines.push('');
 		}
+		lines.push(`<sub>Source file: \`${c.repoPath}\`</sub>`);
+		lines.push('');
 	}
 
 	if (args.emptyChannels.length > 0) {

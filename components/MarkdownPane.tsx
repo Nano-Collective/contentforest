@@ -18,6 +18,9 @@ type Props = {
 	// for reference docs like the weekly digest that aren't distributed here.
 	onMarkDistributed?: () => void;
 	onMarkWontUse?: () => void;
+	// Render body links with target="_blank" so they open in a new tab —
+	// useful for digests whose links point at other pages in the app.
+	openLinksInNewTab?: boolean;
 };
 
 type Mode = 'preview' | 'raw';
@@ -38,12 +41,18 @@ export default function MarkdownPane({
 	markError,
 	onMarkDistributed,
 	onMarkWontUse,
+	openLinksInNewTab = false,
 }: Props) {
 	const [mode, setMode] = useState<Mode>('preview');
 	const [copied, setCopied] = useState(false);
 	const markable = !!onMarkDistributed && !!onMarkWontUse;
 
-	const rendered = useMemo(() => marked.parse(body) as string, [body]);
+	const rendered = useMemo(() => {
+		const html = marked.parse(body) as string;
+		return openLinksInNewTab
+			? html.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ')
+			: html;
+	}, [body, openLinksInNewTab]);
 
 	const onCopy = async () => {
 		await navigator.clipboard.writeText(body);

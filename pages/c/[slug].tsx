@@ -10,6 +10,7 @@ import FileTree, {
 	type FileTreeSection,
 } from '@/components/FileTree';
 import MarkdownPane from '@/components/MarkdownPane';
+import {useFileQueryParam} from '@/hooks/useFileQueryParam';
 import {
 	type CollectivePack,
 	listCollectivePacks,
@@ -78,6 +79,10 @@ export default function CollectivePackPage({pack}: Props) {
 	];
 	const firstChannel = items[0]?.channel ?? '';
 	const [selected, setSelected] = useState(firstChannel);
+	useFileQueryParam(
+		pack.files.map(f => f.channel),
+		setSelected,
+	);
 	const [marking, setMarking] = useState(false);
 	const [markError, setMarkError] = useState<{
 		channel: string;

@@ -16,6 +16,7 @@ import {
 	type Candidate,
 	channelLabel,
 	contentRootFor,
+	deepLinkFor,
 	excerptOf,
 	gatherCandidates,
 	isUnused,
@@ -136,6 +137,11 @@ test('gatherCandidates: collects unused product + collective channel files', t =
 	t.is(gh.title, 'Deep dive');
 	t.is(gh.sourceLabel, 'nanocoder v1.0.0');
 	t.is(gh.packPath, '/p/nanocoder/1.0.0');
+	t.is(gh.channelKey, 'article:deep:github-discussion');
+	t.true(gh.isArticle);
+	const li = byChannel.get('linkedin')?.[0] as Candidate;
+	t.is(li.channelKey, 'linkedin');
+	t.false(li.isArticle);
 	rmSync(tmp, {recursive: true});
 });
 
@@ -189,6 +195,7 @@ test('gatherCandidates: sorts each channel newest-first', t => {
 function fakeCandidate(channel: string, i: number): Candidate {
 	return {
 		channel,
+		channelKey: channel,
 		repoPath: `content/p/${channel}-${i}.md`,
 		sourceLabel: `src ${i}`,
 		packPath: `/p/x/${i}`,
@@ -196,6 +203,7 @@ function fakeCandidate(channel: string, i: number): Candidate {
 		generatedAt: `2026-06-${String(i).padStart(2, '0')}T00:00:00.000Z`,
 		charCount: 100,
 		excerpt: `excerpt ${i}`,
+		isArticle: false,
 	};
 }
 
@@ -279,10 +287,12 @@ test('parseSelection: rejects an empty why', t => {
 
 // ── renderDigest ────────────────────────────────────────────────────────────
 
-function fakePick(channel: string): Pick {
+function fakePick(channel: string, opts: {isArticle?: boolean} = {}): Pick {
 	const candidate = fakeCandidate(channel, 1);
 	candidate.title = `${channel} title`;
 	candidate.excerpt = `${channel} excerpt`;
+	candidate.channelKey = opts.isArticle ? `article:slug:${channel}` : channel;
+	candidate.isArticle = !!opts.isArticle;
 	return {
 		channel,
 		repoPath: candidate.repoPath,
@@ -291,10 +301,20 @@ function fakePick(channel: string): Pick {
 	};
 }
 
-test('renderDigest: orders picks, embeds source/why/excerpt, lists empty channels', t => {
+test('deepLinkFor: deep-links to the exact file via an encoded ?file= param', t => {
+	const c = fakeCandidate('github-discussion', 1);
+	c.packPath = '/p/nanocoder/1.28.0';
+	c.channelKey = 'article:acp:github-discussion';
+	t.is(
+		deepLinkFor(c),
+		'/p/nanocoder/1.28.0?file=article%3Aacp%3Agithub-discussion',
+	);
+});
+
+test('renderDigest: orders picks, embeds title/why/excerpt/deep-link, lists empty channels', t => {
 	const digest = renderDigest({
 		date: '2026-06-29',
-		picks: [fakePick('x'), fakePick('github-discussion')],
+		picks: [fakePick('x'), fakePick('github-discussion', {isArticle: true})],
 		emptyChannels: ['linkedin', 'reddit'],
 		generatedAt: '2026-06-29T00:15:00.000Z',
 		model: 'minimax-m3',
@@ -302,11 +322,23 @@ test('renderDigest: orders picks, embeds source/why/excerpt, lists empty channel
 	// frontmatter
 	t.true(digest.startsWith('---\nkind: weekly\n'));
 	t.true(digest.includes('week_of: "2026-06-29"'));
-	// github-discussion section comes before X
-	t.true(digest.indexOf('## GitHub Discussion') < digest.indexOf('## X'));
+	// github-discussion section comes before X (heading now includes the title)
+	t.true(
+		digest.indexOf('## GitHub Discussion — github-discussion title') <
+			digest.indexOf('## X — x title'),
+	);
 	// per-pick content
 	t.true(digest.includes('**Why this one:** why github-discussion'));
-	t.true(digest.includes('`content/p/github-discussion-1.md`'));
+	t.true(digest.includes('**What:** Deep-dive article from src 1'));
+	t.true(digest.includes('**What:** Release / announcement post from src 1'));
+	// prominent deep link to the exact file, opening on its pack page
+	t.true(
+		digest.includes(
+			'[**Open this post**](/p/x/1?file=article%3Aslug%3Agithub-discussion)',
+		),
+	);
+	// source path kept as small secondary reference
+	t.true(digest.includes('<sub>Source file: `content/p/x-1.md`</sub>'));
 	t.true(digest.includes('> x excerpt'));
 	// empty channels noted, ordered
 	t.true(digest.includes('No unused content this week for: Reddit, LinkedIn.'));
