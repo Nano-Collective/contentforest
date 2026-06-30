@@ -712,5 +712,47 @@
     "angle": "A 30-day default for whitepaper review",
     "archetype": "by-the-numbers",
     "preview": "30 days is the review window on every Nano Collective whitepaper, set on purpose. Long enough to sur"
+  },
+  {
+    "date": "2026-06-30",
+    "source": "nanocoder",
+    "angle": "ACP mode lets the editor be the UI",
+    "archetype": "origin",
+    "preview": "Most coding agents ship a terminal UI and call it the agent. Nanocoder's `--acp` speaks JSON-RPC: Ze"
+  },
+  {
+    "date": "2026-06-30",
+    "source": "nanotune",
+    "angle": "A second model grades the first",
+    "archetype": "problem-relief",
+    "preview": "Your fine-tune gives great open-ended answers. Then string matching tries to grade them and quietly "
+  },
+  {
+    "date": "2026-06-30",
+    "source": "get-md",
+    "angle": "One bad URL must not tank the batch",
+    "archetype": "sharp-take",
+    "preview": "A scraper that dies on one 404 isn't a scraper. It's a single point of failure with a marketing page"
+  },
+  {
+    "date": "2026-06-30",
+    "source": "json-up",
+    "angle": "Version 0 is unknown, not your v1 schema",
+    "archetype": "by-the-numbers",
+    "preview": "Version 0. That's what json-up calls your data when `_version` is missing. Not v1, not \"almost v1\". "
+  },
+  {
+    "date": "2026-06-30",
+    "source": "collective",
+    "angle": "Two contribution modes, one discriminator",
+    "archetype": "one-tip",
+    "preview": "Most Nano Collective PRs sit because a question should've been asked before they opened. The test: c"
+  },
+  {
+    "date": "2026-06-30",
+    "source": "collective",
+    "angle": "Recorded rationale survives the founder leaving",
+    "archetype": "problem-relief",
+    "preview": "Inheriting an OSS project after the founder goes quiet is the part nobody warns you about. Decisions"
   }
 ]
