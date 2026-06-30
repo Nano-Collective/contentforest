@@ -1,3 +1,7 @@
+---
+wont_use_at: "2026-06-30T11:23:53.532Z"
+---
+
 <!-- angle: The placement of an agent inside a workflow decides what behaviours are even possible. A terminal-panel agent and an editor-native agent can run the same model and produce different systems, because the affordances of the place filter everything downstream. Architecture over features; placement over prompts. -->
 
 ---
