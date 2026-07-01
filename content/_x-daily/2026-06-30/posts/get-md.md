@@ -7,6 +7,7 @@ angle: "One bad URL must not tank the batch"
 generated_at: "2026-06-30T04:23:09.209Z"
 model: "minimax-m3"
 char_count: 277
+distributed_at: "2026-07-01T14:21:07.651Z"
 ---
 
 A scraper that dies on one 404 isn't a scraper. It's a single point of failure with a marketing page.
