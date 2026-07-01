@@ -754,5 +754,47 @@
     "angle": "Recorded rationale survives the founder leaving",
     "archetype": "problem-relief",
     "preview": "Inheriting an OSS project after the founder goes quiet is the part nobody warns you about. Decisions"
+  },
+  {
+    "date": "2026-07-01",
+    "source": "nanocoder",
+    "angle": "tool profile matches model size",
+    "archetype": "sharp-take",
+    "preview": "Shipping a 600-token system prompt to a 4B model is a waste. nanocoder's auto profile resolves to na"
+  },
+  {
+    "date": "2026-07-01",
+    "source": "nanotune",
+    "angle": "local model judges the benchmark",
+    "archetype": "til",
+    "preview": "Most LLM-as-judge setups hit a cloud API. The one scoring your tests doesn't have to."
+  },
+  {
+    "date": "2026-07-01",
+    "source": "get-md",
+    "angle": "regex by default, LLM by opt-in",
+    "archetype": "contrarian",
+    "preview": "Most HTML-to-markdown libraries put you on the LLM path by default. You pay tokens for a page that d"
+  },
+  {
+    "date": "2026-07-01",
+    "source": "json-up",
+    "angle": "use the async builder from day one",
+    "archetype": "one-tip",
+    "preview": "Every migration up function is sync today, until one isn't. Start with createAsyncMigrations() in js"
+  },
+  {
+    "date": "2026-07-01",
+    "source": "collective",
+    "angle": "sponsors fund, they do not direct",
+    "archetype": "contrarian",
+    "preview": "Most sponsor deals trade money for influence. The Nano Collective draws the line the other way: spon"
+  },
+  {
+    "date": "2026-07-01",
+    "source": "collective",
+    "angle": "community fund balance is zero today",
+    "archetype": "by-the-numbers",
+    "preview": "The community fund balance is $0 today. The mechanism is built (Open Source Collective fiscal hostin"
   }
 ]

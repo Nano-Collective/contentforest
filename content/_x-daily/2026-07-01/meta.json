@@ -1,0 +1,47 @@
+{
+  "kind": "x-daily",
+  "date": "2026-07-01",
+  "generated_at": "2026-07-01T04:52:12.745Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "tool profile matches model size",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "local model judges the benchmark",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "regex by default, LLM by opt-in",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "use the async builder from day one",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "sponsors fund, they do not direct",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "community fund balance is zero today",
+      "archetype": "by-the-numbers"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
