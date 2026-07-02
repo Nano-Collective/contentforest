@@ -1,0 +1,47 @@
+{
+  "kind": "x-daily",
+  "date": "2026-07-02",
+  "generated_at": "2026-07-02T09:47:54.295Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "Subagent parallel cap",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Apple Silicon only on purpose",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Sitemap glob filtering",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Scattered if-checks for old formats",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merge is not a build approval",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Projects survive the founder leaving",
+      "archetype": "problem-relief"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
