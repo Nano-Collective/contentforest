@@ -7,6 +7,7 @@ angle: "Anyone can propose a project"
 generated_at: "2026-07-03T04:06:21.656Z"
 model: "minimax-m3"
 char_count: 265
+distributed_at: "2026-07-03T15:15:37.900Z"
 ---
 
 The best filter for a new project is the argument for it, not who you are.
