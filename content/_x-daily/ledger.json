@@ -838,5 +838,47 @@
     "angle": "Projects survive the founder leaving",
     "archetype": "problem-relief",
     "preview": "Every open source project eventually loses its founder. What happens to the work afterwards is anyon"
+  },
+  {
+    "date": "2026-07-03",
+    "source": "nanocoder",
+    "angle": "Mention a line range, not a whole file",
+    "archetype": "one-tip",
+    "preview": "Asking @ to dump a 2,000-line file into context is a fast way to lose the room you needed for actual"
+  },
+  {
+    "date": "2026-07-03",
+    "source": "nanotune",
+    "angle": "Start with a 0.5B model",
+    "archetype": "contrarian",
+    "preview": "Every fine-tuning guide says start big. Nanotune says start on a 0.5B Qwen Coder. Training fits in 1"
+  },
+  {
+    "date": "2026-07-03",
+    "source": "get-md",
+    "angle": "Tail-only overlap with heading trail",
+    "archetype": "til",
+    "preview": "A RAG answer straddling a chunk boundary only surfaces if both halves make retrieval. Two chunkMarkd"
+  },
+  {
+    "date": "2026-07-03",
+    "source": "json-up",
+    "angle": "The version field is your data",
+    "archetype": "sharp-take",
+    "preview": "Your data's version field isn't ours to rename. json-up defaults to `_version`, but `migrate({ key: "
+  },
+  {
+    "date": "2026-07-03",
+    "source": "collective",
+    "angle": "Anyone can propose a project",
+    "archetype": "sharp-take",
+    "preview": "The best filter for a new project is the argument for it, not who you are."
+  },
+  {
+    "date": "2026-07-03",
+    "source": "collective",
+    "angle": "Three required security checks",
+    "archetype": "til",
+    "preview": "The hardest part of shipping a new Nano Collective project is not the code. It is getting three CI c"
   }
 ]
