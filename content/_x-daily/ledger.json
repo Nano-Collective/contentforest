@@ -880,5 +880,47 @@
     "angle": "Three required security checks",
     "archetype": "til",
     "preview": "The hardest part of shipping a new Nano Collective project is not the code. It is getting three CI c"
+  },
+  {
+    "date": "2026-07-05",
+    "source": "nanocoder",
+    "angle": "nano tool profile for 1B models",
+    "archetype": "contrarian",
+    "preview": "Run a 1B model on a coding agent and watch the system prompt eat the context window. Nanocoder's /tu"
+  },
+  {
+    "date": "2026-07-05",
+    "source": "nanotune",
+    "angle": "100 examples is enough",
+    "archetype": "by-the-numbers",
+    "preview": "100 examples is enough for a 0.5B-1.5B model to learn a real behaviour. The part nobody warns you ab"
+  },
+  {
+    "date": "2026-07-05",
+    "source": "get-md",
+    "angle": "RAG chunks lost their place",
+    "archetype": "problem-relief",
+    "preview": "A RAG chunk surfaces as a match and the model can't tell you which section of which doc it came from"
+  },
+  {
+    "date": "2026-07-05",
+    "source": "json-up",
+    "angle": "v2 schema types v3's up input",
+    "archetype": "til",
+    "preview": "Your migration `up` function's `data` argument looks like `unknown`. It isn't. json-up threads each "
+  },
+  {
+    "date": "2026-07-05",
+    "source": "collective",
+    "angle": "propose first, then build",
+    "archetype": "one-tip",
+    "preview": "The fastest way to get your PR merged on an NC project is a Discord message to a maintainer before y"
+  },
+  {
+    "date": "2026-07-05",
+    "source": "collective",
+    "angle": "two places, no third",
+    "archetype": "origin",
+    "preview": "Every dollar that comes into the Nano Collective goes to one of two places: the cost of running the "
   }
 ]
