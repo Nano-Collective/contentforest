@@ -881,6 +881,34 @@
     "archetype": "til",
     "preview": "The hardest part of shipping a new Nano Collective project is not the code. It is getting three CI c"
   },
+    {
+    "date": "2026-07-04",
+    "source": "get-md",
+    "angle": "Two engines, one command",
+    "archetype": "sharp-take",
+    "preview": "Blind A/B picking is how you ship the wrong one. `get-md` --compare writes Turndown and ReaderLM-v2 "
+  },
+  {
+    "date": "2026-07-04",
+    "source": "json-up",
+    "angle": "Each up runs the schema",
+    "archetype": "til",
+    "preview": "Your migration is only as good as the shape your data lands in. json-up runs each up() output throug"
+  },
+  {
+    "date": "2026-07-04",
+    "source": "collective",
+    "angle": "Sanity-check before the whitepaper",
+    "archetype": "one-tip",
+    "preview": "Before you write a whitepaper, post the idea. A 5-minute issue or Discord message surfaces anyone al"
+  },
+  {
+    "date": "2026-07-04",
+    "source": "collective",
+    "angle": "Why the brand page is tight",
+    "archetype": "origin",
+    "preview": "A brand page that lets you call everything \"transformative\" makes the one thing you actually shipped"
+  },
   {
     "date": "2026-07-05",
     "source": "nanocoder",
@@ -922,5 +950,17 @@
     "angle": "two places, no third",
     "archetype": "origin",
     "preview": "Every dollar that comes into the Nano Collective goes to one of two places: the cost of running the "
+    "date": "2026-07-04",
+    "source": "nanocoder",
+    "angle": "CI prompt that will not go away",
+    "archetype": "problem-relief",
+    "preview": "First nanocoder run in a fresh CI directory: hangs on a trust prompt no one is there to answer. Pass"
+  },
+  {
+    "date": "2026-07-04",
+    "source": "nanotune",
+    "angle": "100 examples on a laptop",
+    "archetype": "by-the-numbers",
+    "preview": "100 examples is enough to fine-tune a 1B model on a MacBook. nanotune's defaults assume exactly that"
   }
 ]
