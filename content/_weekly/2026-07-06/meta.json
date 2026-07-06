@@ -1,0 +1,47 @@
+{
+  "kind": "weekly",
+  "date": "2026-07-06",
+  "generated_at": "2026-07-06T13:52:44.298Z",
+  "model": "minimax-m3",
+  "picks": [
+    {
+      "channel": "github-discussion",
+      "repoPath": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/github-discussion.md",
+      "source_label": "nanocoder v1.28.0",
+      "pack_path": "/p/nanocoder/1.28.0",
+      "title": "Nanocoder as an ACP agent: driving it from Zed",
+      "why": "The v1.28.0 ACP-for-Zed write-up has the deepest technical meat of any candidate, explaining why this is effectively a new agent (same Nanocoder, editor-native UI) and contrasting it with the VS Code extension, which is the kind of architectural walk-through GitHub Discussion readers value."
+    },
+    {
+      "channel": "reddit",
+      "repoPath": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/reddit.md",
+      "source_label": "collective: why-we-updated-how-we-describe-nanocoder",
+      "pack_path": "/c/why-we-updated-how-we-describe-nanocoder",
+      "title": null,
+      "why": "A positioning post travels well on Reddit because it invites debate rather than just announcing a feature, and the before/after framing of the Nanocoder tagline is a self-contained discussion prompt that does not depend on readers running the tool."
+    },
+    {
+      "channel": "linkedin",
+      "repoPath": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/linkedin.md",
+      "source_label": "nanocoder v1.28.0",
+      "pack_path": "/p/nanocoder/1.28.0",
+      "title": null,
+      "why": "ACP for Zed is the kind of milestone LinkedIn audiences forward, with concrete UX details (streaming, tool cards, diffs, permissions) that ship well as a professional-facing announcement from the most recent release."
+    },
+    {
+      "channel": "x",
+      "repoPath": "content/nanocoder/1.28.0/articles/auto-tune-tool-consolidation/channels/x.md",
+      "source_label": "nanocoder v1.28.0",
+      "pack_path": "/p/nanocoder/1.28.0",
+      "title": null,
+      "why": "The auto-tune profile hook (33 to 19 tools, size-suffix inference, mid-session re-resolution) is dense, concrete, and tweet-shaped, which is exactly the kind of single-concrete-number post that performs on X."
+    }
+  ],
+  "candidate_counts": {
+    "linkedin": 13,
+    "x": 13,
+    "github-discussion": 13,
+    "reddit": 13
+  },
+  "final_status": "passed"
+}
