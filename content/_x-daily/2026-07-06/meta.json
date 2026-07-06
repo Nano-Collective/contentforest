@@ -1,0 +1,47 @@
+{
+  "kind": "x-daily",
+  "date": "2026-07-06",
+  "generated_at": "2026-07-06T11:30:24.566Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder.md",
+      "source": "nanocoder",
+      "angle": "Skills unify commands subagents and tools",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune.md",
+      "source": "nanotune",
+      "angle": "Fine-tuning without YAML",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md.md",
+      "source": "get-md",
+      "angle": "Sub-100ms HTML to Markdown",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up.md",
+      "source": "json-up",
+      "angle": "Migrations not if statements",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Economics Charter published in public",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Open a Stage 0 conversation first",
+      "archetype": "one-tip"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
