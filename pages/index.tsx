@@ -2,10 +2,10 @@ import type {GetStaticProps} from 'next';
 import Head from 'next/head';
 import {Hero} from '@/components/home/Hero';
 import {ProductGrid} from '@/components/home/ProductGrid';
+import {listCalendarWeeks} from '@/lib/calendar';
 import {
 	listCollectivePacks,
 	listProducts,
-	listWeeklyPacks,
 	listXDailyBuckets,
 	type ProductSummary,
 } from '@/lib/content';
@@ -14,14 +14,14 @@ type Props = {
 	products: ProductSummary[];
 	collectivePackCount: number;
 	xDailyBucketCount: number;
-	weeklyPackCount: number;
+	calendarWeekCount: number;
 };
 
 export default function Home({
 	products,
 	collectivePackCount,
 	xDailyBucketCount,
-	weeklyPackCount,
+	calendarWeekCount,
 }: Props) {
 	return (
 		<>
@@ -33,7 +33,7 @@ export default function Home({
 				products={products}
 				collectivePackCount={collectivePackCount}
 				xDailyBucketCount={xDailyBucketCount}
-				weeklyPackCount={weeklyPackCount}
+				calendarWeekCount={calendarWeekCount}
 			/>
 		</>
 	);
@@ -45,7 +45,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 			products: listProducts(),
 			collectivePackCount: listCollectivePacks().length,
 			xDailyBucketCount: listXDailyBuckets().length,
-			weeklyPackCount: listWeeklyPacks().length,
+			calendarWeekCount: listCalendarWeeks().length,
 		},
 	};
 };

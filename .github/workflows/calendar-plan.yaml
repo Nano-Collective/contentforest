@@ -1,0 +1,96 @@
+name: Content Calendar Planner
+
+# The scheduling half of the content calendar. It generates nothing — it reads
+# committed content and (re)writes the per-week ledgers at content/_calendar/,
+# then commits them straight to main (they are a derived index, not reviewable
+# content). Runs daily to advance "today" and pick up new releases, and on any
+# push that changes content/ so merging an X batch or a release pack reflows the
+# calendar immediately. The `!content/_calendar/**` path filter stops the
+# planner's own commit from retriggering it. See scripts/plan-calendar.ts.
+#
+# NOTE: this pushes directly to main. If main is protected against direct
+# pushes, either exempt github-actions[bot] or swap the push for a PR.
+
+on:
+  schedule:
+    # 00:45 UTC daily — after the weekly X batch has a chance to merge.
+    - cron: "45 0 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "!content/_calendar/**"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Plan as of this date YYYY-MM-DD (omit for today, UTC)"
+        required: false
+        type: string
+
+concurrency:
+  group: calendar-plan
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        # pin: actions/checkout@v4.3.1
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Set up PNPM
+        # pin: pnpm/action-setup@v4.4.0
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        # pin: actions/setup-node@v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Plan the calendar and commit the ledgers
+        env:
+          INPUT_DATE: ${{ inputs.date }}
+        run: |
+          set -euo pipefail
+          DATE="${INPUT_DATE:-$(date -u +%F)}"
+          echo "Planning as of: $DATE"
+
+          pnpm plan-calendar --date "$DATE" --commit
+
+          # Validate every written ledger before publishing. A corrupt ledger
+          # should fail the run, not land on main.
+          if [ -d content/_calendar ]; then
+            for f in content/_calendar/*.json; do
+              [ -e "$f" ] || continue
+              week=$(basename "$f" .json)
+              pnpm validate --pack "_calendar/${week}" --root content --quiet
+            done
+          fi
+
+          git add content/_calendar
+          if git diff --cached --quiet; then
+            echo "calendar unchanged — nothing to commit"
+            exit 0
+          fi
+          git commit -m "chore: refresh content calendar (${DATE})"
+          git push origin HEAD:main

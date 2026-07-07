@@ -1,6 +1,6 @@
 import {
 	ArrowRight,
-	CalendarRange,
+	CalendarDays,
 	Megaphone,
 	MessageSquare,
 	Package,
@@ -19,14 +19,14 @@ type Props = {
 	products: ProductSummary[];
 	collectivePackCount: number;
 	xDailyBucketCount: number;
-	weeklyPackCount: number;
+	calendarWeekCount: number;
 };
 
 export function ProductGrid({
 	products,
 	collectivePackCount,
 	xDailyBucketCount,
-	weeklyPackCount,
+	calendarWeekCount,
 }: Props) {
 	return (
 		<section id="products" className="max-w-6xl mx-auto px-4 py-16">
@@ -118,23 +118,23 @@ export function ProductGrid({
 					</Link>
 				</li>
 
-				<li key="_weekly">
-					<Link href="/w" className="block group">
+				<li key="_calendar">
+					<Link href="/calendar" className="block group">
 						<Card className="h-full transition-colors group-hover:border-primary/50 card-hover-glow">
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2">
-									<CalendarRange className="h-5 w-5 text-primary" />
-									Weekly pack
+									<CalendarDays className="h-5 w-5 text-primary" />
+									Calendar
 								</CardTitle>
 								<CardDescription>
-									Weekly picks of unused content
+									What to post, planned day by day
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<div className="flex items-center justify-between text-sm text-muted-foreground">
 									<span>
-										{weeklyPackCount} week
-										{weeklyPackCount === 1 ? '' : 's'}
+										{calendarWeekCount} week
+										{calendarWeekCount === 1 ? '' : 's'}
 									</span>
 									<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
 								</div>

@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-08-03",
+  "generated_at": "2026-07-07T19:41:22.906Z",
+  "days": {
+    "2026-08-03": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/custom-tools-vs-mcp-vs-commands/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/custom-tools-vs-mcp-vs-commands/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/custom-tools-vs-mcp-vs-commands/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/custom-tools-vs-mcp-vs-commands/channels/x.md"
+      }
+    ],
+    "2026-08-04": [],
+    "2026-08-05": [],
+    "2026-08-06": [],
+    "2026-08-07": [],
+    "2026-08-08": [],
+    "2026-08-09": []
+  }
+}

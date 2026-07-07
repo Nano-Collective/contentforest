@@ -3,11 +3,10 @@ kind: x-daily
 date: "2026-07-06"
 source: "collective"
 channel: x
-angle: "Economics Charter published in public"
-generated_at: "2026-07-06T11:30:24.566Z"
+angle: "The charter is published before you invest"
+generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
-char_count: 258
-distributed_at: "2026-07-07T19:00:03.592Z"
+char_count: 232
 ---
 
-Most OSS collectives ask for your time and trust first, terms later. The Nano Collective publishes its Economics Charter before you start: financial terms written down, every change dated in git, no retrospective shifts. You know the deal before you commit.
+The Nano Collective's Economics Charter was published before there was anything in the fund. No investors, no equity, no pitch. The terms are on record so contributors decide on facts.

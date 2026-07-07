@@ -54,20 +54,8 @@ export type XDailyBucket = {
 	files: ContentFile[];
 };
 
-export type WeeklyPackSummary = {
-	date: string;
-	meta: Record<string, unknown> | null;
-};
-
-export type WeeklyPack = {
-	date: string;
-	meta: Record<string, unknown> | null;
-	digest: ContentFile | null;
-};
-
 const COLLECTIVE_DIR = '_collective';
 const X_DAILY_DIR = '_x-daily';
-const WEEKLY_DIR = '_weekly';
 
 function listDirs(path: string): string[] {
 	try {
@@ -349,54 +337,4 @@ export function readXDailyBucket(
 	}
 	files.sort((a, b) => a.channel.localeCompare(b.channel));
 	return {date, meta: readMetaJson(root), files};
-}
-
-/**
- * Lists the weekly content packs at content/_weekly/<date>/, newest first.
- * Each pack is the Monday-curated digest of unused content from across the
- * product and collective packs — see scripts/weekly-pack.ts. Date dirs sort
- * lexically, which is chronological for YYYY-MM-DD.
- */
-export function listWeeklyPacks(
-	contentDir: string = DEFAULT_CONTENT_DIR,
-): WeeklyPackSummary[] {
-	const root = join(contentDir, WEEKLY_DIR);
-	let entries: string[];
-	try {
-		entries = readdirSync(root).filter(entry => {
-			try {
-				return statSync(join(root, entry)).isDirectory();
-			} catch {
-				return false;
-			}
-		});
-	} catch {
-		return [];
-	}
-	const packs = entries.map(date => ({
-		date,
-		meta: readMetaJson(join(root, date)),
-	}));
-	packs.sort((a, b) => b.date.localeCompare(a.date));
-	return packs;
-}
-
-/**
- * Reads a single weekly pack. The pack is a single `digest.md` (a curation
- * that links out to the source files in their own packs) plus meta.json. The
- * digest is a reference doc, not distributable content, so it has no
- * distributed_at/wont_use_at lifecycle of its own.
- */
-export function readWeeklyPack(
-	date: string,
-	contentDir: string = DEFAULT_CONTENT_DIR,
-): WeeklyPack {
-	const root = join(contentDir, WEEKLY_DIR, date);
-	let digest: ContentFile | null = null;
-	try {
-		digest = readMarkdown(join(root, 'digest.md'), 'digest');
-	} catch {
-		// digest.md may not exist for an in-flight or empty pack
-	}
-	return {date, meta: readMetaJson(root), digest};
 }

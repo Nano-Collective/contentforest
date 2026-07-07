@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-08-10",
+  "generated_at": "2026-07-07T19:41:22.906Z",
+  "days": {
+    "2026-08-10": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/daemon-event-triggered-runs/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/daemon-event-triggered-runs/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/daemon-event-triggered-runs/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.27.0/articles/daemon-event-triggered-runs/channels/x.md"
+      }
+    ],
+    "2026-08-11": [],
+    "2026-08-12": [],
+    "2026-08-13": [],
+    "2026-08-14": [],
+    "2026-08-15": [],
+    "2026-08-16": []
+  }
+}

@@ -39,28 +39,43 @@ test('contentRootFor: maps each mode to its content root', t => {
 	t.is(contentRootFor('local'), 'content/_local');
 });
 
-test('buildSlots: one product slot each plus N collective slots', t => {
-	const slots = buildSlots(PRODUCTS, 2);
-	t.deepEqual(slots, [
-		{file: 'nanocoder.md', source: 'nanocoder', sourceKind: 'product'},
-		{file: 'get-md.md', source: 'get-md', sourceKind: 'product'},
-		{file: 'collective-1.md', source: 'collective', sourceKind: 'collective'},
-		{file: 'collective-2.md', source: 'collective', sourceKind: 'collective'},
-	]);
+test('buildSlots: round-robins sources and numbers per source', t => {
+	// 2 products + collective = 3 sources; 7 slots wraps twice.
+	const slots = buildSlots(PRODUCTS, 7);
+	t.deepEqual(
+		slots.map(s => s.file),
+		[
+			'nanocoder-1.md',
+			'get-md-1.md',
+			'collective-1.md',
+			'nanocoder-2.md',
+			'get-md-2.md',
+			'collective-2.md',
+			'nanocoder-3.md',
+		],
+	);
+	t.is(slots[2].sourceKind, 'collective');
+	t.is(slots[0].sourceKind, 'product');
 });
 
-test('buildSlots: zero collective slots yields only product slots', t => {
-	const slots = buildSlots(PRODUCTS, 0);
-	t.is(slots.length, 2);
-	t.false(slots.some(s => s.sourceKind === 'collective'));
+test('buildSlots: every product gets at least one slot in a full week', t => {
+	const slots = buildSlots(PRODUCTS, 30);
+	t.is(slots.length, 30);
+	for (const p of PRODUCTS) {
+		t.true(
+			slots.some(s => s.source === p.slug),
+			`${p.slug} has a slot`,
+		);
+	}
+	t.true(slots.some(s => s.sourceKind === 'collective'));
 });
 
-const SLOTS: Slot[] = buildSlots(PRODUCTS, 1);
+const SLOTS: Slot[] = buildSlots(PRODUCTS, 3);
 
 function validPlanJson(): string {
 	return JSON.stringify([
-		{file: 'nanocoder.md', angle: 'mcp support', focus: 'Explain MCP.'},
-		{file: 'get-md.md', angle: 'url to markdown', focus: 'One-shot fetch.'},
+		{file: 'nanocoder-1.md', angle: 'mcp support', focus: 'Explain MCP.'},
+		{file: 'get-md-1.md', angle: 'url to markdown', focus: 'One-shot fetch.'},
 		{
 			file: 'collective-1.md',
 			angle: 'how we ship',
@@ -76,7 +91,7 @@ test('parseXDailyPlan: accepts a plan covering every slot exactly once', t => {
 		// Re-ordered to slot order.
 		t.deepEqual(
 			result.plan.map(p => p.file),
-			['nanocoder.md', 'get-md.md', 'collective-1.md'],
+			['nanocoder-1.md', 'get-md-1.md', 'collective-1.md'],
 		);
 	}
 });
@@ -87,7 +102,7 @@ test('parseXDailyPlan: keeps a valid archetype from the plan', t => {
 	const result = parseXDailyPlan(JSON.stringify(plan), SLOTS);
 	t.true(result.ok);
 	if (result.ok) {
-		const entry = result.plan.find(p => p.file === 'nanocoder.md');
+		const entry = result.plan.find(p => p.file === 'nanocoder-1.md');
 		t.is(entry?.archetype, 'sharp-take');
 	}
 });
@@ -121,8 +136,8 @@ test('parseXDailyPlan: rejects a non-array', t => {
 
 test('parseXDailyPlan: flags a missing slot', t => {
 	const plan = JSON.stringify([
-		{file: 'nanocoder.md', angle: 'a', focus: 'f'},
-		{file: 'get-md.md', angle: 'a', focus: 'f'},
+		{file: 'nanocoder-1.md', angle: 'a', focus: 'f'},
+		{file: 'get-md-1.md', angle: 'a', focus: 'f'},
 	]);
 	const result = parseXDailyPlan(plan, SLOTS);
 	t.false(result.ok);
@@ -145,7 +160,7 @@ test('parseXDailyPlan: flags an unexpected slot', t => {
 
 test('parseXDailyPlan: flags a duplicate slot', t => {
 	const plan = JSON.parse(validPlanJson());
-	plan.push({file: 'nanocoder.md', angle: 'dup', focus: 'f'});
+	plan.push({file: 'nanocoder-1.md', angle: 'dup', focus: 'f'});
 	const result = parseXDailyPlan(JSON.stringify(plan), SLOTS);
 	t.false(result.ok);
 	if (!result.ok) {

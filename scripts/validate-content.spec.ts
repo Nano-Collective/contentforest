@@ -2123,3 +2123,176 @@ test('x-daily: sample final_status skips the gate', t => {
 		cleanup(root);
 	}
 });
+
+// ---------------------------------------------------------------------------
+// Calendar ledgers (content/_calendar/<week>.json)
+// ---------------------------------------------------------------------------
+
+const LEDGER_WEEK = '2026-07-06';
+const LEDGER_PACK_ID = `_calendar/${LEDGER_WEEK}`;
+
+function writeLedger(root: string, week: string, data: unknown) {
+	const dir = join(root, '_calendar');
+	mkdirSync(dir, {recursive: true});
+	writeFileSync(join(dir, `${week}.json`), JSON.stringify(data, null, 2));
+}
+
+function item(over: Record<string, unknown> = {}) {
+	return {
+		slot: 'x-1',
+		channel: 'x',
+		type: 'evergreen-x',
+		ref: 'config/products.json', // a file that exists, so no ref warning
+		...over,
+	};
+}
+
+test('happy: a well-formed ledger passes', t => {
+	const root = makeTmpRoot();
+	try {
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: LEDGER_WEEK,
+			generated_at: 'x',
+			days: {[LEDGER_WEEK]: [item()]},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
+		t.true(report.scannedPacks.includes(LEDGER_PACK_ID));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('fail: week_of not matching filename → ledger-week-matches-filename', t => {
+	const root = makeTmpRoot();
+	try {
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: '2026-07-13',
+			generated_at: 'x',
+			days: {},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(f => f.rule === 'ledger-week-matches-filename'),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('fail: two release sets on one day → ledger-one-release-set-per-day', t => {
+	const root = makeTmpRoot();
+	try {
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: LEDGER_WEEK,
+			generated_at: 'x',
+			days: {
+				[LEDGER_WEEK]: [
+					item({
+						type: 'release',
+						channel: 'github-discussion',
+						release_set: 'a@1',
+					}),
+					item({
+						type: 'release',
+						channel: 'github-discussion',
+						release_set: 'b@1',
+					}),
+				],
+			},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(
+			report.failures.some(f => f.rule === 'ledger-one-release-set-per-day'),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('fail: unknown item type → ledger-item-type', t => {
+	const root = makeTmpRoot();
+	try {
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: LEDGER_WEEK,
+			generated_at: 'x',
+			days: {[LEDGER_WEEK]: [item({type: 'nonsense'})]},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'ledger-item-type'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('fail: a day outside the week → ledger-day-in-week', t => {
+	const root = makeTmpRoot();
+	try {
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: LEDGER_WEEK,
+			generated_at: 'x',
+			days: {'2026-07-20': [item()]},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'ledger-day-in-week'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('warn: a ref that is not on disk → ledger-ref-exists warning', t => {
+	const root = makeTmpRoot();
+	try {
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: LEDGER_WEEK,
+			generated_at: 'x',
+			days: {[LEDGER_WEEK]: [item({ref: 'content/nope/does-not-exist.md'})]},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
+		t.true(report.warnings.some(w => w.rule === 'ledger-ref-exists'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('fail: malformed JSON ledger → ledger-parses', t => {
+	const root = makeTmpRoot();
+	try {
+		const dir = join(root, '_calendar');
+		mkdirSync(dir, {recursive: true});
+		writeFileSync(join(dir, `${LEDGER_WEEK}.json`), '{ not json');
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.true(report.failures.some(f => f.rule === 'ledger-parses'));
+	} finally {
+		cleanup(root);
+	}
+});

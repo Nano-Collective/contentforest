@@ -53,6 +53,7 @@ import {join, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import matter from 'gray-matter';
+import {weekDates} from '../lib/calendar.js';
 import {loadTeam, type TeamChannel, type TeamMember} from '../lib/team.js';
 
 type ChannelKind = 'long-form' | 'social';
@@ -185,6 +186,13 @@ const X_DAILY_DIR = '_x-daily';
 // rather than a single product. Product-sourced posts carry the product slug.
 const X_DAILY_COLLECTIVE_SOURCE = 'collective';
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+const CALENDAR_DIR = '_calendar';
+const CALENDAR_SLOT_TYPES = new Set([
+	'release',
+	'backlog-article',
+	'evergreen-x',
+]);
 
 type PackKind = 'release' | 'article';
 
@@ -1511,6 +1519,139 @@ function validateXDailyPack(args: {
 }
 
 /**
+ * Validates one week's calendar ledger at content/_calendar/<week>.json.
+ *
+ * A ledger is a derived index the planner writes (see scripts/plan-calendar.ts)
+ * — it references content by path rather than containing it, so this is a
+ * structural check, not a content check: valid JSON, week_of matches the
+ * filename, days sit inside that week, every item is well-shaped, and R4 (≤1
+ * release set per day) holds. A `ref` whose target file is missing is a
+ * warning, not a failure: the planner prunes dangling refs, but a hand-edit or
+ * a race could leave one, and we'd rather flag than block.
+ */
+function validateCalendarLedger(
+	week: string,
+	filePath: string,
+): {failures: Failure[]; warnings: Warning[]; skipped: boolean} {
+	const failures: Failure[] = [];
+	const warnings: Warning[] = [];
+	const fileRel = relative(ROOT, filePath);
+
+	if (!DATE_RE.test(week)) {
+		failures.push({
+			file: fileRel,
+			rule: 'ledger-week-format',
+			expected: 'YYYY-MM-DD (an ISO Monday)',
+			actual: week,
+		});
+		return {failures, warnings, skipped: false};
+	}
+
+	let data: {week_of?: unknown; days?: unknown};
+	try {
+		data = readJson(filePath);
+	} catch (e) {
+		failures.push({
+			file: fileRel,
+			rule: 'ledger-parses',
+			expected: 'valid JSON',
+			actual: (e as Error).message,
+		});
+		return {failures, warnings, skipped: false};
+	}
+
+	if (data.week_of !== week) {
+		failures.push({
+			file: fileRel,
+			rule: 'ledger-week-matches-filename',
+			expected: week,
+			actual: String(data.week_of ?? '<missing>'),
+		});
+	}
+
+	const validDates = new Set(weekDates(week));
+	const days = data.days;
+	if (!days || typeof days !== 'object' || Array.isArray(days)) {
+		failures.push({
+			file: fileRel,
+			rule: 'ledger-days-shape',
+			expected: 'days: object keyed by ISO date',
+			actual: days === undefined ? 'missing' : typeof days,
+		});
+		return {failures, warnings, skipped: false};
+	}
+
+	for (const [date, rawItems] of Object.entries(
+		days as Record<string, unknown>,
+	)) {
+		if (!validDates.has(date)) {
+			failures.push({
+				file: fileRel,
+				rule: 'ledger-day-in-week',
+				expected: `a date within the week of ${week}`,
+				actual: date,
+			});
+		}
+		if (!Array.isArray(rawItems)) {
+			failures.push({
+				file: fileRel,
+				rule: 'ledger-day-items-shape',
+				expected: `days["${date}"] is an array`,
+				actual: typeof rawItems,
+			});
+			continue;
+		}
+		const releaseSets = new Set<string>();
+		rawItems.forEach((raw, i) => {
+			const it = raw as Record<string, unknown>;
+			for (const field of ['slot', 'channel', 'ref']) {
+				if (
+					typeof it[field] !== 'string' ||
+					(it[field] as string).length === 0
+				) {
+					failures.push({
+						file: fileRel,
+						rule: 'ledger-item-shape',
+						expected: `${date}[${i}].${field} is a non-empty string`,
+						actual: JSON.stringify(it[field]),
+					});
+				}
+			}
+			if (typeof it.type !== 'string' || !CALENDAR_SLOT_TYPES.has(it.type)) {
+				failures.push({
+					file: fileRel,
+					rule: 'ledger-item-type',
+					expected: `one of ${[...CALENDAR_SLOT_TYPES].join(', ')}`,
+					actual: String(it.type),
+				});
+			}
+			if (typeof it.release_set === 'string') releaseSets.add(it.release_set);
+			if (
+				typeof it.ref === 'string' &&
+				it.ref.length > 0 &&
+				!existsSync(join(ROOT, it.ref))
+			) {
+				warnings.push({
+					file: fileRel,
+					rule: 'ledger-ref-exists',
+					message: `${date}[${i}] ref not found on disk: ${it.ref}`,
+				});
+			}
+		});
+		if (releaseSets.size > 1) {
+			failures.push({
+				file: fileRel,
+				rule: 'ledger-one-release-set-per-day',
+				expected: '≤1 release_set per day',
+				actual: `${releaseSets.size} (${[...releaseSets].join(', ')})`,
+			});
+		}
+	}
+
+	return {failures, warnings, skipped: false};
+}
+
+/**
  * Programmatic entry point — used by the CLI `main()` and by `*.spec.ts`
  * tests. Returns the structured Report; never prints, never exits, never
  * writes files. The CLI wraps this with arg parsing, output formatting,
@@ -1553,6 +1694,7 @@ export function runValidate(options: {
 	const packsToScan: {product: Product; version: string}[] = [];
 	const collectivePacksToScan: {slug: string}[] = [];
 	const xDailyPacksToScan: {date: string}[] = [];
+	const calendarLedgersToScan: {week: string}[] = [];
 	if (options.packFilter) {
 		const [first, second] = options.packFilter.split('/');
 		if (first === COLLECTIVE_DIR) {
@@ -1567,6 +1709,11 @@ export function runValidate(options: {
 				throw new Error(`X-daily pack filter must be "${X_DAILY_DIR}/<date>"`);
 			}
 			xDailyPacksToScan.push({date: second});
+		} else if (first === CALENDAR_DIR) {
+			if (!second) {
+				throw new Error(`Calendar filter must be "${CALENDAR_DIR}/<week>"`);
+			}
+			calendarLedgersToScan.push({week: second});
 		} else {
 			const product = productsBySlug.get(first);
 			if (!product) {
@@ -1588,6 +1735,15 @@ export function runValidate(options: {
 		const xDailyDir = join(options.contentRoot, X_DAILY_DIR);
 		for (const date of listDirs(xDailyDir)) {
 			xDailyPacksToScan.push({date});
+		}
+		// Calendar ledgers are files (<week>.json), not directories.
+		const calendarDir = join(options.contentRoot, CALENDAR_DIR);
+		if (existsSync(calendarDir)) {
+			for (const entry of readdirSync(calendarDir)) {
+				if (entry.endsWith('.json')) {
+					calendarLedgersToScan.push({week: entry.replace(/\.json$/, '')});
+				}
+			}
 		}
 	}
 
@@ -1737,6 +1893,28 @@ export function runValidate(options: {
 			channels: cfg.channels,
 			products: cfg.products,
 		});
+		if (result.skipped) {
+			report.skippedPacks.push(id);
+			continue;
+		}
+		report.scannedPacks.push(id);
+		report.failures.push(...result.failures);
+		report.warnings.push(...result.warnings);
+	}
+
+	for (const {week} of calendarLedgersToScan) {
+		const filePath = join(options.contentRoot, CALENDAR_DIR, `${week}.json`);
+		const id = `${CALENDAR_DIR}/${week}`;
+		if (!existsSync(filePath)) {
+			report.failures.push({
+				file: relative(ROOT, filePath),
+				rule: 'ledger-exists',
+				expected: 'ledger file present',
+				actual: 'missing',
+			});
+			continue;
+		}
+		const result = validateCalendarLedger(week, filePath);
 		if (result.skipped) {
 			report.skippedPacks.push(id);
 			continue;

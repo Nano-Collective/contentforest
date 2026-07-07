@@ -24,6 +24,19 @@ The workflow opens **one PR per pack** with the `auto-release` label (and `faile
 
 **Idempotency guard:** the workflow skips packs whose `auto/release-<product>-<version>` branch already exists on origin. To re-run an already-attempted pack: delete the orphan branch first (`gh api -X DELETE repos/Nano-Collective/contentforest/git/refs/heads/auto/release-<product>-<version>`).
 
+## Calendar planner & weekly X batch
+
+Full reference in [`docs/calendar.md`](./calendar.md); the operational essentials:
+
+- **Weekly X batch** ([`x-daily.yaml`](https://github.com/Nano-Collective/contentforest/actions/workflows/x-daily.yaml), cron `15 0 * * 1`, Monday 00:15 UTC) generates the week's 30-post evergreen X pool (6/day × 5 weekdays) and opens a PR. Review + merge like any content PR. To run for a specific week, **Run workflow** with `date=<that week's Monday>`.
+- **Planner** ([`calendar-plan.yaml`](https://github.com/Nano-Collective/contentforest/actions/workflows/calendar-plan.yaml), daily cron `45 0 * * *` + on push to `content/**`) runs `pnpm plan-calendar --commit`, validates every ledger, and **commits `content/_calendar/*.json` straight to `main`** (no PR — they're a derived index). That commit triggers a Pages rebuild; the live `/calendar` refreshes within a minute.
+
+**Backfill / force a refresh:** dispatch `calendar-plan.yaml` (**Run workflow**), or locally `pnpm plan-calendar --commit` and commit `content/_calendar/`.
+
+**Direct-push-to-`main` caveat:** if `main` becomes protected against direct pushes, the planner's push step will fail — exempt `github-actions[bot]`, or change the last step of `calendar-plan.yaml` to open a PR.
+
+**Weekend/weekday note:** the planner only schedules Monday–Friday. Empty weekend cells and a current-week Monday that's already in the past are expected, not a bug — unposted past items reflow forward onto the next weekday (see `docs/calendar.md` → Reflow).
+
 ## Reading a `failed-validation` PR
 
 The PR opens with the `failed-validation` label when the validator's hard rules fail after the orchestrator's per-agent retry budget is exhausted. The pack is still pushed so a human can read what the agent produced and finish it.

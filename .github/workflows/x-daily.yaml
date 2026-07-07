@@ -1,13 +1,13 @@
-name: Daily X Posts
+name: Weekly X Posts
 
 on:
   schedule:
-    # 00:15 UTC daily — just after midnight.
-    - cron: "15 0 * * *"
+    # 00:15 UTC every Monday — the week's evergreen X batch (6/day × 7).
+    - cron: "15 0 * * 1"
   workflow_dispatch:
     inputs:
       date:
-        description: "Bucket date YYYY-MM-DD (omit for today, UTC)"
+        description: "Week's Monday YYYY-MM-DD (omit for this week, UTC)"
         required: false
         type: string
       dry_run:
@@ -23,7 +23,9 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # A full week is ~42 posts (one nanocoder write each), so allow well beyond
+    # the old daily budget.
+    timeout-minutes: 180
 
     permissions:
       contents: write
@@ -77,7 +79,7 @@ jobs:
       - name: Fetch reference docs
         run: pnpm fetch-refs
 
-      - name: Resolve date
+      - name: Resolve date (the week's Monday)
         id: resolve
         env:
           INPUT_DATE: ${{ inputs.date }}
@@ -86,10 +88,12 @@ jobs:
           if [ -n "${INPUT_DATE:-}" ]; then
             DATE="$INPUT_DATE"
           else
-            DATE=$(date -u +%F)
+            # Monday of the current UTC week (%u: Mon=1..Sun=7).
+            DOW=$(date -u +%u)
+            DATE=$(date -u -d "-$((DOW - 1)) days" +%F)
           fi
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
-          echo "Resolved date: $DATE"
+          echo "Resolved week-of Monday: $DATE"
 
       - name: Generate, validate, and open a PR
         env:
@@ -160,7 +164,7 @@ jobs:
             LABELS="x-daily,failed-validation"
           fi
 
-          BODY=$(printf 'Automated daily X posts for **%s**.\n\n- Final status: `%s`\n- Attempts: `%s`\n- Posts: `%s`\n\nValidation ran during generation; the `meta.json` in the bucket has the report. A reviewer should sanity-check the posts before merging.' \
+          BODY=$(printf 'Automated weekly X batch for the week of **%s** (the evergreen pool the calendar planner draws from).\n\n- Final status: `%s`\n- Attempts: `%s`\n- Posts: `%s`\n\nValidation ran during generation; the `meta.json` in the bucket has the report. A reviewer should sanity-check the posts before merging; the planner schedules them across the week once merged.' \
             "$DATE" "$FINAL_STATUS" "$ATTEMPTS" "$POST_COUNT")
 
           # Try to open the PR. If creation fails, the branch on origin is
@@ -169,7 +173,7 @@ jobs:
           gh pr create \
             --base main \
             --head "$BRANCH" \
-            --title "X posts: ${DATE}" \
+            --title "Weekly X posts: week of ${DATE}" \
             --body "$BODY" \
             --label "$LABELS"
           PR_STATUS=$?

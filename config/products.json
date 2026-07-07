@@ -3,5 +3,5 @@
 	{ "slug": "nanotune", "repo": "Nano-Collective/nanotune" },
 	{ "slug": "get-md", "repo": "Nano-Collective/get-md" },
 	{ "slug": "json-up", "repo": "Nano-Collective/json-up" },
-	{ "slug": "prompt-scrubber", "repo": "Nano-Collective/prompt-scrubber" }
+	{ "slug": "prompt-scrub", "repo": "Nano-Collective/prompt-scrubber" }
 ]
