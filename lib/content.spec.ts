@@ -9,10 +9,8 @@ import {
 	listCollectivePacks,
 	listProducts,
 	listVersions,
-	listWeeklyPacks,
 	readCollectivePack,
 	readVersionPack,
-	readWeeklyPack,
 } from './content.js';
 
 function makeTempContentDir(): string {
@@ -388,60 +386,6 @@ test('isPackDealtWith: non-string distributed_at is treated as unmarked', t => {
 	t.false(
 		isPackDealtWith([mkFile('x', {distributed_at: date as unknown as string})]),
 	);
-});
-
-test('listWeeklyPacks: returns empty array when _weekly is missing', t => {
-	const tmp = makeTempContentDir();
-	rmSync(tmp, {recursive: true});
-	t.deepEqual(listWeeklyPacks(tmp), []);
-});
-
-test('listWeeklyPacks: lists packs newest-first with their meta', t => {
-	const tmp = makeTempContentDir();
-	writeFile(
-		join(tmp, '_weekly', '2026-06-22', 'meta.json'),
-		JSON.stringify({kind: 'weekly', picks: [{channel: 'reddit'}]}),
-	);
-	writeFile(
-		join(tmp, '_weekly', '2026-06-29', 'meta.json'),
-		JSON.stringify({kind: 'weekly', picks: []}),
-	);
-	const packs = listWeeklyPacks(tmp);
-	t.deepEqual(
-		packs.map(p => p.date),
-		['2026-06-29', '2026-06-22'],
-	);
-	t.is((packs[1].meta?.picks as unknown[]).length, 1);
-	rmSync(tmp, {recursive: true});
-});
-
-test('readWeeklyPack: reads digest.md and meta.json', t => {
-	const tmp = makeTempContentDir();
-	const root = join(tmp, '_weekly', '2026-06-29');
-	writeFile(
-		join(root, 'digest.md'),
-		'---\nkind: weekly\nweek_of: "2026-06-29"\n---\n\n# Weekly content pack',
-	);
-	writeFile(join(root, 'meta.json'), JSON.stringify({kind: 'weekly'}));
-	const pack = readWeeklyPack('2026-06-29', tmp);
-	t.is(pack.date, '2026-06-29');
-	t.is(pack.meta?.kind, 'weekly');
-	t.truthy(pack.digest);
-	t.is(pack.digest?.channel, 'digest');
-	t.true(pack.digest?.body.includes('# Weekly content pack'));
-	rmSync(tmp, {recursive: true});
-});
-
-test('readWeeklyPack: returns null digest when digest.md is absent', t => {
-	const tmp = makeTempContentDir();
-	writeFile(
-		join(tmp, '_weekly', '2026-06-29', 'meta.json'),
-		JSON.stringify({kind: 'weekly', final_status: 'empty'}),
-	);
-	const pack = readWeeklyPack('2026-06-29', tmp);
-	t.is(pack.digest, null);
-	t.is(pack.meta?.final_status, 'empty');
-	rmSync(tmp, {recursive: true});
 });
 
 test('isPackDealtWith: integrates with readVersionPack on real files', t => {
