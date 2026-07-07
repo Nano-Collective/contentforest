@@ -2,14 +2,15 @@ name: Content Calendar Planner
 
 # The scheduling half of the content calendar. It generates nothing — it reads
 # committed content and (re)writes the per-week ledgers at content/_calendar/,
-# then commits them straight to main (they are a derived index, not reviewable
-# content). Runs daily to advance "today" and pick up new releases, and on any
-# push that changes content/ so merging an X batch or a release pack reflows the
-# calendar immediately. The `!content/_calendar/**` path filter stops the
-# planner's own commit from retriggering it. See scripts/plan-calendar.ts.
+# then opens (or updates) a single pull request with the refreshed ledgers
+# (they are a derived index, but main requires PRs). Runs daily to advance
+# "today" and pick up new releases, and on any push that changes content/ so
+# merging an X batch or a release pack reflows the calendar. The
+# `!content/_calendar/**` path filter stops the merged PR from retriggering it.
 #
-# NOTE: this pushes directly to main. If main is protected against direct
-# pushes, either exempt github-actions[bot] or swap the push for a PR.
+# The PR uses one long-lived branch (auto/calendar) that is force-updated on
+# each run, so there's always at most one open "Refresh content calendar" PR
+# reflecting the latest schedule. See scripts/plan-calendar.ts.
 
 on:
   schedule:
@@ -38,6 +39,7 @@ jobs:
 
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -67,18 +69,30 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Plan the calendar and commit the ledgers
+      - name: Ensure PR label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh label create calendar --color "0e8a16" --description "Automated content-calendar ledger refresh" --force
+
+      - name: Plan the calendar and open/update a PR
         env:
           INPUT_DATE: ${{ inputs.date }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           DATE="${INPUT_DATE:-$(date -u +%F)}"
+          BRANCH="auto/calendar"
           echo "Planning as of: $DATE"
+
+          # Build the branch fresh off the current main so the PR is a single
+          # clean commit of the latest ledger state.
+          git fetch origin main
+          git checkout -B "$BRANCH" origin/main
 
           pnpm plan-calendar --date "$DATE" --commit
 
           # Validate every written ledger before publishing. A corrupt ledger
-          # should fail the run, not land on main.
+          # should fail the run, not open a PR.
           if [ -d content/_calendar ]; then
             for f in content/_calendar/*.json; do
               [ -e "$f" ] || continue
@@ -89,8 +103,21 @@ jobs:
 
           git add content/_calendar
           if git diff --cached --quiet; then
-            echo "calendar unchanged — nothing to commit"
+            echo "calendar unchanged since main — nothing to publish"
             exit 0
           fi
           git commit -m "chore: refresh content calendar (${DATE})"
-          git push origin HEAD:main
+          git push --force origin "$BRANCH"
+
+          # Open a PR if one isn't already open for this branch; otherwise the
+          # force-push above already updated the existing PR.
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')" ]; then
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Refresh content calendar" \
+              --body $'Automated refresh of the content-calendar ledgers (`content/_calendar/*.json`) by the planner.\n\nThis is a derived index — review is a formality; merging updates the live `/calendar`. The `auto/calendar` branch is force-updated on each planner run, so this PR always reflects the latest schedule.' \
+              --label calendar
+          else
+            echo "PR already open for $BRANCH; the force-push updated it."
+          fi

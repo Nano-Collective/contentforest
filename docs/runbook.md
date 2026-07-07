@@ -29,11 +29,11 @@ The workflow opens **one PR per pack** with the `auto-release` label (and `faile
 Full reference in [`docs/calendar.md`](./calendar.md); the operational essentials:
 
 - **Weekly X batch** ([`x-daily.yaml`](https://github.com/Nano-Collective/contentforest/actions/workflows/x-daily.yaml), cron `15 0 * * 1`, Monday 00:15 UTC) generates the week's 30-post evergreen X pool (6/day × 5 weekdays) and opens a PR. Review + merge like any content PR. To run for a specific week, **Run workflow** with `date=<that week's Monday>`.
-- **Planner** ([`calendar-plan.yaml`](https://github.com/Nano-Collective/contentforest/actions/workflows/calendar-plan.yaml), daily cron `45 0 * * *` + on push to `content/**`) runs `pnpm plan-calendar --commit`, validates every ledger, and **commits `content/_calendar/*.json` straight to `main`** (no PR — they're a derived index). That commit triggers a Pages rebuild; the live `/calendar` refreshes within a minute.
+- **Planner** ([`calendar-plan.yaml`](https://github.com/Nano-Collective/contentforest/actions/workflows/calendar-plan.yaml), daily cron `45 0 * * *` + on push to `content/**`) runs `pnpm plan-calendar --commit`, validates every ledger, and opens/force-updates a single **"Refresh content calendar" PR** off the `auto/calendar` branch. Merge it to land the ledgers on `main` and trigger a Pages rebuild; the live `/calendar` refreshes within a minute.
+
+**One rolling PR:** the ledgers change daily, so the planner keeps a single force-updated PR (branch `auto/calendar`) rather than opening a new one each run. If you close it without merging, the next run reopens it. Review is a formality — it's a derived index.
 
 **Backfill / force a refresh:** dispatch `calendar-plan.yaml` (**Run workflow**), or locally `pnpm plan-calendar --commit` and commit `content/_calendar/`.
-
-**Direct-push-to-`main` caveat:** if `main` becomes protected against direct pushes, the planner's push step will fail — exempt `github-actions[bot]`, or change the last step of `calendar-plan.yaml` to open a PR.
 
 **Weekend/weekday note:** the planner only schedules Monday–Friday. Empty weekend cells and a current-week Monday that's already in the past are expected, not a bug — unposted past items reflow forward onto the next weekday (see `docs/calendar.md` → Reflow).
 

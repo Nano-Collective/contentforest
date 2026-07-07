@@ -126,15 +126,16 @@ they don't work from a local dev server; viewing does.
   Generates the 30-post batch and opens a PR for review. Merging it lets the
   planner schedule the posts.
 - **Planner** — `calendar-plan.yaml`, daily cron `45 0 * * *` **and** on any push
-  to `content/**` (excluding `content/_calendar/**`, so its own commit doesn't
+  to `content/**` (excluding `content/_calendar/**`, so merging its PR doesn't
   retrigger it). It runs `pnpm plan-calendar --commit`, validates every ledger,
-  and **commits the ledgers straight to `main`** — they're a derived index, not
-  reviewable content. That commit triggers a Cloudflare Pages rebuild, which is
-  how the live calendar refreshes.
+  and opens (or force-updates) a single **"Refresh content calendar" PR** off a
+  long-lived `auto/calendar` branch. Merging it lands the ledgers on `main` and
+  triggers a Cloudflare Pages rebuild — how the live calendar refreshes.
 
-> **Direct push to `main`.** The planner pushes to `main` without a PR. If `main`
-> is protected against direct pushes, either exempt `github-actions[bot]` or
-> switch the last step of `calendar-plan.yaml` to open a PR instead.
+> **One rolling PR.** The ledgers are a derived index that changes daily, so the
+> planner keeps a single PR that it force-updates each run rather than opening a
+> new one each time. Review is a formality; merge to publish the latest
+> schedule. (`main` requires PRs, so the planner can't commit to it directly.)
 
 ## Backfilling after a change
 
