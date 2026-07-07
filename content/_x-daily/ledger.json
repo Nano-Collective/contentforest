@@ -40,5 +40,47 @@
     "angle": "Open a Stage 0 conversation first",
     "archetype": "one-tip",
     "preview": "A whitepaper is wasted work if the answer is no. Before you draft anything under the Nano Collective"
+  },
+  {
+    "date": "2026-07-07",
+    "source": "nanocoder",
+    "angle": "You decide what your agent can do",
+    "archetype": "sharp-take",
+    "preview": "A coding agent shouldn't get to choose its own reach. Nanocoder's top-level `disabledTools` array st"
+  },
+  {
+    "date": "2026-07-07",
+    "source": "nanotune",
+    "angle": "Configure the judge before you train",
+    "archetype": "one-tip",
+    "preview": "Training without a judge is just vibes. Run `nanotune judge configure` (pick provider + model), then"
+  },
+  {
+    "date": "2026-07-07",
+    "source": "get-md",
+    "angle": "Whole site to markdown in one command",
+    "archetype": "problem-relief",
+    "preview": "Feeding raw HTML to an LLM burns context on nav, ads and boilerplate. `getmd --sitemap <url> -o ./ou"
+  },
+  {
+    "date": "2026-07-07",
+    "source": "json-up",
+    "angle": "Every migration's output is re-validated",
+    "archetype": "til",
+    "preview": "Most JSON migration libraries trust whatever `up()` returns. `json-up` re-runs your Zod schema on ev"
+  },
+  {
+    "date": "2026-07-07",
+    "source": "collective",
+    "angle": "Thirty days notice on every term change",
+    "archetype": "by-the-numbers",
+    "preview": "30 days. That is the public notice the Nano Collective publishes before any financial term changes, "
+  },
+  {
+    "date": "2026-07-07",
+    "source": "collective",
+    "angle": "Built so the work outlives the founding team",
+    "archetype": "origin",
+    "preview": "Most open source dies when the founders step back. The Nano Collective is set up so it does not need"
   }
 ]
