@@ -1,16 +1,20 @@
 /**
- * Orchestrates one daily run of standalone X (Twitter) posts for the Nano
- * Collective account, committed to content/_x-daily/<date>/.
+ * Generates a WEEK's batch of standalone X (Twitter) posts for the Nano
+ * Collective account in one run, committed to content/_x-daily/<monday>/. This
+ * is the evergreen X pool the calendar planner draws from to fill six X slots a
+ * day (see scripts/plan-calendar.ts); the planner decides which post lands on
+ * which day, not this script.
  *
- * The daily quota is deterministic and owned by THIS script, not the model:
- * one post per product in config/products.json, plus --collective-count posts
- * about the collective itself. Each of those is a "slot". The planning agent
- * only chooses the angle for each slot (steered away from recently-used angles
- * by the ledger); the writer agent writes one post per slot. Owning the slot
- * structure here guarantees the quota and the filenames no matter what the
- * model does.
+ * The quota is deterministic and owned by THIS script, not the model:
+ * --posts slots (default 30 = 6/day × 5 weekdays; the planner skips weekends)
+ * are round-robined across the products in config/products.json plus the
+ * collective, so every product — including the newest — gets at least one turn
+ * a week. Each slot's angle is chosen by the
+ * planning agent (steered off recently-used angles by the ledger); the writer
+ * agent writes one post per slot. Owning the slot structure here guarantees the
+ * quota and filenames no matter what the model does.
  *
- *   1. Build the slots (products + N collective).
+ *   1. Build the slots (round-robin products + collective, --posts of them).
  *   2. Plan agent (prompts/agents/x-daily-plan.md): writes a JSON file with
  *      one {file, angle, archetype, focus} per slot. Retried until it parses +
  *      covers every slot, up to --max-retries.
@@ -19,18 +23,18 @@
  *      producing posts/<file>.md and self-checking only its own file.
  *   5. Validate the whole bucket. For any file still failing, re-spawn its
  *      writer with the error report as fix context, up to --max-retries.
- *   6. On a clean pass, append the day's angles to content/_x-daily/ledger.json
- *      (commit mode only) so tomorrow's planner avoids them.
+ *   6. On a clean pass, append the week's angles to content/_x-daily/ledger.json
+ *      (commit mode only) so next week's planner avoids them.
  *
- *   pnpm x-daily                         # today, writes to content/_local/
- *   pnpm x-daily --date 2026-06-09 --test
+ *   pnpm x-daily                         # this week, writes to content/_local/
+ *   pnpm x-daily --date 2026-07-06 --test
  *   pnpm x-daily --commit                # writes to content/ (the CI path)
- *   pnpm x-daily --dry-run               # print the plan prompt, run nothing
+ *   pnpm x-daily --posts 42 --dry-run    # print the plan prompt, run nothing
  *
- * Exits 0 when the validator is clean, 1 when retries exhaust with failures
- * still present (the workflow opens the PR anyway with a failed-validation
- * label so a human can finish it). Sister script to collective-request.ts;
- * structure is intentionally parallel for ease of comparison.
+ * `--date` should be the week's Monday; the CI cron passes it. Exits 0 when the
+ * validator is clean, 1 when retries exhaust with failures still present (the
+ * workflow opens the PR anyway with a failed-validation label so a human can
+ * finish it).
  */
 
 import {spawnSync} from 'node:child_process';
@@ -143,10 +147,14 @@ export function archetypesCatalogue(): string {
 type Args = {
 	date: string;
 	mode: RunMode;
-	collectiveCount: number;
+	posts: number;
 	dryRun: boolean;
 	maxAttempts: number;
 };
+
+// Default weekly quota: six X posts a day across the five weekdays (weekends
+// are skipped by the calendar planner, so there's no point generating for them).
+const DEFAULT_POSTS_PER_WEEK = 30;
 
 /* c8 ignore start */
 function parse(): Args {
@@ -156,7 +164,7 @@ function parse(): Args {
 			date: {type: 'string'},
 			commit: {type: 'boolean', default: false},
 			test: {type: 'boolean', default: false},
-			'collective-count': {type: 'string', default: '2'},
+			posts: {type: 'string', default: String(DEFAULT_POSTS_PER_WEEK)},
 			'dry-run': {type: 'boolean', default: false},
 			'max-retries': {type: 'string', default: '3'},
 		},
@@ -167,16 +175,20 @@ function parse(): Args {
 			? 'test'
 			: 'local';
 	return {
-		date: (values.date as string | undefined) ?? todayIso(),
+		date: (values.date as string | undefined) ?? mondayIso(),
 		mode,
-		collectiveCount: Number.parseInt(values['collective-count'] as string, 10),
+		posts: Number.parseInt(values.posts as string, 10),
 		dryRun: values['dry-run'] as boolean,
 		maxAttempts: Number.parseInt(values['max-retries'] as string, 10),
 	};
 }
 
-function todayIso(): string {
-	return new Date().toISOString().slice(0, 10);
+/** This week's Monday (UTC) — the default bucket key for the weekly batch. */
+function mondayIso(): string {
+	const d = new Date();
+	const back = (d.getUTCDay() + 6) % 7;
+	d.setUTCDate(d.getUTCDate() - back);
+	return d.toISOString().slice(0, 10);
 }
 
 function readFile(path: string): string {
@@ -211,25 +223,24 @@ export function contentRootFor(mode: RunMode): string {
 }
 
 /**
- * The day's post slots: one per product, then N collective slots numbered
- * collective-1.md .. collective-N.md. Order is products-then-collective so
- * the slot list is stable across runs.
+ * The week's post slots: `count` of them, round-robined across every product
+ * plus the collective so each source gets a fair, stable share and every
+ * product appears at least once. Files are numbered per source
+ * (`nanocoder-1.md`, `nanocoder-2.md`, `collective-1.md`, ...). The planner
+ * places these across the week's days; order here is just deterministic.
  */
-export function buildSlots(
-	products: Product[],
-	collectiveCount: number,
-): Slot[] {
-	const slots: Slot[] = products.map(p => ({
-		file: `${p.slug}.md`,
-		source: p.slug,
-		sourceKind: 'product',
-	}));
-	for (let i = 1; i <= collectiveCount; i++) {
-		slots.push({
-			file: `${COLLECTIVE_SOURCE}-${i}.md`,
-			source: COLLECTIVE_SOURCE,
-			sourceKind: 'collective',
-		});
+export function buildSlots(products: Product[], count: number): Slot[] {
+	const sources: {source: string; kind: 'product' | 'collective'}[] = [
+		...products.map(p => ({source: p.slug, kind: 'product' as const})),
+		{source: COLLECTIVE_SOURCE, kind: 'collective' as const},
+	];
+	const perSource = new Map<string, number>();
+	const slots: Slot[] = [];
+	for (let i = 0; i < count; i++) {
+		const {source, kind} = sources[i % sources.length];
+		const n = (perSource.get(source) ?? 0) + 1;
+		perSource.set(source, n);
+		slots.push({file: `${source}-${n}.md`, source, sourceKind: kind});
 	}
 	return slots;
 }
@@ -555,7 +566,7 @@ function appendLedger(args: {
 async function main() {
 	const args = parse();
 	const products = loadProducts();
-	const slots = buildSlots(products, args.collectiveCount);
+	const slots = buildSlots(products, args.posts);
 	const contentRoot = contentRootFor(args.mode);
 	const packDir = join(ROOT, contentRoot, X_DAILY_DIR, args.date);
 	const packId = `${X_DAILY_DIR}/${args.date}`;
@@ -574,7 +585,7 @@ async function main() {
 	const recentAngles = summarizeRecentAngles(ledger, slots);
 
 	console.log(
-		`x-daily: ${args.date} (mode=${args.mode}) — ${slots.length} slots (${products.length} product + ${args.collectiveCount} collective), max-attempts=${args.maxAttempts}`,
+		`x-daily: week of ${args.date} (mode=${args.mode}) — ${slots.length} posts round-robined across ${products.length} product(s) + collective, max-attempts=${args.maxAttempts}`,
 	);
 
 	const planPath = join(tmpdir(), `cf-x-daily-plan-${Date.now()}.json`);
