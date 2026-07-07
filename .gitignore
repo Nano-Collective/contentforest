@@ -52,3 +52,6 @@ next-env.d.ts.bak
 # repo — generation uses templated prompts under prompts/ instead — so the
 # whole .nanocoder/ tree is runtime-only.
 /.nanocoder/
+
+# local generation scratch (x-daily self-check output)
+.tmp/

@@ -4,6 +4,8 @@ Built by the [Nano Collective](https://nanocollective.org) — a community colle
 
 ContentForest is the Nano Collective's release-content cockpit: a daily GitHub Action detects new releases across NC product repos, runs Nanocoder against a templated prompt to generate a complete content pack per release (announcement channel posts plus 0–3 deep-dive drip-articles), validates the output, and opens a PR. Merged PRs deploy to a Cloudflare-Pages-hosted file viewer at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org).
 
+On top of that, a **content calendar** turns "what's been generated" into "what to post, and when". An automated planner schedules six X posts per weekday, at least one deep-dive article a week, and new-release announcements as they land — all viewable as a month/week calendar at `/calendar`, with distribute-tracking per post. See [`docs/calendar.md`](./docs/calendar.md).
+
 This is an **internal tool** built for the Nano Collective. The repo is public for transparency; the deployed site, issue tracker, and request flows below are intended for `Nano-Collective` org members.
 
 ## Quick start
@@ -38,6 +40,7 @@ For a real CI-driven generation, dispatch [`.github/workflows/daily-content.yaml
 
 - **[`CONTRIBUTING.md`](./CONTRIBUTING.md)** — dev setup, test gate, coding standards, and the divergences from the [Nano Collective playbook](https://docs.nanocollective.org/collective/projects/creating-a-new-project) this repo takes.
 - **[`docs/runbook.md`](./docs/runbook.md)** — dispatching runs, reading failed-validation PRs, recovering from broken state.
+- **[`docs/calendar.md`](./docs/calendar.md)** — the content calendar: scheduling rules, the planner, the weekly X batch, and how it runs.
 - **[`docs/local-development.md`](./docs/local-development.md)** — local generation workflow for prompt tuning.
 - **[`docs/adding-a-product.md`](./docs/adding-a-product.md)** — onboarding a new NC product.
 - **[`AGENTS.md`](./AGENTS.md)** — orientation for AI agents working in this repo.
