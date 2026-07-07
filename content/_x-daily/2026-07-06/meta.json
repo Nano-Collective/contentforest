@@ -1,44 +1,188 @@
 {
   "kind": "x-daily",
   "date": "2026-07-06",
-  "generated_at": "2026-07-06T11:30:24.566Z",
+  "generated_at": "2026-07-07T19:16:43.402Z",
   "model": "minimax-m3",
   "posts": [
     {
-      "file": "nanocoder.md",
+      "file": "nanocoder-1.md",
       "source": "nanocoder",
-      "angle": "Skills unify commands subagents and tools",
-      "archetype": "origin"
+      "angle": "Cloud is not the default",
+      "archetype": "contrarian"
     },
     {
-      "file": "nanotune.md",
+      "file": "nanotune-1.md",
       "source": "nanotune",
-      "angle": "Fine-tuning without YAML",
+      "angle": "Training data prep is the friction",
       "archetype": "problem-relief"
     },
     {
-      "file": "get-md.md",
+      "file": "get-md-1.md",
       "source": "get-md",
-      "angle": "Sub-100ms HTML to Markdown",
-      "archetype": "by-the-numbers"
+      "angle": "HTML-to-MD for code blocks and tables",
+      "archetype": "problem-relief"
     },
     {
-      "file": "json-up.md",
+      "file": "json-up-1.md",
       "source": "json-up",
-      "angle": "Migrations not if statements",
-      "archetype": "sharp-take"
+      "angle": "Migrations that know what they're migrating to",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Pasted your config into ChatGPT again",
+      "archetype": "problem-relief"
     },
     {
       "file": "collective-1.md",
       "source": "collective",
-      "angle": "Economics Charter published in public",
-      "archetype": "contrarian"
+      "angle": "The charter is published before you invest",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Model-callable tools as markdown",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "Local fine-tuning is real on Apple Silicon",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Local LLM converter, no API key",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Three named error types",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Tool call results are also prompts",
+      "archetype": "til"
     },
     {
       "file": "collective-2.md",
       "source": "collective",
-      "angle": "Open a Stage 0 conversation first",
+      "angle": "30 days of public review by default",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Provider count reframes flexibility",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "LLM-as-a-judge for open-ended evals",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "Turndown vs LLM latency budget",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "A schema without a migration path is debt",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "The prompt is the leak",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Not for profit, by design",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Checkpoint before risky refactors",
       "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Small models, exportable to GGUF",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "HTML for humans, Markdown for LLMs",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Pick your version key",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "A VPN doesn't redact your prompt",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Sponsors don't buy the roadmap",
+      "archetype": "til"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Skills replace the extension sprawl",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Why a judge belongs in the benchmark",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-5.md",
+      "source": "get-md",
+      "angle": "Convert an entire sitemap in one run",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up-5.md",
+      "source": "json-up",
+      "angle": "Zod + migrations as one library",
+      "archetype": "origin"
+    },
+    {
+      "file": "prompt-scrub-5.md",
+      "source": "prompt-scrub",
+      "angle": "Scrub, send, rehydrate",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "collective-5.md",
+      "source": "collective",
+      "angle": "Will I ever get paid for this PR",
+      "archetype": "problem-relief"
     }
   ],
   "attempts": 1,

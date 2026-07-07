@@ -1,0 +1,88 @@
+{
+  "week_of": "2026-07-13",
+  "generated_at": "2026-07-07T19:41:22.906Z",
+  "days": {
+    "2026-07-13": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/x.md"
+      },
+      {
+        "slot": "x-2",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/collective-5.md",
+        "source": "collective"
+      },
+      {
+        "slot": "x-3",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/get-md-5.md",
+        "source": "get-md"
+      },
+      {
+        "slot": "x-4",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/json-up-5.md",
+        "source": "json-up"
+      },
+      {
+        "slot": "x-5",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/nanocoder-5.md",
+        "source": "nanocoder"
+      },
+      {
+        "slot": "x-6",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/nanotune-5.md",
+        "source": "nanotune"
+      }
+    ],
+    "2026-07-14": [
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/prompt-scrub-4.md",
+        "source": "prompt-scrub"
+      },
+      {
+        "slot": "x-2",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/prompt-scrub-5.md",
+        "source": "prompt-scrub"
+      }
+    ],
+    "2026-07-15": [],
+    "2026-07-16": [],
+    "2026-07-17": [],
+    "2026-07-18": [],
+    "2026-07-19": []
+  }
+}

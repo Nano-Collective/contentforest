@@ -2,85 +2,211 @@
   {
     "date": "2026-07-06",
     "source": "nanocoder",
-    "angle": "Skills unify commands subagents and tools",
-    "archetype": "origin",
-    "preview": "Commands, subagents, tools: three extension surfaces, one feature, three files. nanocoder's Skills b"
-  },
-  {
-    "date": "2026-07-06",
-    "source": "nanotune",
-    "angle": "Fine-tuning without YAML",
-    "archetype": "problem-relief",
-    "preview": "\"Fine-tuning on a Mac\" usually means reading five config files, picking a YAML template, and praying"
-  },
-  {
-    "date": "2026-07-06",
-    "source": "get-md",
-    "angle": "Sub-100ms HTML to Markdown",
-    "archetype": "by-the-numbers",
-    "preview": "Under 100ms. That is how long `get-md` takes to turn a fetched HTML page into clean Markdown, fast e"
-  },
-  {
-    "date": "2026-07-06",
-    "source": "json-up",
-    "angle": "Migrations not if statements",
-    "archetype": "sharp-take",
-    "preview": "A stack of `if (oldField) newField = oldField` checks is a timebomb: the schema you did not predict "
-  },
-  {
-    "date": "2026-07-06",
-    "source": "collective",
-    "angle": "Economics Charter published in public",
+    "angle": "Cloud is not the default",
     "archetype": "contrarian",
-    "preview": "Most OSS collectives ask for your time and trust first, terms later. The Nano Collective publishes i"
+    "preview": "Your terminal agent shouldn't phone home by default. Nanocoder ships Ollama, llama.cpp, MLX, llama-s"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanotune",
+    "angle": "Training data prep is the friction",
+    "archetype": "problem-relief",
+    "preview": "The worst part of fine-tuning is rarely the training run. It's assembling examples that match a sche"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "get-md",
+    "angle": "HTML-to-MD for code blocks and tables",
+    "archetype": "problem-relief",
+    "preview": "Your HTML-to-MD converter just mangled a nested code block inside a table cell, and your LLM is hall"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "json-up",
+    "angle": "Migrations that know what they're migrating to",
+    "archetype": "problem-relief",
+    "preview": "The worst kind of migration is the one that runs clean and leaves your data wrong. json-up checks th"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "prompt-scrub",
+    "angle": "Pasted your config into ChatGPT again",
+    "archetype": "problem-relief",
+    "preview": "You've pasted an env block into ChatGPT to \"ask a quick question.\" It left your machine. prompt-scru"
   },
   {
     "date": "2026-07-06",
     "source": "collective",
-    "angle": "Open a Stage 0 conversation first",
-    "archetype": "one-tip",
-    "preview": "A whitepaper is wasted work if the answer is no. Before you draft anything under the Nano Collective"
-  },
-  {
-    "date": "2026-07-07",
-    "source": "nanocoder",
-    "angle": "You decide what your agent can do",
-    "archetype": "sharp-take",
-    "preview": "A coding agent shouldn't get to choose its own reach. Nanocoder's top-level `disabledTools` array st"
-  },
-  {
-    "date": "2026-07-07",
-    "source": "nanotune",
-    "angle": "Configure the judge before you train",
-    "archetype": "one-tip",
-    "preview": "Training without a judge is just vibes. Run `nanotune judge configure` (pick provider + model), then"
-  },
-  {
-    "date": "2026-07-07",
-    "source": "get-md",
-    "angle": "Whole site to markdown in one command",
-    "archetype": "problem-relief",
-    "preview": "Feeding raw HTML to an LLM burns context on nav, ads and boilerplate. `getmd --sitemap <url> -o ./ou"
-  },
-  {
-    "date": "2026-07-07",
-    "source": "json-up",
-    "angle": "Every migration's output is re-validated",
-    "archetype": "til",
-    "preview": "Most JSON migration libraries trust whatever `up()` returns. `json-up` re-runs your Zod schema on ev"
-  },
-  {
-    "date": "2026-07-07",
-    "source": "collective",
-    "angle": "Thirty days notice on every term change",
-    "archetype": "by-the-numbers",
-    "preview": "30 days. That is the public notice the Nano Collective publishes before any financial term changes, "
-  },
-  {
-    "date": "2026-07-07",
-    "source": "collective",
-    "angle": "Built so the work outlives the founding team",
+    "angle": "The charter is published before you invest",
     "archetype": "origin",
-    "preview": "Most open source dies when the founders step back. The Nano Collective is set up so it does not need"
+    "preview": "The Nano Collective's Economics Charter was published before there was anything in the fund. No inve"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanocoder",
+    "angle": "Model-callable tools as markdown",
+    "archetype": "til",
+    "preview": "Your tool's parameter values get shell-quoted before they hit the body, so even '; rm -rf /; #' land"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanotune",
+    "angle": "Local fine-tuning is real on Apple Silicon",
+    "archetype": "sharp-take",
+    "preview": "Your training data shouldn't leave the machine it's written on."
+  },
+  {
+    "date": "2026-07-06",
+    "source": "get-md",
+    "angle": "Local LLM converter, no API key",
+    "archetype": "til",
+    "preview": "\"AI conversion\" usually means someone else's machine. In `get-md`, `useLLM: true` with no `llm` bloc"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "json-up",
+    "angle": "Three named error types",
+    "archetype": "til",
+    "preview": "Most migration libs throw a generic Error and leave you parsing the message. json-up throws three na"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "prompt-scrub",
+    "angle": "Tool call results are also prompts",
+    "archetype": "til",
+    "preview": "Your agent's tool outputs become its next prompt. `ls`, `git log`, `cat`, `grep` all flow back into "
+  },
+  {
+    "date": "2026-07-06",
+    "source": "collective",
+    "angle": "30 days of public review by default",
+    "archetype": "by-the-numbers",
+    "preview": "30 days is the floor. Every whitepaper at the Nano Collective sits in public review for at least tha"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanocoder",
+    "angle": "Provider count reframes flexibility",
+    "archetype": "by-the-numbers",
+    "preview": "20+ named adapters, plus anything OpenAI-compatible. The Nanocoder provider list (Ollama, llama.cpp,"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanotune",
+    "angle": "LLM-as-a-judge for open-ended evals",
+    "archetype": "til",
+    "preview": "A regex can't tell you if a haiku scans. Nanotune's LLM judge scores open-ended answers against crit"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "get-md",
+    "angle": "Turndown vs LLM latency budget",
+    "archetype": "by-the-numbers",
+    "preview": "100ms or 5-10 seconds. get-md does both: Turndown for batch, CI, and real-time; the local ReaderLM-v"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "json-up",
+    "angle": "A schema without a migration path is debt",
+    "archetype": "sharp-take",
+    "preview": "A schema change without a migration is a follow-up no one gets to. json-up puts version, schema, and"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "prompt-scrub",
+    "angle": "The prompt is the leak",
+    "archetype": "sharp-take",
+    "preview": "A VPN doesn't redact the email in your prompt. Privacy at the wire and privacy at the content are di"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "collective",
+    "angle": "Not for profit, by design",
+    "archetype": "sharp-take",
+    "preview": "Donations should have nowhere to hide. At the Nano Collective the charter names the only two destina"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanocoder",
+    "angle": "Checkpoint before risky refactors",
+    "archetype": "one-tip",
+    "preview": "A risky refactor with an agent feels like a hostage negotiation: commit nothing, hope for the best. "
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanotune",
+    "angle": "Small models, exportable to GGUF",
+    "archetype": "by-the-numbers",
+    "preview": "A 0.5B to 1.5B fine-tune is useless if it can't leave your laptop. nanotune export fuses your LoRA i"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "get-md",
+    "angle": "HTML for humans, Markdown for LLMs",
+    "archetype": "sharp-take",
+    "preview": "Display-rendering a page and feeding it to an LLM are not the same job. Same source, different outpu"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "json-up",
+    "angle": "Pick your version key",
+    "archetype": "one-tip",
+    "preview": "Your JSON already has a version field and the convention is wrong. Rename it and every reader breaks"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "prompt-scrub",
+    "angle": "A VPN doesn't redact your prompt",
+    "archetype": "contrarian",
+    "preview": "A VPN hides your IP. The model still sees your prompt. prompt-scrub edits the text before it leaves "
+  },
+  {
+    "date": "2026-07-06",
+    "source": "collective",
+    "angle": "Sponsors don't buy the roadmap",
+    "archetype": "til",
+    "preview": "Sponsor money at the Nano Collective pays for infra and a ring-fenced community fund for OSS bountie"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanocoder",
+    "angle": "Skills replace the extension sprawl",
+    "archetype": "origin",
+    "preview": "Extensions that don't know each other aren't much of a system. Commands, subagents, tools, and event"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "nanotune",
+    "angle": "Why a judge belongs in the benchmark",
+    "archetype": "origin",
+    "preview": "You can't string-match your way to knowing if a fine-tune is any good. We ran an LLM-as-judge in nan"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "get-md",
+    "angle": "Convert an entire sitemap in one run",
+    "archetype": "one-tip",
+    "preview": "Point get-md at a sitemap.xml and walk away. It fans out across every URL with bounded concurrency, "
+  },
+  {
+    "date": "2026-07-06",
+    "source": "json-up",
+    "angle": "Zod + migrations as one library",
+    "archetype": "origin",
+    "preview": "Most of your JSON lives between versions, not at them. Migration tools don't validate, validators do"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "prompt-scrub",
+    "angle": "Scrub, send, rehydrate",
+    "archetype": "one-tip",
+    "preview": "One tip for sending prompts to a cloud LLM today: scrub the message locally first, send the scrubbed"
+  },
+  {
+    "date": "2026-07-06",
+    "source": "collective",
+    "angle": "Will I ever get paid for this PR",
+    "archetype": "problem-relief",
+    "preview": "Closing a PR at 1am and wondering if any of it will ever be paid for is a quiet kind of resentment."
   }
 ]
