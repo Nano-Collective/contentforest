@@ -1,0 +1,36 @@
+{
+  "product": "get-md",
+  "version": "1.6.0",
+  "product_url": "https://github.com/Nano-Collective/get-md",
+  "generated_at": "2026-07-08T16:13:06.512Z",
+  "model": "minimax-m3",
+  "generation_attempts": 5,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "one-converter-four-formats",
+      "title": "How convertToMarkdown dispatches a Buffer to the right extractor",
+      "focus": "A walkthrough of get-md v1.6.0's magic-byte routing inside convertToMarkdown - how a %PDF or PK Buffer is dispatched to the PDF or DOCX pipeline, why Readability is force-disabled on those paths, how URL strings ending in .pdf flow through the same code, and why the same single entry point now handles HTML, URLs, PDF, DOCX, and Markdown without the caller threading options.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "reconstructing-pdf-structure",
+      "title": "Turning PDF text dumps into real Markdown structure",
+      "focus": "How get-md's PDF extractor rebuilds headings, paragraphs, and lists from pdf-parse's flat per-visual-line output - the running-header and footer detection that drops lines repeated on a majority of pages, the ALL-CAPS heading heuristic that promotes short uppercase lines to h1/h2, and the bullet-folding logic that joins wrapped continuation lines into the current list item across page breaks.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "markdown-input-frontmatter-pipeline",
+      "title": "Why feed existing Markdown back through get-md",
+      "focus": "The Markdown input path added in get-md v1.6.0 - why it skips HTML parsing and runs only the optimization passes, how it preserves an existing YAML frontmatter block without doubling it or clobbering your real title, and how RAG ingestion pipelines can use it to apply consistent metadata, computed wordCount and readingTime, and includeLinks/includeImages/includeTables filtering across mixed HTML, PDF, DOCX, and Markdown corpora.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
