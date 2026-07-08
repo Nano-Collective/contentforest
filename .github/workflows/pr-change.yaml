@@ -171,7 +171,8 @@ jobs:
           # Branch shapes the rest of the pipeline produces:
           #   collective/<slug>-issue-<n>                              → collective pack
           #   change/<product>-<version>-issue-<n>                     → product release edit pack
-          #   auto/release-<product>-<version>                         → product release auto pack
+          #   release/<product>-<version>-issue-<n>                    → product release pack (new-release gen)
+          #   auto/release-<product>-<version>                         → product release auto pack (legacy)
           #   personal/<member>-<pack-id-flat>-issue-<n>               → personal pack
           #
           # `<product>`, `<version>`, and `<member>` may contain hyphens (e.g.
@@ -289,10 +290,17 @@ jobs:
               ISSUE="${REST##*-issue-}"
               break
             fi
+            if [[ "$BRANCH" == "release/${P}-"*"-issue-"* ]]; then
+              PRODUCT="$P"
+              REST="${BRANCH#release/${P}-}"
+              VERSION="${REST%-issue-*}"
+              ISSUE="${REST##*-issue-}"
+              break
+            fi
           done < <(jq -r '.[].slug' config/products.json)
 
           if [ -z "$PRODUCT" ]; then
-            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` couldn't identify a content pack from branch \`$BRANCH\`. Expected one of: \`collective/<slug>-issue-<n>\`, \`change/<product>-<version>-issue-<n>\`, \`auto/release-<product>-<version>\`."
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "❌ \`/change\` couldn't identify a content pack from branch \`$BRANCH\`. Expected one of: \`collective/<slug>-issue-<n>\`, \`change/<product>-<version>-issue-<n>\`, \`release/<product>-<version>-issue-<n>\`, \`auto/release-<product>-<version>\`."
             echo "ok=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi

@@ -25,6 +25,7 @@ Re-runs the request agent against the **same issue body**. The original branch (
 
 | Issue label | Workflow | Agent that re-runs |
 | --- | --- | --- |
+| `release-request` | `.github/workflows/release-request.yaml` | `pnpm parse-release-request` + `pnpm generate` |
 | `collective-request` | `.github/workflows/collective-request.yaml` | `pnpm collective-request` |
 | `change-request` | `.github/workflows/change-request.yaml` | `pnpm change-request` |
 | `personal-request` | `.github/workflows/personal-request.yaml` | `pnpm personal-request` |
@@ -72,7 +73,7 @@ Re-runs the agent **against the open PR's branch** with `<text>` as a change req
 | --- | --- | --- |
 | `collective/<slug>-issue-<n>` | `pnpm collective-request` (whole-pack scope) | The collective pack at `content/_collective/<slug>/` |
 | `change/<product>-<version>-issue-<n>` | `pnpm change-request` (whole-pack scope) | The product pack at `content/<product>/<version>/` |
-| `auto/release-<product>-<version>` | `pnpm change-request` (whole-pack scope) | The product pack at `content/<product>/<version>/` (auto-release PRs from daily-content) |
+| `release/<product>-<version>-issue-<n>` | `pnpm change-request` (whole-pack scope) | The product pack at `content/<product>/<version>/` (release-request PRs) |
 | `personal/<member>-<pack-id-flat>-issue-<n>` | `pnpm personal-request` (edit mode) | The personal pack at `<base-pack>/personal/<member>/` |
 
 It does **not** fire on:

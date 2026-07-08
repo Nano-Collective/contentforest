@@ -42,6 +42,27 @@ const CONFIG: ValidatorConfig = {
 	],
 };
 
+// Hacker News: a release-only, optional channel. Used by the scoping tests
+// below to confirm it lands in release packs only and never blocks a pack
+// that omits it.
+const CONFIG_WITH_HN: ValidatorConfig = {
+	...CONFIG,
+	channels: [
+		...CONFIG.channels,
+		{
+			slug: 'hacker-news',
+			kind: 'social',
+			max_words: 120,
+			packs: ['release'],
+			optional: true,
+		},
+	],
+};
+
+// Tiny HN body: a sentence + the discussions link (which contains the repo
+// root URL, so it satisfies link-product-repo). No floor, so this passes.
+const HN_BODY = `${PRODUCT_SLUG} v${VERSION} is out. Discussion and details: ${PRODUCT_REPO_URL}/discussions`;
+
 // ~320-word body that hits all happy-path rules: includes the repo URL,
 // no forbidden terms, no placeholders, no release-tag links. Long enough
 // to clear the 300-word github-discussion floor.
@@ -2292,6 +2313,128 @@ test('fail: malformed JSON ledger → ledger-parses', t => {
 			config: CONFIG,
 		});
 		t.true(report.failures.some(f => f.rule === 'ledger-parses'));
+	} finally {
+		cleanup(root);
+	}
+});
+
+// ---------------------------------------------------------------------------
+// Hacker News: release-only, optional channel scoping
+// ---------------------------------------------------------------------------
+
+test('release: optional hacker-news channel absent → pack still passes', t => {
+	const root = makeTmpRoot();
+	try {
+		// Happy pack has the four required channels and no hacker-news.md.
+		writeHappyPack(root);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'channels',
+			config: CONFIG_WITH_HN,
+		});
+		t.deepEqual(report.failures, []);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('release: present hacker-news channel file is allowed and validated', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		writeFileSync(
+			join(packDir, 'channels/hacker-news.md'),
+			buildMd('hacker-news', HN_BODY),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'channels',
+			config: CONFIG_WITH_HN,
+		});
+		t.deepEqual(report.failures, []);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('release: hacker-news body over its max_words → max-words', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// LONG_BODY is ~320 words, well over the 120-word hacker-news ceiling.
+		writeFileSync(
+			join(packDir, 'channels/hacker-news.md'),
+			buildMd('hacker-news', LONG_BODY),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'channels',
+			config: CONFIG_WITH_HN,
+		});
+		t.true(
+			report.failures.some(
+				f =>
+					f.rule === 'max-words' && f.file.endsWith('channels/hacker-news.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('article: hacker-news file inside an article → file-unexpected (release-only)', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		const articleDir = writeArticle(packDir, 'registry-redesign');
+		// hacker-news is scoped to release packs, not articles.
+		writeFileSync(
+			join(articleDir, 'channels/hacker-news.md'),
+			buildMd('hacker-news', HN_BODY),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'articles',
+			config: CONFIG_WITH_HN,
+		});
+		t.true(
+			report.failures.some(
+				f =>
+					f.rule === 'file-unexpected' &&
+					f.file.endsWith('channels/hacker-news.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('collective: hacker-news file → file-unexpected (release-only)', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyCollectivePack(root);
+		writeFileSync(
+			join(packDir, 'channels/hacker-news.md'),
+			buildCollectiveMd('hacker-news', COLLECTIVE_X_BODY, {
+				channel: 'hacker-news',
+			}),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: COLLECTIVE_PACK_ID,
+			config: CONFIG_WITH_HN,
+		});
+		t.true(
+			report.failures.some(
+				f =>
+					f.rule === 'file-unexpected' &&
+					f.file.endsWith('channels/hacker-news.md'),
+			),
+		);
 	} finally {
 		cleanup(root);
 	}

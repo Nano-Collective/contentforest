@@ -126,7 +126,7 @@ export function buildPackOptionsBlock(options: PackOption[]): string {
 			'    id: base_pack',
 			'    attributes:',
 			'      label: Base pack',
-			'      description: No packs exist yet. Generate a release pack via the daily-content workflow, or a collective pack via the collective-request issue template, then come back here.',
+			'      description: No packs exist yet. Generate a release pack by filing a "Request New Release Content" issue (release-request), or a collective pack via the collective-request issue template, then come back here.',
 			'      placeholder: ""',
 			'    validations:',
 			'      required: true',

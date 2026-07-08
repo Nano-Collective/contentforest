@@ -27,6 +27,7 @@
 		"seed-fixtures": "tsx scripts/seed-fixtures.ts",
 		"change-request": "tsx scripts/change-request.ts",
 		"parse-change-request": "tsx scripts/parse-change-request.ts",
+		"parse-release-request": "tsx scripts/parse-release-request.ts",
 		"collective-request": "tsx scripts/collective-request.ts",
 		"parse-collective-request": "tsx scripts/parse-collective-request.ts",
 		"sync-collective-slugs": "tsx scripts/sync-collective-slugs.ts",
@@ -36,7 +37,8 @@
 		"plan-calendar": "tsx scripts/plan-calendar.ts",
 		"sync-team-members": "tsx scripts/sync-team-members.ts",
 		"sync-pack-options": "tsx scripts/sync-pack-options.ts",
-		"sync-change-targets": "tsx scripts/sync-change-targets.ts"
+		"sync-change-targets": "tsx scripts/sync-change-targets.ts",
+		"sync-release-products": "tsx scripts/sync-release-products.ts"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",

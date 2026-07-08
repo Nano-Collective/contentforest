@@ -4,8 +4,8 @@ What this PR changes and why. One or two sentences is usually enough.
 
 ## Type of change
 
-- [ ] Content (auto-generated release pack — `auto-release` label, validator passed)
-- [ ] Content (auto-generated, validator failed — `failed-validation` label, needs human edit before merge)
+- [ ] Content (generated release pack — `release-request` label, validator passed)
+- [ ] Content (generated, validator failed — `failed-validation` label, needs human edit before merge)
 - [ ] Bug fix
 - [ ] Feature / enhancement
 - [ ] Refactor

@@ -2,7 +2,7 @@
 
 Thanks for your interest in ContentForest. We welcome contributions from developers of all skill levels — bug fixes, prompt tuning, validator improvements, UI tweaks, docs, all of it.
 
-ContentForest is an internal Nano Collective tool: a daily GitHub Action detects new releases across NC product repos, runs Nanocoder against templated prompts to generate a release-content pack, validates the output, and opens a PR. Merged PRs deploy to a file viewer at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org). The repo is public for transparency; request flows and issues are intended for `Nano-Collective` org members.
+ContentForest is an internal Nano Collective tool: file an issue to request content and a GitHub Action runs Nanocoder against templated prompts to generate a release-content pack, validates the output, and opens a PR. Merged PRs deploy to a file viewer at [`contentforest.nanocollective.org`](https://contentforest.nanocollective.org). The repo is public for transparency; request flows and issues are intended for `Nano-Collective` org members.
 
 This guide covers the dev setup, the test gate, and the divergences this project takes from the [Nano Collective playbook](https://docs.nanocollective.org/collective/projects/creating-a-new-project).
 
@@ -29,7 +29,9 @@ If you find an unassigned issue you'd like to work on, comment on it so we don't
 
 ## Filing Requests via Issues
 
-Most content changes don't need a code PR — they go through an issue template that dispatches an agent and opens a PR for you. Two flows are wired up today:
+Most content changes don't need a code PR — they go through an issue template that dispatches an agent and opens a PR for you. The flows wired up today:
+
+- **[Request new release content](https://github.com/Nano-Collective/contentforest/issues/new?template=release-request.yml)** (`release-request` label) — generate a full pack for a new product release. Pick the product (dropdown, auto-synced from `config/products.json`), enter the version (tag without the `v` prefix), and optionally add an angle to emphasise. The agent reads the product's GitHub release, generates the pack, validates it, and opens a PR off `release/<product>-<version>-issue-<n>` that auto-closes the issue on merge. Edit the issue body and comment `/retry` to re-run if the first attempt didn't land. Wired via [`scripts/parse-release-request.ts`](scripts/parse-release-request.ts) + `pnpm generate`.
 
 - **[Request a content change](https://github.com/Nano-Collective/contentforest/issues/new?template=change-request.yml)** (`change-request` label) — apply a targeted edit to an existing release pack. Pick the product, version, scope (whole pack / headline channels / specific article / specific file), and describe the change. The agent applies the edit, runs the validator, and opens a PR that auto-closes the issue on merge. Comment `/retry` on the issue to re-run if the first attempt didn't land. Orchestrator: [`scripts/change-request.ts`](scripts/change-request.ts).
 

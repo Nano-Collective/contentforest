@@ -8,21 +8,20 @@ owner: Will Lamerton
 
 Operational reference for the people who actually keep this thing running. If you're here because something broke, jump to **[When something breaks](#when-something-breaks)** at the bottom; it covers the common symptoms.
 
-## Dispatching a generation manually
+## Requesting a release pack
 
-The daily cron at 08:00 UTC handles the routine case. For backfills, re-runs, or testing a specific release in CI, dispatch the workflow yourself:
+Release packs are generated on demand, issue-driven, matching every other content flow (change-request, collective-request, personal-request). There is no cron and no manual workflow dispatch for release generation.
 
-1. Open [the daily-content workflow](https://github.com/Nano-Collective/contentforest/actions/workflows/daily-content.yaml).
-2. Click **Run workflow**.
-3. Inputs:
-   - `product` — slug from `config/products.json` (e.g. `nanocoder`, `nanotune`, `get-md`, `json-up`).
-   - `version` — the release tag without the `v` prefix (e.g. `1.25.2`).
-   - `dry_run` — `true` writes to `content/_test/<product>/<version>/` and labels the PR `test`. `false` writes to `content/<product>/<version>/` and opens a real release PR.
-4. Submit. The run takes 8–15 minutes typical, longer worst case (`docs/handoff.md` §1 has the cost ceiling).
+1. Open a **[Request New Release Content](https://github.com/Nano-Collective/contentforest/issues/new?template=release-request.yml)** issue.
+2. Fill the form:
+   - **Product** — dropdown, auto-synced from `config/products.json` (e.g. `nanocoder`, `nanotune`, `get-md`, `json-up`).
+   - **Version** — the release tag without the `v` prefix (e.g. `1.28.0`).
+   - **Additional context** (optional) — an angle or emphasis folded into the source material the agent works from.
+3. File it. The agent reads the product's GitHub release, generates the full pack (channel posts + any articles), validates it, and opens a PR off `release/<product>-<version>-issue-<n>` that `Closes` the issue on merge. The run takes 8–15 minutes typical, longer worst case (`docs/handoff.md` §1 has the cost ceiling).
 
-The workflow opens **one PR per pack** with the `auto-release` label (and `failed-validation` if the hard rules failed). Review the diff, merge if it reads cleanly. The merge triggers a Cloudflare Pages rebuild and the pack appears at `/p/<product>/<version>/` on the live site within a minute.
+The PR carries the `release-request` label (and `failed-validation` if the hard rules failed). Review the diff, merge if it reads cleanly. The merge triggers a Cloudflare Pages rebuild and the pack appears at `/p/<product>/<version>/` on the live site within a minute.
 
-**Idempotency guard:** the workflow skips packs whose `auto/release-<product>-<version>` branch already exists on origin. To re-run an already-attempted pack: delete the orphan branch first (`gh api -X DELETE repos/Nano-Collective/contentforest/git/refs/heads/auto/release-<product>-<version>`).
+**Iterating:** if the first attempt fails, edit the issue body to refine and comment `/retry` on the issue. To adjust the resulting PR, comment `/change <request>` on it (same as every other content PR).
 
 ## Calendar planner & weekly X batch
 
@@ -73,12 +72,12 @@ The PR opens with the `failed-validation` label when the validator's hard rules 
 The workflow deletes its own branches if PR creation fails or if the run produces no channel files (system failure). But if a branch persists after a failed run:
 
 ```bash
-gh api -X DELETE repos/Nano-Collective/contentforest/git/refs/heads/auto/release-<product>-<version>
+gh api -X DELETE repos/Nano-Collective/contentforest/git/refs/heads/release/<product>-<version>-issue-<n>
 ```
 
 ### Dropped PRs
 
-If a PR was closed without merging and you want to re-run the same `<product>/<version>`, delete the branch (above), then re-dispatch the workflow.
+If a PR was closed without merging and you want to re-run the same `<product>/<version>`, comment `/retry` on the original **Request New Release Content** issue (edit the issue body first if you want to refine the request), or file a fresh one.
 
 ### Stale `_local/` or `_test/` content
 
@@ -103,7 +102,7 @@ rm -rf content/_local content/_test
 - The product's `index.json` was manually bumped without a real generation run.
 - GitHub's API is rate-limiting.
 
-**Workaround:** dispatch `daily-content.yaml` manually with explicit `product=<slug> version=<v>` (see [Dispatching a generation manually](#dispatching-a-generation-manually)). The orchestrator does the right thing even when the release body is empty (it falls back gracefully).
+**Workaround:** file a **Request New Release Content** issue with the explicit product + version (see [Requesting a release pack](#requesting-a-release-pack)). The orchestrator does the right thing even when the release body is empty (it falls back gracefully).
 
 ## Rolling back a bad merge
 

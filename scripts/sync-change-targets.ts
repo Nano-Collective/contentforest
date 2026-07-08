@@ -130,7 +130,7 @@ export function buildTargetOptionsBlock(options: TargetOption[]): string {
 			'    id: target',
 			'    attributes:',
 			'      label: Target',
-			'      description: No product release packs exist yet. Generate one via the daily-content workflow first.',
+			'      description: No product release packs exist yet. Generate one by filing a "Request New Release Content" issue (release-request) first.',
 			'      placeholder: ""',
 			'    validations:',
 			'      required: true',

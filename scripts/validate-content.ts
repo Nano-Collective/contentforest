@@ -58,12 +58,22 @@ import {loadTeam, type TeamChannel, type TeamMember} from '../lib/team.js';
 
 type ChannelKind = 'long-form' | 'social';
 
+// Which pack kinds a channel applies to. Absent = every pack. Lets us scope a
+// release-only channel (Hacker News) out of collective / article / personal
+// packs. Values line up with PackKind plus the collective pack.
+type ChannelPackScope = 'release' | 'article' | 'collective';
+
 type ChannelRule = {
 	slug: string;
 	kind: ChannelKind;
 	min_words?: number;
 	max_words?: number;
 	max_chars?: number;
+	packs?: ChannelPackScope[];
+	// When true the channel is validated if present but never required — its
+	// absence won't fail a pack. Lets us add a channel without retroactively
+	// breaking packs that were generated before it existed.
+	optional?: boolean;
 };
 
 type Product = {slug: string; repo: string};
@@ -143,6 +153,22 @@ export type ValidatorConfig = {
 
 function findChannel(channels: ChannelRule[], slug: string) {
 	return channels.find(c => c.slug === slug);
+}
+
+/** Channels in scope for a given pack kind (`packs` unset ⇒ every kind). */
+function channelsForPack(
+	channels: ChannelRule[],
+	scope: ChannelPackScope,
+): ChannelRule[] {
+	return channels.filter(c => !c.packs || c.packs.includes(scope));
+}
+
+/** In-scope channels that must exist — drops `optional` ones. */
+function requiredChannels(
+	channels: ChannelRule[],
+	scope: ChannelPackScope,
+): ChannelRule[] {
+	return channelsForPack(channels, scope).filter(c => !c.optional);
 }
 
 function countWords(body: string) {
@@ -700,7 +726,7 @@ function validatePack(args: {
 		for (const exp of expectedFiles({
 			product: args.product.slug,
 			version: args.version,
-			channels: args.channels,
+			channels: requiredChannels(args.channels, kind),
 		})) {
 			if (!fileExistsAny(args.packRoot, exp.rel)) {
 				failures.push({
@@ -716,10 +742,13 @@ function validatePack(args: {
 		// this fires on the path, so it catches LLM over-generation (stray
 		// combined-posts file, leftover from a prior pass) even when the
 		// frontmatter inside happens to be valid. Auto-fix needs to delete
-		// these by path, not rewrite them.
+		// these by path, not rewrite them. In-scope channels (incl. optional
+		// ones like hacker-news for release packs) are allowed here.
 		const channelsDir = join(args.packRoot, 'channels');
 		if (existsSync(channelsDir)) {
-			const expectedSlugs = new Set(args.channels.map(c => c.slug));
+			const expectedSlugs = new Set(
+				channelsForPack(args.channels, kind).map(c => c.slug),
+			);
 			for (const entry of readdirSync(channelsDir)) {
 				if (!entry.endsWith('.md')) continue;
 				const slug = entry.slice(0, -3);
@@ -1011,7 +1040,7 @@ function validateCollectivePack(args: {
 	if (phaseIncludesNonPersonal(args.phase)) {
 		const expected: {rel: string; reason: string}[] = [
 			{rel: 'meta.json', reason: 'meta.json missing'},
-			...args.channels.map(c => ({
+			...requiredChannels(args.channels, 'collective').map(c => ({
 				rel: `channels/${c.slug}.md`,
 				reason: `channels/${c.slug}.md missing`,
 			})),
@@ -1027,10 +1056,13 @@ function validateCollectivePack(args: {
 			}
 		}
 
-		// Extra channel files — see validatePack for the rationale.
+		// Extra channel files — see validatePack for the rationale. Release-only
+		// channels (hacker-news) are out of scope here, so they'd be flagged.
 		const channelsDir = join(args.packRoot, 'channels');
 		if (existsSync(channelsDir)) {
-			const expectedSlugs = new Set(args.channels.map(c => c.slug));
+			const expectedSlugs = new Set(
+				channelsForPack(args.channels, 'collective').map(c => c.slug),
+			);
 			for (const entry of readdirSync(channelsDir)) {
 				if (!entry.endsWith('.md')) continue;
 				const slug = entry.slice(0, -3);

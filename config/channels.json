@@ -21,5 +21,12 @@
 		"kind": "social",
 		"min_words": 150,
 		"max_words": 1500
+	},
+	{
+		"slug": "hacker-news",
+		"kind": "social",
+		"max_words": 120,
+		"packs": ["release"],
+		"optional": true
 	}
 ]

@@ -43,16 +43,14 @@ The product slug used everywhere — config, content directory, GH repo name, do
 
    Most products won't need this — the default (LinkedIn, X, GitHub Discussion, Reddit) is the right call for general-audience product releases.
 
-3. **Update the issue-template product dropdown** (when the GitHub-issue-driven change-request feature ships, per `handoff.md` §6) — `.github/ISSUE_TEMPLATE/change-request.yml` enumerates products by hand because issue forms can't read JSON at runtime. Add the new slug to the dropdown options.
-
-4. **Open a PR.** Standard review, merge.
+3. **Open a PR.** Standard review, merge. The issue-template product dropdowns are auto-synced — the `sync-release-products` workflow fires on push to `main` touching `config/products.json` and opens a follow-up PR to add the new slug to `.github/ISSUE_TEMPLATE/release-request.yml`. No hand-editing required; just merge the follow-up PR when it lands.
 
 ## Backfill the most recent release
 
-Once the PR merges, the next daily cron at 08:00 UTC will pick up the new product. To produce a pack immediately:
+Release packs are generated on demand, so once the product is merged (and the dropdown-sync PR has landed), produce the first pack by filing a request:
 
-1. Open [the daily-content workflow](https://github.com/Nano-Collective/contentforest/actions/workflows/daily-content.yaml).
-2. **Run workflow** with `product=<new-product> version=<latest-tag-without-v> dry_run=false`.
+1. Open a **[Request New Release Content](https://github.com/Nano-Collective/contentforest/issues/new?template=release-request.yml)** issue.
+2. Set **Product** to the new slug and **Version** to the latest tag (without the `v` prefix).
 3. Review the resulting PR.
 
 If the latest release body is thin (e.g. a docs-only patch), expect zero articles and short channel posts — that's correct behaviour, not a failure (planning §6.6 / handoff `Don'ts`).
@@ -61,7 +59,7 @@ If the latest release body is thin (e.g. a docs-only patch), expect zero article
 
 Once added, the new product has:
 
-- A daily check for new releases (cron + manual dispatch).
+- Release packs generated on demand by filing a **Request New Release Content** issue.
 - One PR per release pack at `content/<new-product>/<version>/`, validated automatically.
 - Visibility on the file viewer at `https://contentforest.nanocollective.org/p/<new-product>/`.
 - The same brand voice + channel rules as every other NC product.
@@ -75,6 +73,6 @@ It does **not** automatically get:
 ## Sanity checks before merging
 
 - [ ] `pnpm types` and `pnpm lint` clean (the `config/products.json` edit is plain JSON; nothing to break, but the gates run anyway).
-- [ ] `pnpm detect-releases` shows the new product's latest release as a job to do.
+- [ ] `pnpm detect-releases` (manual diagnostic) shows the new product's latest release as unprocessed.
 - [ ] `pnpm generate --product <new-product> --version <v> --dry-run` substitutes cleanly — no `{{...}}` placeholders left in the prompt body.
-- [ ] (Optional but recommended) `pnpm fetch-refs && pnpm generate --product <new-product> --version <v> --test` produces a sensible pack locally before you backfill in CI.
+- [ ] (Optional but recommended) `pnpm fetch-refs && pnpm generate --product <new-product> --version <v> --test` produces a sensible pack locally before you file the first release request.

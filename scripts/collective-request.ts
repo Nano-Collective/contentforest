@@ -121,7 +121,16 @@ export function buildPrompt(args: {
 	model: string;
 }): string {
 	const template = readFile(join(PROMPTS_DIR, 'collective-request.md'));
-	const channelsJson = readFile(join(CONFIG_DIR, 'channels.json'));
+	// Collective packs only carry channels applicable to them — drop any
+	// scoped elsewhere (e.g. the release-only hacker-news channel) so the
+	// agent never writes a file the collective validator would reject.
+	const allChannels = JSON.parse(
+		readFile(join(CONFIG_DIR, 'channels.json')),
+	) as {packs?: string[]}[];
+	const collectiveChannels = allChannels.filter(
+		c => !c.packs || c.packs.includes('collective'),
+	);
+	const channelsJson = JSON.stringify(collectiveChannels, null, 2);
 	return substitute(template, {
 		SLUG: args.job.slug,
 		PACK_DIR: args.packDir,

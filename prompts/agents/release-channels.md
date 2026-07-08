@@ -91,6 +91,7 @@ Use `config/channels.json` (below) for length/char rules. Both `min_words` and `
 | X | `channels/x.md` | ≤ 280 chars including the link. One link, max two hashtags. Punchy but not marketing-y. |
 | GitHub Discussion | `channels/github-discussion.md` | **Canonical long-form release post.** Engineering-doc register. This is what gets pasted into a Discussion on `Nano-Collective/website`, which becomes the public blog post. Include the canonical tagline somewhere natural. Cover what changed and why. Code examples where useful. **Set a `title` in the frontmatter** — this becomes the Discussion title when posted. Keep it concise (≤ 80 chars) and headline-shaped, e.g. `Nanocoder v{{VERSION}} — <one-line angle>`. |
 | Reddit | `channels/reddit.md` | Conversational, "we built this, here's what changed." First-person plural. |
+| Hacker News | `channels/hacker-news.md` | An HN submission: a title + a tiny body. Put the **HN-formatted title in the frontmatter `title` field** — plain and factual, ≤ 80 chars, e.g. `{{PRODUCT_SLUG}} v{{VERSION}}: <one-line what-it-is>` (use `Show HN: ...` only if it genuinely fits). The body is **tiny** (1-2 sentences, no minimum length) pointing readers to the discussion, and must link to `{{PRODUCT_REPO_URL}}/discussions`. No marketing, no hashtags. Placeholder-grade copy is acceptable here. |
 
 **Link policy (hard rule):** every post must link to **{{PRODUCT_REPO_URL}}** (the repo root) — never to a release-specific URL like `/releases/tag/...`. The GitHub release URL `{{RELEASE_TAG_URL}}` is for your reference only; do not include it in any output.
 
@@ -100,8 +101,8 @@ Use `config/channels.json` (below) for length/char rules. Both `min_words` and `
 ---
 product: {{PRODUCT_SLUG}}
 version: "{{VERSION}}"
-channel: <slug>          # one of "linkedin", "x", "github-discussion", "reddit"
-title: <string>          # required ONLY for channel: github-discussion — becomes the Discussion title
+channel: <slug>          # one of "linkedin", "x", "github-discussion", "reddit", "hacker-news"
+title: <string>          # required for channel: github-discussion (Discussion title) AND channel: hacker-news (the HN submission title)
 generated_at: "{{GENERATED_AT}}"
 model: "{{MODEL}}"
 char_count: <integer count of body chars excluding frontmatter>
@@ -136,6 +137,7 @@ Write **only** these files under `{{PACK_DIR}}`:
 - `channels/x.md`
 - `channels/github-discussion.md`
 - `channels/reddit.md`
+- `channels/hacker-news.md`
 
 Do not write anything under `articles/` — the article-channels agent owns that path.
 
@@ -146,8 +148,8 @@ These are enforced by `scripts/validate-content.ts --phase channels`; failing an
 1. Every required file above exists.
 2. Every `.md` file has the frontmatter shape above with all required fields populated.
 3. `frontmatter.product` matches `{{PRODUCT_SLUG}}` and `frontmatter.version` matches `{{VERSION}}`.
-4. `frontmatter.channel` is one of `linkedin`, `x`, `github-discussion`, `reddit`.
-5. Per-channel length/char rules respected (X ≤ 280 chars; LinkedIn / Reddit / GitHub Discussion under their `max_words`).
+4. `frontmatter.channel` is one of `linkedin`, `x`, `github-discussion`, `reddit`, `hacker-news`.
+5. Per-channel length/char rules respected (X ≤ 280 chars; LinkedIn / Reddit / GitHub Discussion under their `max_words`; Hacker News body under its `max_words`, no floor).
 6. No forbidden phrase (case-insensitive) appears anywhere in any body.
 7. No unresolved placeholder (`{{TODO}}`, `{{RELEASE_URL}}`, etc.) in any body.
 8. Every body contains the literal product repo root URL `{{PRODUCT_REPO_URL}}`.

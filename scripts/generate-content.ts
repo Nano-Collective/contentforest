@@ -62,6 +62,12 @@ export type JobSpec = {
 	version: string;
 	releaseBody?: string;
 	releaseTagUrl?: string;
+	/**
+	 * Optional steer from a release-request issue (the "Additional context"
+	 * field). Appended to the release body before the agents run so it shapes
+	 * the pack without overwriting the canonical GitHub release notes.
+	 */
+	context?: string;
 };
 
 export type RunMode = 'commit' | 'local' | 'test';
@@ -103,6 +109,7 @@ type Args = {
 	product?: string;
 	version?: string;
 	jobSpec?: string;
+	jobSpecFile?: string;
 	mode: RunMode;
 	dryRun: boolean;
 	maxAttemptsPerAgent: number;
@@ -116,6 +123,7 @@ function parse(): Args {
 			product: {type: 'string'},
 			version: {type: 'string'},
 			'job-spec': {type: 'string'},
+			'job-spec-file': {type: 'string'},
 			commit: {type: 'boolean', default: false},
 			test: {type: 'boolean', default: false},
 			'dry-run': {type: 'boolean', default: false},
@@ -131,6 +139,7 @@ function parse(): Args {
 		product: values.product as string | undefined,
 		version: values.version as string | undefined,
 		jobSpec: values['job-spec'] as string | undefined,
+		jobSpecFile: values['job-spec-file'] as string | undefined,
 		mode,
 		dryRun: values['dry-run'] as boolean,
 		// --max-retries is the *total attempts* per agent (1 initial + retries).
@@ -848,12 +857,19 @@ async function main() {
 	const args = parse();
 
 	let job: JobSpec;
-	if (args.jobSpec) {
+	if (args.jobSpecFile) {
+		// Pass the spec by file path, not by argv, when the payload may carry
+		// user-pasted markdown (the release-request `context` field). Shoving a
+		// multi-KB JSON blob with embedded \" and \n through pnpm's command-
+		// string escaping has corrupted backslash-heavy JSON in CI before it
+		// reaches JSON.parse — see change-request.yaml for the full rationale.
+		job = JSON.parse(readFileSync(args.jobSpecFile, 'utf8')) as JobSpec;
+	} else if (args.jobSpec) {
 		job = JSON.parse(args.jobSpec) as JobSpec;
 	} else {
 		if (!args.product || !args.version) {
 			console.error(
-				'generate: --product and --version are required (or pass --job-spec)',
+				'generate: --product and --version are required (or pass --job-spec / --job-spec-file)',
 			);
 			process.exit(2);
 		}
@@ -884,6 +900,12 @@ async function main() {
 		const fetched = fetchReleaseBody(product, job.version);
 		job.releaseBody = job.releaseBody ?? fetched.body;
 		job.releaseTagUrl = job.releaseTagUrl ?? fetched.url;
+	}
+	// A release-request issue can carry an "Additional context" steer. Fold it
+	// into the release body under a clearly-marked heading so the agents treat
+	// it as first-class source material without us plumbing a new prompt var.
+	if (job.context?.trim()) {
+		job.releaseBody = `${job.releaseBody ?? ''}\n\n## Additional context (from the release request)\n\n${job.context.trim()}`;
 	}
 
 	if (args.dryRun) {

@@ -1,0 +1,281 @@
+name: Release Request
+
+# Issue-driven new-release content. Filing a "Request New Release Content"
+# issue (label `release-request`) generates a fresh pack for a product/version
+# and opens a PR. Sister to change-request.yaml — that one edits an existing
+# pack; this one creates one. Replaces the old scheduled/dispatch
+# daily-content workflow: we create content via issues like everything else.
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  # One concurrent run per issue. A `/retry` comment that fires while the
+  # previous attempt is still running queues behind it.
+  group: release-request-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    # Listen on `labeled` (not `opened`) because GitHub fires both when an
+    # issue is created with the label already applied; gate on the specific
+    # label name so other labels (e.g. `processing`) don't kick off a run.
+    if: |
+      (
+        github.event_name == 'issues'
+        && github.event.label.name == 'release-request'
+      )
+      || (
+        github.event_name == 'issue_comment'
+        && startsWith(github.event.comment.body, '/retry')
+        && contains(github.event.issue.labels.*.name, 'release-request')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Verify requester is a public NC org member
+        id: gate
+        # Belt-and-braces with gate-issues.yaml. The two race on `issues:
+        # opened`; this check prevents wasting a Nanocoder spawn if
+        # release-request wins the race against the gate. We emit
+        # `member=true|false` and condition every subsequent step on it.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          set -euo pipefail
+          STATUS=$(gh api -i "orgs/Nano-Collective/public_members/${AUTHOR}" 2>&1 \
+            | awk 'NR==1 {print $2}' || echo "404")
+          if [ "${STATUS:-404}" = "204" ]; then
+            echo "$AUTHOR verified as public NC org member"
+            echo "member=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::skipping release-request — $AUTHOR is not a public NC org member (status=$STATUS); gate-issues.yaml will close the issue"
+            echo "member=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.gate.outputs.member == 'true'
+        # pin: actions/checkout@v4.3.1
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Set up PNPM
+        if: steps.gate.outputs.member == 'true'
+        # pin: pnpm/action-setup@v4.4.0
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        if: steps.gate.outputs.member == 'true'
+        # pin: actions/setup-node@v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: steps.gate.outputs.member == 'true'
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build and install Nanocoder from main
+        if: steps.gate.outputs.member == 'true'
+        run: |
+          git clone --depth 1 https://github.com/Nano-Collective/nanocoder.git /tmp/nanocoder
+          cd /tmp/nanocoder
+          npm install
+          npm run build
+          npm link
+          which nanocoder
+          nanocoder --version || true
+
+      - name: Configure git
+        if: steps.gate.outputs.member == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Ensure PR / issue labels exist
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create release-request --color "1f6feb" --description "Issue requesting a new release content pack" --force
+          gh label create processing --color "fbca04" --description "Content-request agent is currently running" --force
+          gh label create failed-validation --color "d93f0b" --description "Validator found hard-rule failures" --force
+
+      - name: Mark issue as processing
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          gh issue edit "$ISSUE" --add-label processing --remove-label failed-validation || true
+
+      - name: Fetch reference docs
+        if: steps.gate.outputs.member == 'true'
+        run: pnpm fetch-refs
+
+      - name: Parse issue body into job spec
+        id: parse
+        if: steps.gate.outputs.member == 'true'
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          REQUESTER: ${{ github.event.issue.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          SPEC=$(printf '%s' "$ISSUE_BODY" | pnpm --silent parse-release-request --requester "$REQUESTER" --issue-number "$ISSUE_NUMBER")
+          echo "$SPEC" > /tmp/spec.json
+          echo "Parsed spec:"
+          jq . /tmp/spec.json
+          PRODUCT=$(jq -r '.product' /tmp/spec.json)
+          VERSION=$(jq -r '.version' /tmp/spec.json)
+          echo "product=$PRODUCT" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release pack
+        id: generate
+        if: steps.gate.outputs.member == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          # Skip the model-context probe to models.dev for unknown providers.
+          NANOCODER_CONTEXT_LIMIT: "128000"
+          PRODUCT: ${{ steps.parse.outputs.product }}
+          VERSION: ${{ steps.parse.outputs.version }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          BRANCH="release/${PRODUCT}-${VERSION}-issue-${ISSUE}"
+
+          # Defensive guard against duplicate runs racing on the same issue.
+          # /retry intentionally discards the previous attempt; any other
+          # event sees an existing branch as a sibling run already handling
+          # this issue, and exits cleanly without touching it.
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            if [ "${{ github.event_name }}" = "issue_comment" ]; then
+              echo "branch $BRANCH already exists on origin — /retry deleting for clean retry"
+              git push origin --delete "$BRANCH" || true
+            else
+              echo "branch $BRANCH already exists on origin — another run is handling this issue, exiting"
+              exit 0
+            fi
+          fi
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          git checkout -B "$BRANCH" origin/main
+
+          # Pass the spec by file path, not by argv — the release-request
+          # `context` field can carry user-pasted markdown with embedded
+          # quotes/backslashes that pnpm's argv escaping has corrupted before
+          # JSON.parse in CI. See change-request.yaml for the full rationale.
+          #
+          # Validation failures (content present but rules broken) are NOT
+          # system failures — we still open a PR with the failed-validation
+          # label. Generation crashes with no output ARE system failures,
+          # caught by the channel-file discriminator in the next step.
+          set +e
+          pnpm generate --job-spec-file /tmp/spec.json --commit
+          GEN_STATUS=$?
+          set -e
+          echo "gen_status=$GEN_STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Push branch and open PR
+        id: pr
+        if: always() && steps.generate.outputs.branch != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.generate.outputs.branch }}
+          GEN_STATUS: ${{ steps.generate.outputs.gen_status }}
+          PRODUCT: ${{ steps.parse.outputs.product }}
+          VERSION: ${{ steps.parse.outputs.version }}
+          ISSUE: ${{ github.event.issue.number }}
+          REQUESTER: ${{ github.event.issue.user.login }}
+        run: |
+          set -euo pipefail
+          PACK_DIR="content/${PRODUCT}/${VERSION}"
+          CHANNELS_DIR="${PACK_DIR}/channels"
+
+          # Discriminator: did Nanocoder actually write channel files? If not,
+          # it's a system failure (API key error, model unavailable, Ink
+          # crash) — don't push junk. Delete the branch so /retry is unblocked.
+          CHANNEL_COUNT=$(find "$CHANNELS_DIR" -maxdepth 1 -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+          if [ "${CHANNEL_COUNT:-0}" -lt 1 ]; then
+            echo "::error::nanocoder produced no channel files for ${PRODUCT}@${VERSION} — system failure"
+            git push origin --delete "$BRANCH" 2>/dev/null || true
+            gh issue comment "$ISSUE" --body "The generator ran but produced no channel files — likely a system failure (model/API error, not a content problem). Check the [workflow logs]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) and comment \`/retry\`."
+            exit 1
+          fi
+
+          # Stage only content/ — never sneak in stray _repos/ or _refs/.
+          git add content/
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo "generator produced no tracked diff — nothing to PR"
+            gh issue comment "$ISSUE" --body "The generator ran but did not write any tracked files. Comment \`/retry\` to try again."
+            exit 0
+          fi
+
+          git commit -m "release: pack ${PRODUCT} v${VERSION} (issue #${ISSUE})"
+          git push --set-upstream origin "$BRANCH"
+
+          META_PATH="${PACK_DIR}/meta.json"
+          FINAL_STATUS=$(jq -r '.final_status // "unknown"' "$META_PATH" 2>/dev/null || echo "unknown")
+          GEN_ATTEMPTS=$(jq -r '.generation_attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
+          FIX_ATTEMPTS=$(jq -r '.auto_fix_attempts // 0' "$META_PATH" 2>/dev/null || echo "0")
+
+          LABELS="release-request"
+          if [ "$FINAL_STATUS" != "passed" ] || [ "${GEN_STATUS:-1}" -ne 0 ]; then
+            LABELS="release-request,failed-validation"
+          fi
+
+          BODY=$(printf 'Closes #%s\n\nNew release pack for **%s** v%s, requested by @%s.\n\n- Final status: `%s`\n- Generation attempts: `%s`\n- Auto-fix attempts: `%s`\n\nValidation ran during generation; the `meta.json` in the pack has the report. A reviewer should sanity-check the content before merging. Iterate on the PR with a `/change <request>` comment.' \
+            "$ISSUE" "$PRODUCT" "$VERSION" "$REQUESTER" "$FINAL_STATUS" "$GEN_ATTEMPTS" "$FIX_ATTEMPTS")
+
+          # Try to open the PR. If creation fails (auth, transient API error),
+          # the branch on origin is orphaned — delete it so /retry isn't
+          # blocked by the idempotency guard.
+          set +e
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Release pack: ${PRODUCT} v${VERSION} (issue #${ISSUE})" \
+            --body "$BODY" \
+            --label "$LABELS")
+          PR_STATUS=$?
+          set -e
+
+          if [ "$PR_STATUS" -ne 0 ]; then
+            echo "::error::pr creation failed — deleting orphan remote branch"
+            git push origin --delete "$BRANCH" 2>/dev/null || true
+            gh issue comment "$ISSUE" --body "The pack was generated but PR creation failed. Check the workflow logs and comment \`/retry\`."
+            exit 1
+          fi
+
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          echo "final_status=$FINAL_STATUS" >> "$GITHUB_OUTPUT"
+          gh issue comment "$ISSUE" --body "Release-pack PR opened: $PR_URL"
+
+      - name: Clear processing label
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          GEN_STATUS: ${{ steps.generate.outputs.gen_status }}
+          FINAL_STATUS: ${{ steps.pr.outputs.final_status }}
+        run: |
+          gh issue edit "$ISSUE" --remove-label processing || true
+          if [ "${GEN_STATUS:-1}" -ne 0 ] || { [ -n "${FINAL_STATUS:-}" ] && [ "${FINAL_STATUS}" != "passed" ]; }; then
+            gh issue edit "$ISSUE" --add-label failed-validation || true
+          fi
