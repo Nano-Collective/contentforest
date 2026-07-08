@@ -7,6 +7,7 @@ angle: "Local fine-tuning is real on Apple Silicon"
 generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
 char_count: 182
+distributed_at: "2026-07-08T12:58:54.669Z"
 ---
 
 Your training data shouldn't leave the machine it's written on.
