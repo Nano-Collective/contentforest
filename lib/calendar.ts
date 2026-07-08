@@ -462,12 +462,20 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 	const dayHasReleaseSet = (date: string): boolean =>
 		days[date].some(i => i.release_set);
 
-	// 2. R3 + R4: place each pending release set on the earliest future day that
-	//    has no release set yet. A set with no free day this week is left for a
+	// Fresh long-form (releases + backlog articles) is NOT crammed into today —
+	// today's posting may already be done or underway, so anything the planner
+	// places new starts on the next working day, giving the marketer lead time.
+	// (Evergreen-X fill below still tops up today; it's not a timed announcement.)
+	// Items already placed on today by a prior run are preserved by the seeding
+	// step above and are not moved.
+	const freshDays = future.filter(d => d > input.today);
+
+	// 2. R3 + R4: place each pending release set on the earliest fresh WEEKDAY
+	//    with no release set yet. A set with no free day this week is left for a
 	//    later week (its id stays out of consumedSetIds).
 	for (const set of input.pools.releaseSets) {
 		if (input.consumedSetIds.has(set.id)) continue;
-		const day = future.find(d => !dayHasReleaseSet(d));
+		const day = freshDays.find(d => !dayHasReleaseSet(d));
 		if (!day) continue;
 		for (const it of set.items) {
 			if (input.consumedRefs.has(it.ref)) continue;
@@ -494,7 +502,8 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		);
 		if (pick) {
 			const day =
-				future.find(d => !dayHasReleaseSet(d)) ?? future[future.length - 1];
+				freshDays.find(d => !dayHasReleaseSet(d)) ??
+				freshDays[freshDays.length - 1];
 			if (day) {
 				const place = (ref: string, channel: string) => {
 					if (input.consumedRefs.has(ref)) return;

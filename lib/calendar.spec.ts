@@ -176,8 +176,10 @@ test('R4: two release sets land on different days, earliest first', t => {
 	const setsOn = (d: string) => [
 		...new Set(week.days[d].filter(i => i.release_set).map(i => i.release_set)),
 	];
-	t.deepEqual(setsOn('2026-07-06'), ['aaa@2.0.0']);
-	t.deepEqual(setsOn('2026-07-07'), ['bbb@1.0.0']);
+	// Freshly-generated releases start the next working day, not today (Monday).
+	t.deepEqual(setsOn('2026-07-06'), []);
+	t.deepEqual(setsOn('2026-07-07'), ['aaa@2.0.0']);
+	t.deepEqual(setsOn('2026-07-08'), ['bbb@1.0.0']);
 });
 
 test('weekdays only: releases never land on a weekend', t => {
@@ -188,11 +190,16 @@ test('weekdays only: releases never land on a weekend', t => {
 	const dates = weekDates(WEEK); // Mon..Sun
 	t.is(week.days[dates[5]].length, 0, 'Saturday is empty');
 	t.is(week.days[dates[6]].length, 0, 'Sunday is empty');
-	// The five weekdays each take exactly one release set; the sixth waits.
+	// Releases start the next working day, so Monday (today) is skipped: Tue–Fri
+	// each take one set; the remaining two wait for a later week.
+	t.false(
+		week.days[dates[0]].some(i => i.release_set),
+		'Monday (today) takes no fresh release',
+	);
 	const weekdaysWithRelease = dates
 		.slice(0, 5)
 		.filter(d => week.days[d].some(i => i.release_set)).length;
-	t.is(weekdaysWithRelease, 5);
+	t.is(weekdaysWithRelease, 4);
 });
 
 test('R3: a release X post counts toward the day’s six', t => {
@@ -202,10 +209,11 @@ test('R3: a release X post counts toward the day’s six', t => {
 			evergreenX: evergreen(42),
 		}),
 	});
-	// The release day still has exactly 6 X posts, one of them the release X.
-	t.is(xCount(week.days['2026-07-06']), 6);
+	// The release lands Tuesday (next working day) and still has exactly 6 X
+	// posts, one of them the release X.
+	t.is(xCount(week.days['2026-07-07']), 6);
 	t.true(
-		week.days['2026-07-06'].some(
+		week.days['2026-07-07'].some(
 			i => i.channel === 'x' && i.type === 'release',
 		),
 	);
@@ -231,6 +239,11 @@ test('R2: places one backlog article + siblings when none scheduled', t => {
 	const article = all.filter(i => i.type === 'backlog-article');
 	t.is(article.length, 3);
 	t.true(article.some(i => i.channel === 'github-discussion'));
+	// A freshly-placed backlog article starts the next working day, not today.
+	t.false(
+		week.days['2026-07-06'].some(i => i.type === 'backlog-article'),
+		'Monday (today) takes no fresh backlog article',
+	);
 });
 
 test('R2: prefers a day with no release set', t => {
@@ -240,15 +253,22 @@ test('R2: prefers a day with no release set', t => {
 			backlogArticles: [backlog],
 		}),
 	});
-	// Release set is on Monday, so the backlog article should avoid it.
-	const mondayHasBacklog = week.days['2026-07-06'].some(
-		i => i.type === 'backlog-article',
+	// Both land on fresh weekdays (after today = Monday): the release takes
+	// Tuesday, so the backlog article avoids it and takes a later day with no
+	// release set. Neither is placed on today.
+	t.false(
+		week.days['2026-07-06'].some(i => i.type === 'backlog-article'),
+		'Monday (today) takes no fresh backlog article',
 	);
-	t.false(mondayHasBacklog);
-	const tuesdayHasBacklog = week.days['2026-07-07'].some(
-		i => i.type === 'backlog-article',
+	t.false(
+		week.days['2026-07-07'].some(i => i.type === 'backlog-article'),
+		'the release day gets no backlog article',
 	);
-	t.true(tuesdayHasBacklog);
+	const backlogDays = weekDates(WEEK).filter(d =>
+		week.days[d].some(i => i.type === 'backlog-article'),
+	);
+	t.true(backlogDays.length > 0);
+	t.false(backlogDays.some(d => week.days[d].some(i => i.release_set)));
 });
 
 // ── pinning + reflow ─────────────────────────────────────────────────────────
