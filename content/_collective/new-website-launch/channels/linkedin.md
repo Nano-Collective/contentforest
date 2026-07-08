@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-06-27T21:04:36.123Z"
 model: "minimax-m3"
 char_count: 2436
+distributed_at: "2026-07-08T13:10:51.067Z"
 ---
 
 The Nano Collective has relaunched its website. The previous version was soft and colourful. The new one looks and reads like what the collective actually builds.
