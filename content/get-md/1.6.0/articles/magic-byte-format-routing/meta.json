@@ -1,0 +1,7 @@
+{
+  "slug": "magic-byte-format-routing",
+  "title": "How get-md routes a single buffer to PDF, DOCX, HTML, or Markdown",
+  "focus": "A walk through the new ContentSource / magic-byte detection layer in convertToMarkdown, showing how one call site dispatches to the right extractor by sniffing %PDF or PK headers, by inputType, or by file extension, and why we picked sniffing over an explicit format flag.",
+  "generated_at": "2026-07-08T15:55:41.290Z",
+  "model": "minimax-m3"
+}
