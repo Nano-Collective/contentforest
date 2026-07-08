@@ -7,6 +7,7 @@ angle: "Model-callable tools as markdown"
 generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
 char_count: 231
+distributed_at: "2026-07-08T12:58:17.952Z"
 ---
 
 Your tool's parameter values get shell-quoted before they hit the body, so even '; rm -rf /; #' lands in echo as one literal string. nanocoder custom tools block injection at the template layer, not by trusting the model to behave.
