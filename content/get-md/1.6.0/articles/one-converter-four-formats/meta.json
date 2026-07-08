@@ -1,0 +1,7 @@
+{
+  "slug": "one-converter-four-formats",
+  "title": "How convertToMarkdown dispatches a Buffer to the right extractor",
+  "focus": "A walkthrough of get-md v1.6.0's magic-byte routing inside convertToMarkdown - how a %PDF or PK Buffer is dispatched to the PDF or DOCX pipeline, why Readability is force-disabled on those paths, how URL strings ending in .pdf flow through the same code, and why the same single entry point now handles HTML, URLs, PDF, DOCX, and Markdown without the caller threading options.",
+  "generated_at": "2026-07-08T16:13:06.512Z",
+  "model": "minimax-m3"
+}

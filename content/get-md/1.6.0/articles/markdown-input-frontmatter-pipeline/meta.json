@@ -1,0 +1,7 @@
+{
+  "slug": "markdown-input-frontmatter-pipeline",
+  "title": "Why feed existing Markdown back through get-md",
+  "focus": "The Markdown input path added in get-md v1.6.0 - why it skips HTML parsing and runs only the optimization passes, how it preserves an existing YAML frontmatter block without doubling it or clobbering your real title, and how RAG ingestion pipelines can use it to apply consistent metadata, computed wordCount and readingTime, and includeLinks/includeImages/includeTables filtering across mixed HTML, PDF, DOCX, and Markdown corpora.",
+  "generated_at": "2026-07-08T16:13:06.512Z",
+  "model": "minimax-m3"
+}
