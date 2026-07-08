@@ -1,69 +1,9 @@
 {
   "week_of": "2026-07-06",
-  "generated_at": "2026-07-07T20:03:36.366Z",
+  "generated_at": "2026-07-08T03:58:21.097Z",
   "days": {
     "2026-07-06": [],
-    "2026-07-07": [
-      {
-        "slot": "github-discussion-1",
-        "channel": "github-discussion",
-        "type": "backlog-article",
-        "ref": "content/_collective/new-website-launch/channels/github-discussion.md"
-      },
-      {
-        "slot": "linkedin-1",
-        "channel": "linkedin",
-        "type": "backlog-article",
-        "ref": "content/_collective/new-website-launch/channels/linkedin.md"
-      },
-      {
-        "slot": "reddit-1",
-        "channel": "reddit",
-        "type": "backlog-article",
-        "ref": "content/_collective/new-website-launch/channels/reddit.md"
-      },
-      {
-        "slot": "x-1",
-        "channel": "x",
-        "type": "backlog-article",
-        "ref": "content/_collective/new-website-launch/channels/x.md"
-      },
-      {
-        "slot": "x-2",
-        "channel": "x",
-        "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-07-06/posts/collective-1.md",
-        "source": "collective"
-      },
-      {
-        "slot": "x-3",
-        "channel": "x",
-        "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-07-06/posts/get-md-1.md",
-        "source": "get-md"
-      },
-      {
-        "slot": "x-4",
-        "channel": "x",
-        "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-07-06/posts/json-up-1.md",
-        "source": "json-up"
-      },
-      {
-        "slot": "x-5",
-        "channel": "x",
-        "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-07-06/posts/nanocoder-1.md",
-        "source": "nanocoder"
-      },
-      {
-        "slot": "x-6",
-        "channel": "x",
-        "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-07-06/posts/nanotune-1.md",
-        "source": "nanotune"
-      }
-    ],
+    "2026-07-07": [],
     "2026-07-08": [
       {
         "slot": "x-1",
@@ -106,6 +46,30 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/nanotune-2.md",
         "source": "nanotune"
+      },
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/_collective/new-website-launch/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/_collective/new-website-launch/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/_collective/new-website-launch/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/_collective/new-website-launch/channels/x.md"
       }
     ],
     "2026-07-09": [

@@ -1,6 +1,6 @@
 {
   "week_of": "2026-07-13",
-  "generated_at": "2026-07-07T20:03:36.366Z",
+  "generated_at": "2026-07-08T03:58:21.097Z",
   "days": {
     "2026-07-13": [
       {
@@ -77,9 +77,45 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/prompt-scrub-5.md",
         "source": "prompt-scrub"
+      },
+      {
+        "slot": "x-3",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/collective-1.md",
+        "source": "collective"
+      },
+      {
+        "slot": "x-4",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/get-md-1.md",
+        "source": "get-md"
+      },
+      {
+        "slot": "x-5",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/json-up-1.md",
+        "source": "json-up"
+      },
+      {
+        "slot": "x-6",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/nanocoder-1.md",
+        "source": "nanocoder"
       }
     ],
-    "2026-07-15": [],
+    "2026-07-15": [
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-06/posts/nanotune-1.md",
+        "source": "nanotune"
+      }
+    ],
     "2026-07-16": [],
     "2026-07-17": [],
     "2026-07-18": [],
