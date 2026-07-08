@@ -1,6 +1,6 @@
 {
   "week_of": "2026-07-06",
-  "generated_at": "2026-07-08T13:18:14.656Z",
+  "generated_at": "2026-07-08T16:32:18.689Z",
   "days": {
     "2026-07-06": [],
     "2026-07-07": [],
@@ -70,6 +70,41 @@
         "channel": "x",
         "type": "backlog-article",
         "ref": "content/_collective/new-website-launch/channels/x.md"
+      },
+      {
+        "slot": "github-discussion-2",
+        "channel": "github-discussion",
+        "type": "release",
+        "ref": "content/get-md/1.6.0/channels/github-discussion.md",
+        "release_set": "get-md@1.6.0"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "release",
+        "ref": "content/get-md/1.6.0/channels/hacker-news.md",
+        "release_set": "get-md@1.6.0"
+      },
+      {
+        "slot": "linkedin-2",
+        "channel": "linkedin",
+        "type": "release",
+        "ref": "content/get-md/1.6.0/channels/linkedin.md",
+        "release_set": "get-md@1.6.0"
+      },
+      {
+        "slot": "reddit-2",
+        "channel": "reddit",
+        "type": "release",
+        "ref": "content/get-md/1.6.0/channels/reddit.md",
+        "release_set": "get-md@1.6.0"
+      },
+      {
+        "slot": "x-8",
+        "channel": "x",
+        "type": "release",
+        "ref": "content/get-md/1.6.0/channels/x.md",
+        "release_set": "get-md@1.6.0"
       }
     ],
     "2026-07-09": [
