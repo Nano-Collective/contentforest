@@ -6,6 +6,7 @@ title: "New Nano Collective website: principles first, live proof, tighter codeb
 generated_at: "2026-06-27T21:04:36.123Z"
 model: "minimax-m3"
 char_count: 7438
+distributed_at: "2026-07-08T13:07:44.618Z"
 ---
 
 The Nano Collective has relaunched its website. This post is a walkthrough of what changed, why, and what it sets up for the next round of announcements.
