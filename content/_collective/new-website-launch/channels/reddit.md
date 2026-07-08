@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-06-27T21:04:36.123Z"
 model: "minimax-m3"
 char_count: 5026
+distributed_at: "2026-07-08T13:13:05.184Z"
 ---
 
 **TL;DR:** We rebuilt the Nano Collective website. The redesign is less about the new visuals and more about the site finally matching the brand guidelines we already had. The three principles lead the homepage, flagship projects get real landing pages, and community stats are live rather than curated.
