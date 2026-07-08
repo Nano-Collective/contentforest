@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-06-29",
+  "generated_at": "2026-07-08T17:06:00.554Z",
+  "days": {
+    "2026-06-29": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/auto-tune-tool-consolidation/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/auto-tune-tool-consolidation/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/auto-tune-tool-consolidation/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/auto-tune-tool-consolidation/channels/x.md"
+      }
+    ],
+    "2026-06-30": [],
+    "2026-07-01": [],
+    "2026-07-02": [],
+    "2026-07-03": [],
+    "2026-07-04": [],
+    "2026-07-05": []
+  }
+}

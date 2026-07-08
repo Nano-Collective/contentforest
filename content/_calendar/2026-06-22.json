@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-06-22",
+  "generated_at": "2026-07-08T17:06:00.554Z",
+  "days": {
+    "2026-06-22": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/x.md"
+      }
+    ],
+    "2026-06-23": [],
+    "2026-06-24": [],
+    "2026-06-25": [],
+    "2026-06-26": [],
+    "2026-06-27": [],
+    "2026-06-28": []
+  }
+}
