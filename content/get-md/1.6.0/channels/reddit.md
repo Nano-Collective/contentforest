@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-07-08T16:13:06.512Z"
 model: "minimax-m3"
 char_count: 4989
+distributed_at: "2026-07-09T20:34:41.528Z"
 ---
 
 We've just shipped get-md v1.6.0, and the headline change is that get-md is no longer HTML-only. PDF, DOCX, and Markdown inputs now join HTML strings and URLs, with format auto-detection on the file extension or the magic bytes (`%PDF` for PDF, the ZIP/`PK` signature for DOCX).
