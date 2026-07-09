@@ -20,6 +20,10 @@ body:
       description: |
         Pick what to edit. `<product>/<version>` targets the release pack itself (channels, meta, or a single file under it). `<product>/<version>/articles/<slug>` targets one article inside a pack. List is auto-generated from `content/` on `main`, sorted newest-first.
       options:
+        - prompt-scrub/1.0.0
+        - prompt-scrub/1.0.0/articles/rule-packs-0x-contract
+        - prompt-scrub/1.0.0/articles/scrubbing-agentic-tool-outputs
+        - prompt-scrub/1.0.0/articles/secret-detector-three-layers
         - get-md/1.6.0
         - get-md/1.6.0/articles/markdown-input-frontmatter-pipeline
         - get-md/1.6.0/articles/one-converter-four-formats
