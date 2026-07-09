@@ -11,6 +11,7 @@ export const CHANNEL_SHORT: Record<string, string> = {
 	reddit: 'Reddit',
 	linkedin: 'LinkedIn',
 	'github-discussion': 'Discussion',
+	'hacker-news': 'HN',
 };
 
 /** Colour + label per scheduling type, shared by the month and week views. */
