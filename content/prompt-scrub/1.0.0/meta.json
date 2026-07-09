@@ -1,0 +1,36 @@
+{
+  "product": "prompt-scrub",
+  "version": "1.0.0",
+  "product_url": "https://github.com/Nano-Collective/prompt-scrubber",
+  "generated_at": "2026-07-09T19:23:12.277Z",
+  "model": "minimax-m3",
+  "generation_attempts": 5,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "secret-detector-three-layers",
+      "title": "How the secret detector catches what regexes miss",
+      "focus": "A behind-the-scenes look at the three-layer design behind SecretDetector (vendor-prefix patterns, key-value heuristics, and a Shannon-entropy gate at 4.5 bits/char) and why missing a credential is treated as worse than the false positives that gating accepts.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "rule-packs-0x-contract",
+      "title": "Authoring a prompt-scrub rule pack from scratch",
+      "focus": "A walkthrough of the 0.x rule-pack contract for prompt-scrub - the Detector interface, why detectors return value and placeholderPrefix but never replacement, the three supported export shapes, and the integration points (config, package.json, rules list) - aimed at a developer publishing their first custom detector pack.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "scrubbing-agentic-tool-outputs",
+      "title": "Scrubbing tool output inside an agentic loop",
+      "focus": "A practical how-to for wrapping every tool-call result (ls, git log, cat, grep, file reads) in an agentic coding loop so identifiers from the host machine never reach the next LLM turn, including the message-array scrub shape, the gaps the current detector set leaves in tool output, and the inspect-first workflow to verify what is and is not caught.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}

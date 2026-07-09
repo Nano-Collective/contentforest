@@ -1,0 +1,7 @@
+{
+  "slug": "scrubbing-agentic-tool-outputs",
+  "title": "Scrubbing tool output inside an agentic loop",
+  "focus": "A practical how-to for wrapping every tool-call result (ls, git log, cat, grep, file reads) in an agentic coding loop so identifiers from the host machine never reach the next LLM turn, including the message-array scrub shape, the gaps the current detector set leaves in tool output, and the inspect-first workflow to verify what is and is not caught.",
+  "generated_at": "2026-07-09T19:23:12.277Z",
+  "model": "minimax-m3"
+}

@@ -1,0 +1,7 @@
+{
+  "slug": "rule-packs-0x-contract",
+  "title": "Authoring a prompt-scrub rule pack from scratch",
+  "focus": "A walkthrough of the 0.x rule-pack contract for prompt-scrub - the Detector interface, why detectors return value and placeholderPrefix but never replacement, the three supported export shapes, and the integration points (config, package.json, rules list) - aimed at a developer publishing their first custom detector pack.",
+  "generated_at": "2026-07-09T19:23:12.277Z",
+  "model": "minimax-m3"
+}
