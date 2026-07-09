@@ -19,9 +19,10 @@
  * buildWeek is deterministic and idempotent: given the same content, the same
  * prior ledger and the same `today`, it returns the same schedule. It "reflows"
  * — future, not-yet-actioned items may move when a release arrives or an item
- * is marked distributed/won't-use — but it never touches past days or any item
- * already distributed (those are pinned). That combination is what keeps
- * repeated planner runs stable rather than oscillating.
+ * is marked distributed/won't-use, and a still-unused release set drifts
+ * BACKWARD onto today / an earlier free weekday when one opens up — but it never
+ * touches past days or any item already distributed (those are pinned). That
+ * combination is what keeps repeated planner runs stable rather than oscillating.
  */
 import {existsSync, readdirSync, readFileSync} from 'node:fs';
 import {join, relative} from 'node:path';
@@ -440,7 +441,51 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 	//    Future days keep live items (unused or distributed); drop won't-use and
 	//    vanished files. Everything kept is consumed so it isn't re-placed.
 	let weekHasBacklog = false;
+	// Release sets un-pinned from seeding so step 2 can reflow them (see below),
+	// keyed by id with their placed posts in ledger order.
+	const heldSets: {id: string; items: {ref: string; channel: string}[]}[] = [];
+	const heldIds = new Set<string>();
 	if (input.existing) {
+		// Pre-pass for backward reflow: group this week's FUTURE release posts by
+		// set and flag any set that already has a distributed post. A set that is
+		// still *entirely* unused is "held" — not pinned to its current day — so
+		// step 2 can pull it BACKWARD onto today or an earlier free weekday when
+		// one opens up (e.g. a release parked on Friday slides to today once
+		// today's slot is free). A set with any distributed post stays pinned
+		// where it was posted — you can't un-post it.
+		const futureItems = new Map<
+			string,
+			{date: string; ref: string; channel: string}[]
+		>();
+		const setHasDistributed = new Set<string>();
+		for (const date of dates) {
+			if (date < input.today) continue;
+			for (const item of input.existing.days[date] ?? []) {
+				if (!item.release_set) continue;
+				const st = status(item.ref);
+				if (st === undefined || st === 'wont_use') continue;
+				const entry = {date, ref: item.ref, channel: item.channel};
+				const list = futureItems.get(item.release_set);
+				if (list) list.push(entry);
+				else futureItems.set(item.release_set, [entry]);
+				if (st === 'distributed') setHasDistributed.add(item.release_set);
+			}
+		}
+		// Held sets, earliest-original-day first, so re-placement stays
+		// earliest-first and deterministic.
+		for (const [id, its] of [...futureItems.entries()]
+			.filter(([setId]) => !setHasDistributed.has(setId))
+			.sort(
+				(a, b) =>
+					a[1][0].date.localeCompare(b[1][0].date) || a[0].localeCompare(b[0]),
+			)) {
+			heldIds.add(id);
+			heldSets.push({
+				id,
+				items: its.map(i => ({ref: i.ref, channel: i.channel})),
+			});
+		}
+
 		for (const date of dates) {
 			const items = input.existing.days[date] ?? [];
 			const isPast = date < input.today;
@@ -449,6 +494,12 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 				if (isPast) {
 					if (st !== 'distributed' && st !== 'wont_use') continue;
 				} else if (st === undefined || st === 'wont_use') {
+					continue;
+				}
+				// A held (reflowable) set's posts are consumed so nothing else grabs
+				// them, but left unplaced (and the id un-consumed) for step 2.
+				if (!isPast && item.release_set && heldIds.has(item.release_set)) {
+					input.consumedRefs.add(item.ref);
 					continue;
 				}
 				days[date].push(item);
@@ -462,17 +513,36 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 	const dayHasReleaseSet = (date: string): boolean =>
 		days[date].some(i => i.release_set);
 
-	// 2. R3 + R4: place each pending release set on the earliest future day that
-	//    has no release set yet. A set with no free day this week is left for a
-	//    later week (its id stays out of consumedSetIds).
-	for (const set of input.pools.releaseSets) {
+	// 2. R3 + R4: (re)place release sets on the earliest free future weekday.
+	//    Held sets (fully-unused, un-pinned above) go first so a release reflows
+	//    BACKWARD onto today / an earlier day when one frees up; then brand-new
+	//    sets from the pool. Each set's posts are inserted at the FRONT of the day
+	//    so a re-placed set keeps the same ordering as a fresh placement, which
+	//    keeps repeated runs byte-stable. R4 keeps ≤1 set per day; a set with no
+	//    free day this week is left for a later week (its id stays un-consumed).
+	const pending = [
+		...heldSets.map(h => ({...h, fromPool: false})),
+		...input.pools.releaseSets
+			.filter(s => !heldIds.has(s.id) && !input.consumedSetIds.has(s.id))
+			.map(s => ({
+				id: s.id,
+				items: s.items.map(it => ({ref: it.ref, channel: it.channel})),
+				fromPool: true,
+			})),
+	];
+	for (const set of pending) {
 		if (input.consumedSetIds.has(set.id)) continue;
 		const day = future.find(d => !dayHasReleaseSet(d));
 		if (!day) continue;
+		const placed: ScheduledItem[] = [];
 		for (const it of set.items) {
-			if (input.consumedRefs.has(it.ref)) continue;
-			if (status(it.ref) !== 'unused') continue;
-			days[day].push({
+			// Pool posts must still be unused and un-consumed; held posts were
+			// already consumed (and validated unused) during seeding.
+			if (set.fromPool) {
+				if (input.consumedRefs.has(it.ref)) continue;
+				if (status(it.ref) !== 'unused') continue;
+			}
+			placed.push({
 				slot: '',
 				channel: it.channel,
 				type: 'release',
@@ -481,6 +551,7 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 			});
 			input.consumedRefs.add(it.ref);
 		}
+		days[day].unshift(...placed);
 		input.consumedSetIds.add(set.id);
 	}
 

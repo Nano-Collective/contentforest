@@ -253,6 +253,119 @@ test('R2: prefers a day with no release set', t => {
 
 // ── pinning + reflow ─────────────────────────────────────────────────────────
 
+// A release set placed on a later day, described as a prior ledger.
+function parkedRelease(day: string): WeekSchedule {
+	return {
+		week_of: WEEK,
+		generated_at: 'x',
+		days: {
+			[day]: [
+				{
+					slot: 'github-discussion-1',
+					channel: 'github-discussion',
+					type: 'release',
+					ref: 'content/aaa/2.0.0/channels/github-discussion.md',
+					release_set: 'aaa@2.0.0',
+				},
+				{
+					slot: 'x-1',
+					channel: 'x',
+					type: 'release',
+					ref: 'content/aaa/2.0.0/channels/x.md',
+					release_set: 'aaa@2.0.0',
+				},
+			],
+		},
+	};
+}
+
+const RELEASE_REFS = [
+	'content/aaa/2.0.0/channels/github-discussion.md',
+	'content/aaa/2.0.0/channels/x.md',
+];
+
+test('reflow: a fully-unused release drifts back to an earlier free weekday', t => {
+	// Parked on Friday, but today is Wednesday and Wed/Thu/Fri are all free —
+	// the planner should pull the set back to today, the earliest open slot.
+	const week = run({
+		today: '2026-07-08', // Wednesday
+		existing: parkedRelease('2026-07-10'), // Friday
+		pools: poolsFrom({
+			statusOverrides: Object.fromEntries(
+				RELEASE_REFS.map(r => [r, 'unused' as const]),
+			),
+		}),
+	});
+	const on = (d: string) =>
+		week.days[d].some(i => i.release_set === 'aaa@2.0.0');
+	t.true(on('2026-07-08'), 'pulled back to today (Wednesday)');
+	t.false(on('2026-07-10'), 'no longer parked on Friday');
+	// Both posts moved together, none stranded.
+	t.is(
+		week.days['2026-07-08'].filter(i => i.release_set === 'aaa@2.0.0').length,
+		2,
+	);
+});
+
+test('reflow: a release with a distributed post stays pinned', t => {
+	// The announcement is already posted on Friday; the set must not be pulled
+	// back to today — you can't un-post the distributed one.
+	const week = run({
+		today: '2026-07-08',
+		existing: parkedRelease('2026-07-10'),
+		pools: poolsFrom({
+			statusOverrides: {
+				'content/aaa/2.0.0/channels/github-discussion.md': 'distributed',
+				'content/aaa/2.0.0/channels/x.md': 'unused',
+			},
+		}),
+	});
+	const on = (d: string) =>
+		week.days[d].some(i => i.release_set === 'aaa@2.0.0');
+	t.true(on('2026-07-10'), 'stays on Friday where it was posted');
+	t.false(on('2026-07-08'), 'not pulled back to today');
+});
+
+test('reflow: a parked release yields today to a distributed set, takes the next free day', t => {
+	// today (Wed) already has a distributed release; the unused parked set can't
+	// share the day (R4), so it drifts back only as far as the next free weekday.
+	const existing: WeekSchedule = {
+		week_of: WEEK,
+		generated_at: 'x',
+		days: {
+			'2026-07-08': [
+				{
+					slot: 'github-discussion-1',
+					channel: 'github-discussion',
+					type: 'release',
+					ref: 'content/bbb/1.0.0/channels/github-discussion.md',
+					release_set: 'bbb@1.0.0',
+				},
+			],
+			'2026-07-10': parkedRelease('2026-07-10').days['2026-07-10'],
+		},
+	};
+	const week = run({
+		today: '2026-07-08',
+		existing,
+		pools: poolsFrom({
+			statusOverrides: {
+				'content/bbb/1.0.0/channels/github-discussion.md': 'distributed',
+				'content/aaa/2.0.0/channels/github-discussion.md': 'unused',
+				'content/aaa/2.0.0/channels/x.md': 'unused',
+			},
+		}),
+	});
+	t.true(
+		week.days['2026-07-08'].some(i => i.release_set === 'bbb@1.0.0'),
+		'distributed set pinned on today',
+	);
+	t.true(
+		week.days['2026-07-09'].some(i => i.release_set === 'aaa@2.0.0'),
+		'unused set drifts back to Thursday, the next free day',
+	);
+});
+
 test('pinning: actioned past items stay; future won’t-use is dropped', t => {
 	const wed = '2026-07-08';
 	const existing: WeekSchedule = {
