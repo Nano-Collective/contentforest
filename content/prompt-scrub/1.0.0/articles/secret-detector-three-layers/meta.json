@@ -1,0 +1,7 @@
+{
+  "slug": "secret-detector-three-layers",
+  "title": "How the secret detector catches what regexes miss",
+  "focus": "A behind-the-scenes look at the three-layer design behind SecretDetector (vendor-prefix patterns, key-value heuristics, and a Shannon-entropy gate at 4.5 bits/char) and why missing a credential is treated as worse than the false positives that gating accepts.",
+  "generated_at": "2026-07-09T19:23:12.277Z",
+  "model": "minimax-m3"
+}
