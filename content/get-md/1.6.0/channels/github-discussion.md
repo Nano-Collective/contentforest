@@ -6,6 +6,7 @@ title: "get-md v1.6.0: PDF, DOCX, and Markdown ingestion alongside HTML"
 generated_at: "2026-07-08T16:13:06.512Z"
 model: "minimax-m3"
 char_count: 5580
+distributed_at: "2026-07-09T19:05:13.785Z"
 ---
 
 get-md v1.6.0 is out. The library is no longer HTML-only: PDF, DOCX, and Markdown inputs join HTML and URLs, with auto-detection on the file extension or magic bytes. Behind that headline is a launch-hardening pass over the whole multi-format surface that closes a set of real bugs surfaced during review.
