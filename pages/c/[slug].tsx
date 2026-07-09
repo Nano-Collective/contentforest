@@ -22,6 +22,10 @@ type Props = {
 	pack: CollectivePack;
 };
 
+const CHANNEL_LABELS: Record<string, string> = {
+	'hacker-news': 'HN',
+};
+
 function classify(slug: string): FileTreeItem {
 	if (slug.startsWith('personal:')) {
 		const parts = slug.slice('personal:'.length).split(':');
@@ -31,7 +35,11 @@ function classify(slug: string): FileTreeItem {
 				: `${parts.join(':')}.md`;
 		return {channel: slug, label, group: 'personal'};
 	}
-	return {channel: slug, label: `${slug}.md`, group: 'channels'};
+	return {
+		channel: slug,
+		label: `${CHANNEL_LABELS[slug] ?? slug}.md`,
+		group: 'channels',
+	};
 }
 
 function filenameFor(slug: string): string {
