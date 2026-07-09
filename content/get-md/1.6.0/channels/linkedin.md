@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-07-08T16:13:06.512Z"
 model: "minimax-m3"
 char_count: 1753
+distributed_at: "2026-07-09T19:07:15.784Z"
 ---
 
 get-md v1.6.0 ships today. The library is no longer HTML-only: PDF, DOCX, and Markdown inputs join HTML and URLs, with auto-detection on the file extension or magic bytes (`%PDF` for PDF, the ZIP/`PK` signature for DOCX).
