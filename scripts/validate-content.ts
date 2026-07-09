@@ -134,6 +134,15 @@ const PLACEHOLDER_PATTERNS = [
 	/\bTODO\b/i,
 ];
 
+/**
+ * Hacker News submissions link to the article on the website, which does not
+ * exist yet when the pack is generated. The HN body carries this literal
+ * placeholder in place of that URL; the distributor swaps it for the published
+ * article URL at submission time. It's the one `{{...}}` token allowed in a body
+ * (and it's required for hacker-news), so HN is exempt from `link-product-repo`.
+ */
+const HN_LINK_PLACEHOLDER = '{{link to article on website}}';
+
 function readJson<T>(path: string): T {
 	return JSON.parse(readFileSync(path, 'utf8')) as T;
 }
@@ -942,9 +951,15 @@ function validatePack(args: {
 			});
 		}
 
-		// Unresolved placeholders
+		// Unresolved placeholders. Hacker News is allowed (and required) to carry
+		// the {{link to article on website}} placeholder, so scan the HN body with
+		// that token stripped out first — any OTHER {{...}} still fails.
+		const isHackerNews = slug === 'hacker-news';
+		const placeholderScan = isHackerNews
+			? body.replaceAll(HN_LINK_PLACEHOLDER, '')
+			: body;
 		for (const pattern of PLACEHOLDER_PATTERNS) {
-			if (pattern.test(body)) {
+			if (pattern.test(placeholderScan)) {
 				failures.push({
 					file: fileRel,
 					rule: 'no-placeholder',
@@ -954,8 +969,19 @@ function validatePack(args: {
 			}
 		}
 
-		// Link target — must include repo root, must NOT include release URL
-		if (!body.includes(repoUrl)) {
+		// Link target. Hacker News links to the not-yet-published website article,
+		// so it must carry the placeholder and must NOT include the repo URL; every
+		// other channel must include the repo root. None may include a release URL.
+		if (isHackerNews) {
+			if (!body.includes(HN_LINK_PLACEHOLDER)) {
+				failures.push({
+					file: fileRel,
+					rule: 'link-article-placeholder',
+					expected: `${HN_LINK_PLACEHOLDER} placeholder`,
+					actual: 'missing',
+				});
+			}
+		} else if (!body.includes(repoUrl)) {
 			failures.push({
 				file: fileRel,
 				rule: 'link-product-repo',

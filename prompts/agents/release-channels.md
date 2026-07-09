@@ -91,9 +91,9 @@ Use `config/channels.json` (below) for length/char rules. Both `min_words` and `
 | X | `channels/x.md` | ≤ 280 chars including the link. One link, max two hashtags. Punchy but not marketing-y. |
 | GitHub Discussion | `channels/github-discussion.md` | **Canonical long-form release post.** Engineering-doc register. This is what gets pasted into a Discussion on `Nano-Collective/website`, which becomes the public blog post. Include the canonical tagline somewhere natural. Cover what changed and why. Code examples where useful. **Set a `title` in the frontmatter** — this becomes the Discussion title when posted. Keep it concise (≤ 80 chars) and headline-shaped, e.g. `Nanocoder v{{VERSION}} — <one-line angle>`. |
 | Reddit | `channels/reddit.md` | Conversational, "we built this, here's what changed." First-person plural. |
-| Hacker News | `channels/hacker-news.md` | An HN submission: a title + a tiny body. Put the **HN-formatted title in the frontmatter `title` field** — plain and factual, ≤ 80 chars, e.g. `{{PRODUCT_SLUG}} v{{VERSION}}: <one-line what-it-is>` (use `Show HN: ...` only if it genuinely fits). The body is **tiny** (1-2 sentences, no minimum length) pointing readers to the discussion, and must link to `{{PRODUCT_REPO_URL}}/discussions`. No marketing, no hashtags. Placeholder-grade copy is acceptable here. |
+| Hacker News | `channels/hacker-news.md` | An HN submission: a title + a tiny body. Put the **HN-formatted title in the frontmatter `title` field** — plain and factual, ≤ 80 chars, e.g. `{{PRODUCT_SLUG}} v{{VERSION}}: <one-line what-it-is>` (use `Show HN: ...` only if it genuinely fits). The body is **tiny** (1-2 sentences, no minimum length) pointing readers to the write-up. The HN link is the article on the website, which does not exist yet at generation time, so the body **must contain the literal placeholder `{{link to article on website}}`** where that URL goes — the distributor swaps it for the published article URL when submitting. Do **not** link to the repo or discussions here. No marketing, no hashtags. Placeholder-grade copy is acceptable here. |
 
-**Link policy (hard rule):** every post must link to **{{PRODUCT_REPO_URL}}** (the repo root) — never to a release-specific URL like `/releases/tag/...`. The GitHub release URL `{{RELEASE_TAG_URL}}` is for your reference only; do not include it in any output.
+**Link policy (hard rule):** every post **except Hacker News** must link to **{{PRODUCT_REPO_URL}}** (the repo root) — never to a release-specific URL like `/releases/tag/...`. Hacker News instead carries the literal placeholder `{{link to article on website}}` (see its row above) and must **not** contain the repo URL. The GitHub release URL `{{RELEASE_TAG_URL}}` is for your reference only; do not include it in any output.
 
 # Frontmatter (every .md file you write)
 
@@ -151,8 +151,8 @@ These are enforced by `scripts/validate-content.ts --phase channels`; failing an
 4. `frontmatter.channel` is one of `linkedin`, `x`, `github-discussion`, `reddit`, `hacker-news`.
 5. Per-channel length/char rules respected (X ≤ 280 chars; LinkedIn / Reddit / GitHub Discussion under their `max_words`; Hacker News body under its `max_words`, no floor).
 6. No forbidden phrase (case-insensitive) appears anywhere in any body.
-7. No unresolved placeholder (`{{TODO}}`, `{{RELEASE_URL}}`, etc.) in any body.
-8. Every body contains the literal product repo root URL `{{PRODUCT_REPO_URL}}`.
+7. No unresolved placeholder (`{{TODO}}`, `{{RELEASE_URL}}`, etc.) in any body — **except** Hacker News, whose body must carry the literal `{{link to article on website}}` placeholder.
+8. Every body contains the literal product repo root URL `{{PRODUCT_REPO_URL}}` — **except** Hacker News, which carries `{{link to article on website}}` instead and must not contain the repo URL.
 9. No body contains a `/releases/tag/` or `/releases/download/` URL for the product repo.
 10. `meta.json` parses as valid JSON with the exact shape above.
 
@@ -180,11 +180,12 @@ Read `/tmp/cf-self-check.json`. If `failures` is `[]`, you're done — stop. If 
 Common failure rules and how to address them:
 - `max-chars` (X only) — trim without dropping the link or substantive content.
 - `max-words` (LinkedIn / Reddit / GH Discussion) — restructure to be more concise; don't truncate mid-thought.
-- `link-product-repo` — every body must contain `{{PRODUCT_REPO_URL}}` literally.
+- `link-product-repo` — every body except Hacker News must contain `{{PRODUCT_REPO_URL}}` literally.
+- `link-article-placeholder` (Hacker News only) — the body must contain the literal `{{link to article on website}}` placeholder.
 - `link-not-release` — remove any `/releases/tag/` or `/releases/download/` URL.
 - `forbidden-term` — re-read the brand doc and re-ground the wording.
 - `frontmatter-shape` / `frontmatter-product` / `frontmatter-version` — fix the frontmatter to match the spec above.
-- `no-placeholder` — remove the literal `{{TODO}}` / `{{RELEASE_URL}}` etc.
+- `no-placeholder` — remove the literal `{{TODO}}` / `{{RELEASE_URL}}` etc. (the Hacker News `{{link to article on website}}` placeholder is allowed and required).
 - `file-exists` — write the missing file.
 
 When the self-check passes (or you've hit your 3-cycle cap), stop. Do not summarize what you produced — the orchestrator validates again as the gate.

@@ -59,9 +59,11 @@ const CONFIG_WITH_HN: ValidatorConfig = {
 	],
 };
 
-// Tiny HN body: a sentence + the discussions link (which contains the repo
-// root URL, so it satisfies link-product-repo). No floor, so this passes.
-const HN_BODY = `${PRODUCT_SLUG} v${VERSION} is out. Discussion and details: ${PRODUCT_REPO_URL}/discussions`;
+// Tiny HN body: a sentence + the article placeholder. HN links to the
+// not-yet-published website article, so it carries {{link to article on
+// website}} (required) and must NOT contain the repo URL. No floor, so it
+// passes on length.
+const HN_BODY = `${PRODUCT_SLUG} v${VERSION} is out. Write-up: {{link to article on website}}`;
 
 // ~320-word body that hits all happy-path rules: includes the repo URL,
 // no forbidden terms, no placeholders, no release-tag links. Long enough
@@ -2354,6 +2356,92 @@ test('release: present hacker-news channel file is allowed and validated', t => 
 			config: CONFIG_WITH_HN,
 		});
 		t.deepEqual(report.failures, []);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('release: hacker-news body missing the article placeholder → link-article-placeholder', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// Old-style HN body that links to the repo instead of the placeholder.
+		writeFileSync(
+			join(packDir, 'channels/hacker-news.md'),
+			buildMd(
+				'hacker-news',
+				`${PRODUCT_SLUG} v${VERSION} is out: ${PRODUCT_REPO_URL}/discussions`,
+			),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'channels',
+			config: CONFIG_WITH_HN,
+		});
+		t.true(
+			report.failures.some(
+				f =>
+					f.rule === 'link-article-placeholder' &&
+					f.file.endsWith('channels/hacker-news.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('release: hacker-news is exempt from link-product-repo', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		// HN_BODY has the placeholder and no repo URL — must NOT be flagged.
+		writeFileSync(
+			join(packDir, 'channels/hacker-news.md'),
+			buildMd('hacker-news', HN_BODY),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'channels',
+			config: CONFIG_WITH_HN,
+		});
+		t.false(
+			report.failures.some(
+				f =>
+					f.rule === 'link-product-repo' &&
+					f.file.endsWith('channels/hacker-news.md'),
+			),
+		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+test('release: a non-article placeholder in the hacker-news body still fails no-placeholder', t => {
+	const root = makeTmpRoot();
+	try {
+		const packDir = writeHappyPack(root);
+		writeFileSync(
+			join(packDir, 'channels/hacker-news.md'),
+			buildMd(
+				'hacker-news',
+				`${PRODUCT_SLUG} v${VERSION}: {{link to article on website}} {{TODO}}`,
+			),
+		);
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: PACK_ID,
+			phase: 'channels',
+			config: CONFIG_WITH_HN,
+		});
+		t.true(
+			report.failures.some(
+				f =>
+					f.rule === 'no-placeholder' &&
+					f.file.endsWith('channels/hacker-news.md'),
+			),
+		);
 	} finally {
 		cleanup(root);
 	}
