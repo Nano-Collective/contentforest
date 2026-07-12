@@ -1,6 +1,6 @@
 {
   "week_of": "2026-07-06",
-  "generated_at": "2026-07-10T04:38:42.829Z",
+  "generated_at": "2026-07-12T04:17:38.205Z",
   "days": {
     "2026-07-06": [],
     "2026-07-07": [],
@@ -146,77 +146,42 @@
     ],
     "2026-07-10": [
       {
-        "slot": "github-discussion-1",
-        "channel": "github-discussion",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.0.0/channels/github-discussion.md",
-        "release_set": "prompt-scrub@1.0.0"
-      },
-      {
-        "slot": "hacker-news-1",
-        "channel": "hacker-news",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.0.0/channels/hacker-news.md",
-        "release_set": "prompt-scrub@1.0.0"
-      },
-      {
-        "slot": "linkedin-1",
-        "channel": "linkedin",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.0.0/channels/linkedin.md",
-        "release_set": "prompt-scrub@1.0.0"
-      },
-      {
-        "slot": "reddit-1",
-        "channel": "reddit",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.0.0/channels/reddit.md",
-        "release_set": "prompt-scrub@1.0.0"
-      },
-      {
         "slot": "x-1",
-        "channel": "x",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.0.0/channels/x.md",
-        "release_set": "prompt-scrub@1.0.0"
-      },
-      {
-        "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/prompt-scrub-3.md",
         "source": "prompt-scrub"
       },
       {
-        "slot": "x-3",
+        "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/collective-4.md",
         "source": "collective"
       },
       {
-        "slot": "x-4",
+        "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/get-md-4.md",
         "source": "get-md"
       },
       {
-        "slot": "x-5",
+        "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/json-up-4.md",
         "source": "json-up"
       },
       {
-        "slot": "x-6",
+        "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/nanocoder-4.md",
         "source": "nanocoder"
       },
       {
-        "slot": "x-7",
+        "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/nanotune-4.md",
