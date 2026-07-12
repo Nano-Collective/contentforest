@@ -1,62 +1,97 @@
 {
   "week_of": "2026-07-13",
-  "generated_at": "2026-07-12T04:17:38.205Z",
+  "generated_at": "2026-07-12T18:33:37.984Z",
   "days": {
     "2026-07-13": [
       {
         "slot": "github-discussion-1",
         "channel": "github-discussion",
+        "type": "release",
+        "ref": "content/prompt-scrub/1.0.0/channels/github-discussion.md",
+        "release_set": "prompt-scrub@1.0.0"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "release",
+        "ref": "content/prompt-scrub/1.0.0/channels/hacker-news.md",
+        "release_set": "prompt-scrub@1.0.0"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "release",
+        "ref": "content/prompt-scrub/1.0.0/channels/linkedin.md",
+        "release_set": "prompt-scrub@1.0.0"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "release",
+        "ref": "content/prompt-scrub/1.0.0/channels/reddit.md",
+        "release_set": "prompt-scrub@1.0.0"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "release",
+        "ref": "content/prompt-scrub/1.0.0/channels/x.md",
+        "release_set": "prompt-scrub@1.0.0"
+      },
+      {
+        "slot": "github-discussion-2",
+        "channel": "github-discussion",
         "type": "backlog-article",
         "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/github-discussion.md"
       },
       {
-        "slot": "linkedin-1",
+        "slot": "linkedin-2",
         "channel": "linkedin",
         "type": "backlog-article",
         "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/linkedin.md"
       },
       {
-        "slot": "reddit-1",
+        "slot": "reddit-2",
         "channel": "reddit",
         "type": "backlog-article",
         "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/reddit.md"
       },
       {
-        "slot": "x-1",
+        "slot": "x-2",
         "channel": "x",
         "type": "backlog-article",
         "ref": "content/nanocoder/1.28.0/articles/acp-server-zed-integration/channels/x.md"
       },
       {
-        "slot": "x-2",
+        "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/collective-5.md",
         "source": "collective"
       },
       {
-        "slot": "x-3",
+        "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/get-md-5.md",
         "source": "get-md"
       },
       {
-        "slot": "x-4",
+        "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/json-up-5.md",
         "source": "json-up"
       },
       {
-        "slot": "x-5",
+        "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/nanocoder-5.md",
         "source": "nanocoder"
       },
       {
-        "slot": "x-6",
+        "slot": "x-7",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-06/posts/nanotune-5.md",
