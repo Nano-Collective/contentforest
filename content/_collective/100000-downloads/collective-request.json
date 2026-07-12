@@ -1,0 +1,14 @@
+{
+  "issue_number": 176,
+  "requester": "will-lamerton",
+  "mode": "create",
+  "scope": "whole-pack",
+  "file_path": null,
+  "request": "We just hit 100,000 downloads on all collective projects. We're very proud of this. Please write a celebratory set of content.",
+  "context": null,
+  "generated_at": "2026-07-12T17:20:59.425Z",
+  "model": "minimax-m3",
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
