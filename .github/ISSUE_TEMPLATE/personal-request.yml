@@ -33,6 +33,7 @@ body:
       description: |
         Pick the existing pack to ground the personal-pack in. List is auto-generated from `content/` on `main`, sorted newest-first. `<product>/<version>` for release packs; `_collective/<slug>` for collective packs.
       options:
+        - _collective/100000-downloads
         - prompt-scrub/1.0.0
         - get-md/1.6.0
         - _collective/new-website-launch
