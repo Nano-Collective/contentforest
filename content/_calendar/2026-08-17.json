@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-08-17",
+  "generated_at": "2026-07-13T08:34:30.024Z",
+  "days": {
+    "2026-08-17": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/_collective/100000-downloads/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/_collective/100000-downloads/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/_collective/100000-downloads/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/_collective/100000-downloads/channels/x.md"
+      }
+    ],
+    "2026-08-18": [],
+    "2026-08-19": [],
+    "2026-08-20": [],
+    "2026-08-21": [],
+    "2026-08-22": [],
+    "2026-08-23": []
+  }
+}
