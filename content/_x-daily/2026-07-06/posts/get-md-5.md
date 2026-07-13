@@ -7,6 +7,7 @@ angle: "Convert an entire sitemap in one run"
 generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
 char_count: 269
+distributed_at: "2026-07-13T11:47:42.131Z"
 ---
 
 Point get-md at a sitemap.xml and walk away. It fans out across every URL with bounded concurrency, reports per-page failures inline, and lands a folder of clean markdown before your coffee gets cold. One command, in place of the bash for-loop no one wants to maintain.
