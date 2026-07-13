@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-07-13",
+  "generated_at": "2026-07-13T04:03:10.082Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Local cron, not cloud cron",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Train, export, run locally",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Local model, zero API key",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Three named error types",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Strip text, not stop sending text",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Read the Charter before you PR",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Agent in your editor, no fork",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "Regex does not score haiku",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Turndown beats LLM at scale",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Version in the data, not in the DB",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Eight detectors, one priority order",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Sponsors do not pick the roadmap",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "One extension model, not four",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Validate before you train",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "Runs in React Native, no JSDOM",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Two functions, one builder",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Determinism for prompt caching",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Stage 0 before the whitepaper",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Zero calls home",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Fine-tuning without renting a GPU",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Sitemaps have a kill switch",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Migrations live next to the data",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "Tool results get scrubbed too",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Open source without corporate backing",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Small models, slim prompts",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Hardware presets, no flag memorisation",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-5.md",
+      "source": "get-md",
+      "angle": "Readability first, regex second",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-5.md",
+      "source": "json-up",
+      "angle": "Version 0 is a real state",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-5.md",
+      "source": "prompt-scrub",
+      "angle": "Detectors ship as npm packages",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-5.md",
+      "source": "collective",
+      "angle": "Paused whitepapers are pickup-able",
+      "archetype": "one-tip"
+    }
+  ],
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}

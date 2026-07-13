@@ -208,5 +208,215 @@
     "angle": "Will I ever get paid for this PR",
     "archetype": "problem-relief",
     "preview": "Closing a PR at 1am and wondering if any of it will ever be paid for is a quiet kind of resentment."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanocoder",
+    "angle": "Local cron, not cloud cron",
+    "archetype": "sharp-take",
+    "preview": "Your coding agent's scheduler should live on your machine, not someone else's cloud."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanotune",
+    "angle": "Train, export, run locally",
+    "archetype": "one-tip",
+    "preview": "A fine-tuned model you can actually run at home: `nanotune train`, then `nanotune export` fuses the "
+  },
+  {
+    "date": "2026-07-13",
+    "source": "get-md",
+    "angle": "Local model, zero API key",
+    "archetype": "origin",
+    "preview": "Converting your own HTML to Markdown shouldn't need a cloud account. get-md's local LLM path runs Re"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "json-up",
+    "angle": "Three named error types",
+    "archetype": "by-the-numbers",
+    "preview": "Parsing error messages in a catch block is a smell. json-up throws 3 named errors - ValidationError,"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "prompt-scrub",
+    "angle": "Strip text, not stop sending text",
+    "archetype": "origin",
+    "preview": "A VPN, Tor, or a proxy hides the route. None rewrite email, path, or API key in the prompt."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "collective",
+    "angle": "Read the Charter before you PR",
+    "archetype": "one-tip",
+    "preview": "Before your first PR on a Nano Collective project, read the Economics Charter. It spells out scope-b"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanocoder",
+    "angle": "Agent in your editor, no fork",
+    "archetype": "problem-relief",
+    "preview": "Picking up a new editor shouldn't mean rebuilding your agent integration from scratch. Nanocoder spe"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanotune",
+    "angle": "Regex does not score haiku",
+    "archetype": "contrarian",
+    "preview": "\"Write a haiku about coding\" breaks string-match benchmarks. Default modes like contains or startsWi"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "get-md",
+    "angle": "Turndown beats LLM at scale",
+    "archetype": "contrarian",
+    "preview": "The reflex is to throw an LLM at HTML-to-Markdown. get-md ships Turndown + Mozilla Readability as th"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "json-up",
+    "angle": "Version in the data, not in the DB",
+    "archetype": "contrarian",
+    "preview": "The reflex for JSON versioning is a schema table in the database next to the rows. json-up puts `_ve"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "prompt-scrub",
+    "angle": "Eight detectors, one priority order",
+    "archetype": "by-the-numbers",
+    "preview": "Eight detectors, one priority chain, and the order is the point."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "collective",
+    "angle": "Sponsors do not pick the roadmap",
+    "archetype": "contrarian",
+    "preview": "The default deal with sponsors is quiet influence. Bigger cheque, softer feedback, roadmap drifts to"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanocoder",
+    "angle": "One extension model, not four",
+    "archetype": "sharp-take",
+    "preview": "Four extension systems is three too many."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanotune",
+    "angle": "Validate before you train",
+    "archetype": "one-tip",
+    "preview": "A fine-tune producing nonsense almost always traces back to silent data bugs. Run `nanotune data val"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "get-md",
+    "angle": "Runs in React Native, no JSDOM",
+    "archetype": "origin",
+    "preview": "DOM parsers assume a browser. JSDOM assumes Node. Mobile apps get a fork."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "json-up",
+    "angle": "Two functions, one builder",
+    "archetype": "by-the-numbers",
+    "preview": "Two functions and a builder, that's the whole sync API in json-up. createMigrations().add().add().bu"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "prompt-scrub",
+    "angle": "Determinism for prompt caching",
+    "archetype": "by-the-numbers",
+    "preview": "1 byte off, and the cache misses. prompt-scrub's scrub() is byte-stable per session, so placeholder "
+  },
+  {
+    "date": "2026-07-13",
+    "source": "collective",
+    "angle": "Stage 0 before the whitepaper",
+    "archetype": "one-tip",
+    "preview": "Before you write a whitepaper, raise the idea. Discord, the docs repo, or the organisation repo: any"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanocoder",
+    "angle": "Zero calls home",
+    "archetype": "problem-relief",
+    "preview": "You paste real code into a coding agent every day. You do not want it phoning home. Nanocoder ships "
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanotune",
+    "angle": "Fine-tuning without renting a GPU",
+    "archetype": "contrarian",
+    "preview": "Hearing \"fine-tune a model\" and reaching for an A100 rental is the default. Nanotune runs LoRA on Ap"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "get-md",
+    "angle": "Sitemaps have a kill switch",
+    "archetype": "contrarian",
+    "preview": "Most tools treat a sitemap like an open tap. get-md ships --max-urls, --max-depth, and repeatable --"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "json-up",
+    "angle": "Migrations live next to the data",
+    "archetype": "contrarian",
+    "preview": "The reflex is migrations in a separate CLI or service, far from the code that reads the data. json-u"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "prompt-scrub",
+    "angle": "Tool results get scrubbed too",
+    "archetype": "origin",
+    "preview": "Your `ls` output is part of your prompt. So is `git log`, `cat`, and `grep`."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "collective",
+    "angle": "Open source without corporate backing",
+    "archetype": "contrarian",
+    "preview": "The reflex: durable OSS needs a backer. A corp, a foundation grant, something."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanocoder",
+    "angle": "Small models, slim prompts",
+    "archetype": "sharp-take",
+    "preview": "A 4B model carrying a 700-token system prompt has forgotten the question by the second tool call."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "nanotune",
+    "angle": "Hardware presets, no flag memorisation",
+    "archetype": "one-tip",
+    "preview": "Your first benchmark on a new Mac should not end in an OOM, and you should not need a cheat sheet fo"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "get-md",
+    "angle": "Readability first, regex second",
+    "archetype": "origin",
+    "preview": "Most HTML-to-markdown tools hand you the page chrome and let a regex clean it up after."
+  },
+  {
+    "date": "2026-07-13",
+    "source": "json-up",
+    "angle": "Version 0 is a real state",
+    "archetype": "by-the-numbers",
+    "preview": "0. That's the version json-up assigns your JSON when there's no `_version` field - and it runs every"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "prompt-scrub",
+    "angle": "Detectors ship as npm packages",
+    "archetype": "origin",
+    "preview": "The detector set shouldn't grow by patching the engine. prompt-scrub ships detectors as npm rule pac"
+  },
+  {
+    "date": "2026-07-13",
+    "source": "collective",
+    "angle": "Paused whitepapers are pickup-able",
+    "archetype": "one-tip",
+    "preview": "A whitepaper the original author abandons usually dies. At the Nano Collective it doesn't. Add your "
   }
 ]
