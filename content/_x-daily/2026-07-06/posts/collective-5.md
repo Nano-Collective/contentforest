@@ -7,6 +7,7 @@ angle: "Will I ever get paid for this PR"
 generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
 char_count: 277
+distributed_at: "2026-07-13T11:47:13.615Z"
 ---
 
 Closing a PR at 1am and wondering if any of it will ever be paid for is a quiet kind of resentment.
