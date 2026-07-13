@@ -7,6 +7,7 @@ angle: "Why a judge belongs in the benchmark"
 generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
 char_count: 271
+distributed_at: "2026-07-13T11:49:25.630Z"
 ---
 
 You can't string-match your way to knowing if a fine-tune is any good. We ran an LLM-as-judge in nanotune, on the same local models the rest of the tool uses, so eval stops being an act of faith.
