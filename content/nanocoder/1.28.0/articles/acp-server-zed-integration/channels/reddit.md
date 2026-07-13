@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 5794
+distributed_at: "2026-07-13T13:21:48.497Z"
 ---
 
 A walkthrough post on the Agent Client Protocol server we shipped in Nanocoder v1.28.0, what the integration actually does inside the editor, and how it differs from the WebSocket-based VS Code extension.
