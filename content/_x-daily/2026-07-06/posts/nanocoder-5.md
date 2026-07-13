@@ -7,6 +7,7 @@ angle: "Skills replace the extension sprawl"
 generated_at: "2026-07-07T19:16:43.402Z"
 model: "minimax-m3"
 char_count: 268
+distributed_at: "2026-07-13T11:49:01.148Z"
 ---
 
 Extensions that don't know each other aren't much of a system. Commands, subagents, tools, and event subscriptions all sat in separate folders, no shared manifest. Nanocoder's Skills bundle folds them into one .nanocoder/skills/ folder, so siblings see each other.
