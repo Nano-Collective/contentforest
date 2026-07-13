@@ -6,6 +6,7 @@ title: "Nanocoder as an ACP agent: driving it from Zed"
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 16988
+distributed_at: "2026-07-13T12:37:04.083Z"
 ---
 
 The headline of v1.28.0 lists "ACP for Zed" alongside a tool-surface consolidation and a session-resume fix. The first item deserves its own write-up, because what actually shipped is a different agent: same Nanocoder, same tool definitions, same provider plumbing, but a headless core speaking JSON-RPC instead of an Ink terminal UI. This post walks through what changes when the editor becomes the UI, what gets rendered there, how the protocol mapping works, and how ACP differs from the WebSocket-based VS Code integration that has been around since the extension shipped.
