@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 1928
+distributed_at: "2026-07-13T13:08:28.585Z"
 ---
 
 The v1.28.0 release of Nanocoder adds something we have been wanting for a while: an Agent Client Protocol server that lets editors like Zed drive Nanocoder natively, with the editor as the UI rather than a terminal panel.
