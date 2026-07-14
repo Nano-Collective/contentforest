@@ -94,6 +94,14 @@ export type Pools = {
 	evergreenX: EvergreenItem[];
 	/** Per-ref status, so buildWeek can prune/pin without touching the fs. */
 	refStatus: Map<string, RefStatus>;
+	/**
+	 * Release sets whose announcement has already been posted (≥1 distributed
+	 * announcement channel). Such a release is "done" (R3): buildWeek must not
+	 * re-seed a stale release placement of its unused leftovers, and gatherPools
+	 * keeps it out of the pending pool. Prevents a posted release from holding a
+	 * release slot that a genuinely-missed release needs.
+	 */
+	announcedSetIds: Set<string>;
 };
 
 // Pure date helpers live in ./calendar-dates (no fs) so pages/components can
@@ -282,6 +290,7 @@ export function gatherPools(
 ): Pools {
 	const refStatus = new Map<string, RefStatus>();
 	const releaseSets: ReleaseSet[] = [];
+	const announcedSetIds = new Set<string>();
 	const backlogByDir = new Map<string, RawFile[]>();
 
 	const noteBacklog = (f: RawFile) => {
@@ -305,6 +314,7 @@ export function gatherPools(
 			const announced = files.some(
 				f => !f.isArticle && f.status === 'distributed',
 			);
+			if (announced) announcedSetIds.add(setId);
 			const isPendingRelease =
 				version === latest && !alreadyScheduledSets.has(setId) && !announced;
 			const releaseItems: ReleaseSet['items'] = [];
@@ -400,7 +410,7 @@ export function gatherPools(
 			compareVersionsDesc(a.version, b.version),
 	);
 
-	return {releaseSets, backlogArticles, evergreenX, refStatus};
+	return {releaseSets, backlogArticles, evergreenX, refStatus, announcedSetIds};
 }
 
 // ── Week building ────────────────────────────────────────────────────────────
@@ -493,6 +503,9 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 			if (date < input.today) continue;
 			for (const item of input.existing.days[date] ?? []) {
 				if (!item.release_set) continue;
+				// A done (already-announced) release is never re-held: its leftover
+				// unused posts are dropped in seeding, not reflowed as a release.
+				if (input.pools.announcedSetIds.has(item.release_set)) continue;
 				const st = status(item.ref);
 				if (st === undefined || st === 'wont_use') continue;
 				const entry = {date, ref: item.ref, channel: item.channel};
@@ -522,6 +535,17 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 			const isPast = date < input.today;
 			for (const item of items) {
 				const st = status(item.ref);
+				// A done (already-announced) release's unused leftover channels must
+				// not keep a release slot — drop them so a genuinely-missed release
+				// can take today. Distributed items still fall through below and stay
+				// as the historical record.
+				if (
+					item.release_set &&
+					st === 'unused' &&
+					input.pools.announcedSetIds.has(item.release_set)
+				) {
+					continue;
+				}
 				if (isPast) {
 					if (st !== 'distributed' && st !== 'wont_use') continue;
 				} else if (st === undefined || st === 'wont_use') {
@@ -541,8 +565,14 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		}
 	}
 
+	// R4 (≤1 release set per day) only guards NEW announcements: a day that just
+	// carries an already-announced release's posted history (e.g. a straggler
+	// channel finally distributed today) is still free to host a fresh release,
+	// so a genuinely-missed release isn't bumped off today by posted content.
 	const dayHasReleaseSet = (date: string): boolean =>
-		days[date].some(i => i.release_set);
+		days[date].some(
+			i => i.release_set && !input.pools.announcedSetIds.has(i.release_set),
+		);
 
 	// 2. R3 + R4: (re)place release sets on the earliest free future weekday.
 	//    Held sets (fully-unused, un-pinned above) go first so a release reflows

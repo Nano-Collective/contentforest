@@ -66,6 +66,7 @@ function poolsFrom(parts: {
 	backlogArticles?: Pools['backlogArticles'];
 	evergreenX?: EvergreenItem[];
 	statusOverrides?: Record<string, RefStatus>;
+	announcedSetIds?: Iterable<string>;
 }): Pools {
 	const refStatus = new Map<string, RefStatus>();
 	const reg = (ref: string) =>
@@ -85,6 +86,7 @@ function poolsFrom(parts: {
 		backlogArticles: parts.backlogArticles ?? [],
 		evergreenX: parts.evergreenX ?? [],
 		refStatus,
+		announcedSetIds: new Set(parts.announcedSetIds ?? []),
 	};
 }
 
@@ -327,9 +329,11 @@ test('reflow: a release with a distributed post stays pinned', t => {
 	t.false(on('2026-07-08'), 'not pulled back to today');
 });
 
-test('reflow: a parked release yields today to a distributed set, takes the next free day', t => {
-	// today (Wed) already has a distributed release; the unused parked set can't
-	// share the day (R4), so it drifts back only as far as the next free weekday.
+test('reflow: a posted (announced) release does not block a missed release from today', t => {
+	// bbb was already announced — its github-discussion straggler shows on today as
+	// history. aaa is a fully-unposted (missed) release parked on Friday. A posted
+	// release must NOT hold today's release slot (R4 only guards new announcements),
+	// so aaa lands on today alongside bbb's history rather than being bumped later.
 	const existing: WeekSchedule = {
 		week_of: WEEK,
 		generated_at: 'x',
@@ -350,6 +354,7 @@ test('reflow: a parked release yields today to a distributed set, takes the next
 		today: '2026-07-08',
 		existing,
 		pools: poolsFrom({
+			announcedSetIds: ['bbb@1.0.0'],
 			statusOverrides: {
 				'content/bbb/1.0.0/channels/github-discussion.md': 'distributed',
 				'content/aaa/2.0.0/channels/github-discussion.md': 'unused',
@@ -359,11 +364,11 @@ test('reflow: a parked release yields today to a distributed set, takes the next
 	});
 	t.true(
 		week.days['2026-07-08'].some(i => i.release_set === 'bbb@1.0.0'),
-		'distributed set pinned on today',
+		'posted release stays on today as history',
 	);
 	t.true(
-		week.days['2026-07-09'].some(i => i.release_set === 'aaa@2.0.0'),
-		'unused set drifts back to Thursday, the next free day',
+		week.days['2026-07-08'].some(i => i.release_set === 'aaa@2.0.0'),
+		'missed release also lands on today, not bumped to a later day',
 	);
 });
 
