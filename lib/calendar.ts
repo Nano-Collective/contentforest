@@ -296,8 +296,17 @@ export function gatherPools(
 		for (const version of versions) {
 			const setId = `${product.slug}@${version}`;
 			const files = readPackFiles(contentDir, product.slug, version);
+			// Once ANY announcement channel has been posted, the release is "done"
+			// (R3): its remaining unused posts drop into the normal backlog rotation
+			// rather than being re-surfaced as a fresh release. This keeps a release
+			// whose announcement went out — but that left, say, its hacker-news post
+			// unposted — from re-taking a release slot. A genuinely missed release
+			// (nothing posted) has no distributed announcement, so it stays pending.
+			const announced = files.some(
+				f => !f.isArticle && f.status === 'distributed',
+			);
 			const isPendingRelease =
-				version === latest && !alreadyScheduledSets.has(setId);
+				version === latest && !alreadyScheduledSets.has(setId) && !announced;
 			const releaseItems: ReleaseSet['items'] = [];
 			let newestAt = '';
 			for (const f of files) {

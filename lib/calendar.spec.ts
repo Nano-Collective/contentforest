@@ -684,3 +684,30 @@ test('gatherPools: an already-scheduled latest version falls back to backlog', t
 		rmSync(tmp, {recursive: true});
 	}
 });
+
+test('gatherPools: a part-announced release is done — leftover posts go to backlog, not a new release', t => {
+	const cwd = process.cwd();
+	const tmp = mkdtempSync(join(tmpdir(), 'cf-cal-'));
+	const content = join(tmp, 'content');
+	process.chdir(tmp);
+	try {
+		// The announcement went out on github-discussion; only hacker-news was never
+		// posted. The release is "done" — it must NOT re-surface as a release just
+		// to place the leftover, even though it isn't in alreadyScheduledSets.
+		writeMd(join(content, 'alpha/2.0.0/channels/github-discussion.md'), {
+			channel: 'github-discussion',
+			generated_at: '2026-07-05T00:00:00Z',
+			distributed_at: '2026-07-05T10:00:00Z',
+		});
+		writeMd(join(content, 'alpha/2.0.0/channels/hacker-news.md'), {
+			channel: 'hacker-news',
+			generated_at: '2026-07-05T00:00:00Z',
+		});
+		const pools = gatherPools(content);
+		t.is(pools.releaseSets.length, 0, 'no fresh release for an announced version');
+		t.false(pools.releaseSets.some(s => s.id === 'alpha@2.0.0'));
+	} finally {
+		process.chdir(cwd);
+		rmSync(tmp, {recursive: true});
+	}
+});
