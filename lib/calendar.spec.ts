@@ -499,7 +499,9 @@ test('reflow: a release missed on a past day is re-placed forward as a release',
 		week.days['2026-07-06'].some(i => i.release_set === 'aaa@2.0.0'),
 		'cleared from the past Monday',
 	);
-	const wed = week.days['2026-07-08'].filter(i => i.release_set === 'aaa@2.0.0');
+	const wed = week.days['2026-07-08'].filter(
+		i => i.release_set === 'aaa@2.0.0',
+	);
 	t.is(wed.length, 2, 'both posts re-placed together on the next free weekday');
 	t.true(
 		wed.every(i => i.type === 'release'),
