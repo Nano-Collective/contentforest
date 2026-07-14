@@ -124,7 +124,7 @@ async function main() {
 	const generatedAt = new Date().toISOString();
 	const today = args.date;
 
-	const alreadyScheduled = scheduledSetIds(canonical);
+	const alreadyScheduled = scheduledSetIds(canonical, today);
 	const pools = gatherPools(canonical, alreadyScheduled);
 	console.log(
 		`plan-calendar: ${today} (mode=${args.mode}) — pools: ${pools.releaseSets.length} pending release set(s), ${pools.backlogArticles.length} backlog article(s), ${pools.evergreenX.length} evergreen X post(s)`,

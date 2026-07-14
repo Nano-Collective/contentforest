@@ -21,8 +21,12 @@
  * — future, not-yet-actioned items may move when a release arrives or an item
  * is marked distributed/won't-use, and a still-unused release set drifts
  * BACKWARD onto today / an earlier free weekday when one opens up — but it never
- * touches past days or any item already distributed (those are pinned). That
- * combination is what keeps repeated planner runs stable rather than oscillating.
+ * touches past days or any item already distributed (those are pinned). A release
+ * that was never posted before its scheduled day passed is not stranded either:
+ * it drops out of scheduledSetIds and re-enters the release pool, so it reflows
+ * FORWARD onto the next free weekday as a release (never demoted to backlog).
+ * That combination is what keeps repeated planner runs stable rather than
+ * oscillating.
  */
 import {existsSync, readdirSync, readFileSync} from 'node:fs';
 import {join, relative} from 'node:path';
@@ -172,13 +176,27 @@ function listSchedules(
 	return weeks;
 }
 
-/** Every "<product>@<version>" release set already scheduled in any ledger. */
+/**
+ * Every "<product>@<version>" release set already scheduled on a LIVE day.
+ *
+ * gatherPools uses this to keep a release that's already on the calendar out of
+ * the "pending release" pool (the on-calendar copy is owned by ledger seeding +
+ * the backward-reflow in buildWeek). But a release parked ONLY on past days that
+ * was never posted is a missed release — it must NOT count as scheduled, so it
+ * falls back into the pool and reflows onto the next free weekday rather than
+ * being stranded. Passing `today` restricts the scan to today-or-later
+ * placements; omitting it counts every placement (the historical behaviour).
+ * A release distributed in the past is excluded from the pool separately, by its
+ * file status, so it does not reappear regardless.
+ */
 export function scheduledSetIds(
 	contentDir: string = DEFAULT_CONTENT_DIR,
+	today?: string,
 ): Set<string> {
 	const ids = new Set<string>();
 	for (const week of listSchedules(contentDir)) {
-		for (const items of Object.values(week.days)) {
+		for (const [date, items] of Object.entries(week.days)) {
+			if (today && date < today) continue;
 			for (const item of items) {
 				if (item.release_set) ids.add(item.release_set);
 			}
@@ -453,6 +471,10 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		// one opens up (e.g. a release parked on Friday slides to today once
 		// today's slot is free). A set with any distributed post stays pinned
 		// where it was posted — you can't un-post it.
+		// (A release parked only on PAST days that was never posted is handled
+		// upstream by scheduledSetIds: it drops out of "already scheduled" and
+		// re-enters the release pool, so step 2 places it fresh on the next free
+		// weekday rather than it being stranded / demoted to backlog.)
 		const futureItems = new Map<
 			string,
 			{date: string; ref: string; channel: string}[]

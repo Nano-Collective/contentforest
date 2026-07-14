@@ -12,6 +12,7 @@ import {
 	type Pools,
 	type RefStatus,
 	type ReleaseSet,
+	scheduledSetIds,
 	type WeekSchedule,
 	weekDates,
 	xCount,
@@ -466,6 +467,88 @@ test('reflow: an unposted (unused) past item moves forward, not stranded', t => 
 		.flatMap(([, items]) => items)
 		.map(i => i.ref);
 	t.true(future.includes('missed.md'));
+});
+
+test('reflow: a release missed on a past day is re-placed forward as a release', t => {
+	// Parked on Monday but never posted; by Wednesday that day has passed. Upstream
+	// scheduledSetIds drops the past-only placement, so the set comes back via the
+	// pool. buildWeek must clear the dead Monday placement and re-place it on the
+	// next free weekday, still as a release — never demoted to a backlog article.
+	const missedSet: ReleaseSet = {
+		id: 'aaa@2.0.0',
+		product: 'aaa',
+		version: '2.0.0',
+		newestAt: '2026-07-05T00:00:00Z',
+		items: RELEASE_REFS.map(ref => ({
+			ref,
+			channel: ref.includes('github-discussion') ? 'github-discussion' : 'x',
+			isArticle: false,
+		})),
+	};
+	const week = run({
+		today: '2026-07-08', // Wednesday
+		existing: parkedRelease('2026-07-06'), // Monday, now past
+		pools: poolsFrom({
+			releaseSets: [missedSet],
+			statusOverrides: Object.fromEntries(
+				RELEASE_REFS.map(r => [r, 'unused' as const]),
+			),
+		}),
+	});
+	t.false(
+		week.days['2026-07-06'].some(i => i.release_set === 'aaa@2.0.0'),
+		'cleared from the past Monday',
+	);
+	const wed = week.days['2026-07-08'].filter(i => i.release_set === 'aaa@2.0.0');
+	t.is(wed.length, 2, 'both posts re-placed together on the next free weekday');
+	t.true(
+		wed.every(i => i.type === 'release'),
+		'kept as a release, not demoted to a backlog article',
+	);
+});
+
+test('scheduledSetIds: a release parked only on past days is not counted as scheduled', t => {
+	const tmp = mkdtempSync(join(tmpdir(), 'cf-cal-'));
+	const content = join(tmp, 'content');
+	const calDir = join(content, '_calendar');
+	mkdirSync(calDir, {recursive: true});
+	const ledger: WeekSchedule = {
+		week_of: '2026-07-06',
+		generated_at: 'x',
+		days: {
+			'2026-07-08': [
+				{
+					slot: '',
+					channel: 'github-discussion',
+					type: 'release',
+					ref: 'content/aaa/2.0.0/channels/github-discussion.md',
+					release_set: 'aaa@2.0.0',
+				},
+			],
+			'2026-07-10': [
+				{
+					slot: '',
+					channel: 'x',
+					type: 'release',
+					ref: 'content/bbb/1.0.0/channels/x.md',
+					release_set: 'bbb@1.0.0',
+				},
+			],
+		},
+	};
+	writeFileSync(join(calDir, '2026-07-06.json'), JSON.stringify(ledger));
+	try {
+		// today = Thursday 07-09: 07-08 is past (missed), 07-10 is still upcoming.
+		const live = scheduledSetIds(content, '2026-07-09');
+		t.false(live.has('aaa@2.0.0'), 'past-only placement is not counted');
+		t.true(live.has('bbb@1.0.0'), 'a future placement is still counted');
+		// Without `today`, every placement counts (the historical behaviour).
+		const all = scheduledSetIds(content);
+		t.true(all.has('aaa@2.0.0'));
+		t.true(all.has('bbb@1.0.0'));
+	} finally {
+		rmSync(tmp, {recursive: true});
+	}
 });
 
 test('idempotency: rebuilding from its own output is a no-op', t => {
