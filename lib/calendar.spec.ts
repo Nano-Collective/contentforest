@@ -704,7 +704,11 @@ test('gatherPools: a part-announced release is done — leftover posts go to bac
 			generated_at: '2026-07-05T00:00:00Z',
 		});
 		const pools = gatherPools(content);
-		t.is(pools.releaseSets.length, 0, 'no fresh release for an announced version');
+		t.is(
+			pools.releaseSets.length,
+			0,
+			'no fresh release for an announced version',
+		);
 		t.false(pools.releaseSets.some(s => s.id === 'alpha@2.0.0'));
 	} finally {
 		process.chdir(cwd);
