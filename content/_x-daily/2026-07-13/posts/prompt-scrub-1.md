@@ -7,6 +7,7 @@ angle: "Strip text, not stop sending text"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 273
+distributed_at: "2026-07-15T11:37:02.974Z"
 ---
 
 A VPN, Tor, or a proxy hides the route. None rewrite email, path, or API key in the prompt.
