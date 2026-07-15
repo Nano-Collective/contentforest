@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 1847
+distributed_at: "2026-07-15T11:28:01.106Z"
 ---
 
 We just shipped the first public release of `prompt-scrub`, a small Node.js utility from the Nano Collective that does one thing: it strips identifying content out of prompts and messages before they leave your machine, and rehydrates the model's response back to the original values locally.
