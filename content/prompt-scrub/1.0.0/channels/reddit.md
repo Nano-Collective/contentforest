@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 2962
+distributed_at: "2026-07-15T18:21:53.415Z"
 ---
 
 We just shipped the first public release of `prompt-scrub`, and we want to talk about it.
