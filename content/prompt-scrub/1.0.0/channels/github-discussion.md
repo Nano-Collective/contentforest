@@ -6,6 +6,7 @@ title: "prompt-scrub v1.0.0: a local-first scrubber for prompts and their respon
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 8920
+distributed_at: "2026-07-15T09:40:35.674Z"
 ---
 
 # prompt-scrub v1.0.0: a local-first scrubber for prompts and their responses
