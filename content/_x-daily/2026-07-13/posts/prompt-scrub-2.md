@@ -7,6 +7,7 @@ angle: "Eight detectors, one priority order"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 274
+distributed_at: "2026-07-16T16:23:10.850Z"
 ---
 
 Eight detectors, one priority chain, and the order is the point.
