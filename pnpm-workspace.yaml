@@ -1,4 +1,4 @@
 allowBuilds:
   esbuild: true
   sharp: true
-auditConfig: {}
+auditConfig: { ignoreGhsas: null }
