@@ -7,6 +7,7 @@ angle: "Two functions, one builder"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 190
+distributed_at: "2026-07-17T11:07:10.452Z"
 ---
 
 Two functions and a builder, that's the whole sync API in json-up. createMigrations().add().add().build() and migrate({state, migrations}). The surface is small because the problem is small.
