@@ -7,6 +7,7 @@ angle: "Runs in React Native, no JSDOM"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 262
+distributed_at: "2026-07-17T11:06:50.352Z"
 ---
 
 DOM parsers assume a browser. JSDOM assumes Node. Mobile apps get a fork.
