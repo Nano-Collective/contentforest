@@ -7,6 +7,7 @@ angle: "One extension model, not four"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 217
+distributed_at: "2026-07-17T11:07:28.136Z"
 ---
 
 Four extension systems is three too many.
