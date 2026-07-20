@@ -418,5 +418,215 @@
     "angle": "Paused whitepapers are pickup-able",
     "archetype": "one-tip",
     "preview": "A whitepaper the original author abandons usually dies. At the Nano Collective it doesn't. Add your "
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanocoder",
+    "angle": "ACP speaks the same protocol as Gemini",
+    "archetype": "til",
+    "preview": "Most CLI coding tools need a bespoke editor extension to feel native. Nanocoder just speaks the Agen"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanotune",
+    "angle": "Multi-turn examples live in the same JSONL row",
+    "archetype": "til",
+    "preview": "One JSONL row can be a full conversation. Nanotune keeps every turn in the same `messages` array, so"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "get-md",
+    "angle": "PDF and DOCX go through the same CLI",
+    "archetype": "til",
+    "preview": "`getmd notes.md` isn't a no-op. While `.pdf`, `.docx`, and `.html` route to their extractors by exte"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "json-up",
+    "angle": "Migrations are chainable async or sync, mixed",
+    "archetype": "til",
+    "preview": "Most migration APIs force an all-or-nothing choice: sync or async, end to end."
+  },
+  {
+    "date": "2026-07-20",
+    "source": "prompt-scrub",
+    "angle": "The threat model is the content layer, not the wire",
+    "archetype": "sharp-take",
+    "preview": "A VPN hides where the request came from, not what it says. Prompt privacy is a content problem."
+  },
+  {
+    "date": "2026-07-20",
+    "source": "collective",
+    "angle": "Stage 3 is the build decision, not Stage 1",
+    "archetype": "origin",
+    "preview": "Merging a whitepaper used to read as a build promise from the Nano Collective. It wasn't, and we are"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanocoder",
+    "angle": "Tune is the runtime layer small models actually need",
+    "archetype": "sharp-take",
+    "preview": "A 4B model forgetting the question by the second tool call isn't a model problem. It's a prompt prob"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanotune",
+    "angle": "Benchmark reports tell you which tests failed, not just pass rate",
+    "archetype": "by-the-numbers",
+    "preview": "87% pass rate told me almost nothing. Nanotune's Markdown report groups failures by category. One bu"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "get-md",
+    "angle": "The cache flag reuses work without changing output",
+    "archetype": "sharp-take",
+    "preview": "A 1000-page crawl with `--cache` isn't a clever optimisation. It's the normal case."
+  },
+  {
+    "date": "2026-07-20",
+    "source": "json-up",
+    "angle": "A schema without an up function is still migration-shaped",
+    "archetype": "sharp-take",
+    "preview": "Versioning JSON without a migration path is debt you pay at 2am. The shape of v2 matters less than h"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "prompt-scrub",
+    "angle": "Detector priority puts secrets above emails",
+    "archetype": "til",
+    "preview": "A URL with a token in it isn't a URL. prompt-scrub's collision chain picks SecretDetector over UrlDe"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "collective",
+    "angle": "Two destinations for every dollar, written down",
+    "archetype": "by-the-numbers",
+    "preview": "The whole NC financial model fits on a napkin. Two destinations for every dollar: running the collec"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanocoder",
+    "angle": "Five places to load a skill, in priority order",
+    "archetype": "by-the-numbers",
+    "preview": "Three places a skill can live - project, global, built-in - and only one wins. Project shadows globa"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanotune",
+    "angle": "The judge is a config, not a feature",
+    "archetype": "origin",
+    "preview": "An open-ended eval you can't re-run isn't an eval. In Nanotune the LLM judge is a config: provider, "
+  },
+  {
+    "date": "2026-07-20",
+    "source": "get-md",
+    "angle": "One command turns a sitemap into a corpus",
+    "archetype": "one-tip",
+    "preview": "Glue code isn't a step in the pipeline, it's a tax. `getmd --sitemap <sitemap-url>` walks it, recurs"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "json-up",
+    "angle": "ValidationError points at the path, not the message",
+    "archetype": "problem-relief",
+    "preview": "A migration throws and the stack trace tells you nothing about which field broke. json-up's Validati"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "prompt-scrub",
+    "angle": "Scrub survives the agent loop, not just one prompt",
+    "archetype": "problem-relief",
+    "preview": "Your agent's `ls`, `git log`, `cat`, and `grep` outputs go to the next LLM turn in the clear. The cl"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "collective",
+    "angle": "Funded balance is zero, on purpose, on the record",
+    "archetype": "problem-relief",
+    "preview": "Most open-source orgs won't tell you what's in the fund before you commit a weekend. The Nano Collec"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanocoder",
+    "angle": "Why checkpoint before a risky refactor",
+    "archetype": "one-tip",
+    "preview": "A risky refactor under an agent ties up conversation history, edited files, and your model config in"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanotune",
+    "angle": "Default 100-500 examples is not a placeholder",
+    "archetype": "sharp-take",
+    "preview": "Throwing more data at a tiny model is not fine-tuning. It's over-training in disguise. Nanotune ship"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "get-md",
+    "angle": "1.12GB model, zero network round-trip",
+    "archetype": "by-the-numbers",
+    "preview": "1.12GB on your disk. Zero API calls. get-md's local LLM path runs ReaderLM-v2 via node-llama-cpp, so"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "json-up",
+    "angle": "Version 0 is the default for legacy JSON",
+    "archetype": "origin",
+    "preview": "Your oldest JSON file has no version field, and that file is the one that breaks first. json-up trea"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "prompt-scrub",
+    "angle": "You compose prompt-scrub with the network tool you trust",
+    "archetype": "contrarian",
+    "preview": "Most privacy tools bundle the network layer. prompt-scrub won't. It scrubs text and gets out of the "
+  },
+  {
+    "date": "2026-07-20",
+    "source": "collective",
+    "angle": "Stage 0 is a sanity check, not a gate",
+    "archetype": "sharp-take",
+    "preview": "The Nano Collective doesn't hide a gate behind a 'just ask' form. Stage 0 is a Discord message or a "
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanocoder",
+    "angle": "Custom tools as markdown, validated before they ship",
+    "archetype": "origin",
+    "preview": "A custom tool should be one file, not a plugin. nanocoder's tools are .md with a Zod-style input sch"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "nanotune",
+    "angle": "Data validate catches the bugs that ruin a run",
+    "archetype": "problem-relief",
+    "preview": "90 minutes into training and the loss curve went sideways. It wasn't the model. It was the data: dup"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "get-md",
+    "angle": "Stdin from a piped PDF is treated as a PDF",
+    "archetype": "til",
+    "preview": "Most CLIs guess wrong on stdin. get-md sniffs the first bytes: `%PDF` routes to the PDF extractor, a"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "json-up",
+    "angle": "A custom version key avoids a breaking rename",
+    "archetype": "one-tip",
+    "preview": "Your data already has rows with a version field, and renaming it is a migration of the migration. js"
+  },
+  {
+    "date": "2026-07-20",
+    "source": "prompt-scrub",
+    "angle": "CodeTell detector is opt-in and no-op without terms",
+    "archetype": "one-tip",
+    "preview": "Generic identifiers like count or id would flood your session map with junk matches. prompt-scrub's "
+  },
+  {
+    "date": "2026-07-20",
+    "source": "collective",
+    "angle": "Supporter tier at $250/mo, no roadmap leverage",
+    "archetype": "til",
+    "preview": "$250/mo puts your logo on Nano Collective surfaces. What it does not buy is also on the page: no roa"
   }
 ]

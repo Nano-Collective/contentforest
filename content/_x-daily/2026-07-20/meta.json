@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-07-20",
+  "generated_at": "2026-07-20T04:06:43.119Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "ACP speaks the same protocol as Gemini",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Multi-turn examples live in the same JSONL row",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "PDF and DOCX go through the same CLI",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Migrations are chainable async or sync, mixed",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "The threat model is the content layer, not the wire",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Stage 3 is the build decision, not Stage 1",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Tune is the runtime layer small models actually need",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "Benchmark reports tell you which tests failed, not just pass rate",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "The cache flag reuses work without changing output",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "A schema without an up function is still migration-shaped",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Detector priority puts secrets above emails",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Two destinations for every dollar, written down",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Five places to load a skill, in priority order",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "The judge is a config, not a feature",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "One command turns a sitemap into a corpus",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "ValidationError points at the path, not the message",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Scrub survives the agent loop, not just one prompt",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Funded balance is zero, on purpose, on the record",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Why checkpoint before a risky refactor",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Default 100-500 examples is not a placeholder",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "1.12GB model, zero network round-trip",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Version 0 is the default for legacy JSON",
+      "archetype": "origin"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "You compose prompt-scrub with the network tool you trust",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Stage 0 is a sanity check, not a gate",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Custom tools as markdown, validated before they ship",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Data validate catches the bugs that ruin a run",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md-5.md",
+      "source": "get-md",
+      "angle": "Stdin from a piped PDF is treated as a PDF",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-5.md",
+      "source": "json-up",
+      "angle": "A custom version key avoids a breaking rename",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-5.md",
+      "source": "prompt-scrub",
+      "angle": "CodeTell detector is opt-in and no-op without terms",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "collective-5.md",
+      "source": "collective",
+      "angle": "Supporter tier at $250/mo, no roadmap leverage",
+      "archetype": "til"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
