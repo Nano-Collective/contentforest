@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-07-20T14:24:58.716Z"
 ---
 
 Nanocoder v1.28.0 ships two changes that compound into one quiet usability win.
