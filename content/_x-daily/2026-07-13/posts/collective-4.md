@@ -7,6 +7,7 @@ angle: "Open source without corporate backing"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 247
+distributed_at: "2026-07-20T12:22:58.761Z"
 ---
 
 The reflex: durable OSS needs a backer. A corp, a foundation grant, something.
