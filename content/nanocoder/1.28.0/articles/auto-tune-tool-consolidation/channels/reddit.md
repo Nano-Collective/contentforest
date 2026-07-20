@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-07-20T15:40:46.758Z"
 ---
 
 The headline of Nanocoder v1.28.0 mentions "tool surface consolidated from 33 to 19, automatic tune profile as default." That's two changes, not one, and the second is the more interesting one if you actually run small local models.
