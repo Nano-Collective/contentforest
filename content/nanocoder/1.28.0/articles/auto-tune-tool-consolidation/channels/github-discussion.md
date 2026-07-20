@@ -6,6 +6,7 @@ title: "Tune, auto-detected - how the new tool profiles pick themselves"
 generated_at: "2026-06-21T18:38:50.510Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-07-20T14:13:08.838Z"
 ---
 
 The headline of v1.28.0 mentions that the tool surface was consolidated from 33 to 19 and that an automatic tune profile is now the default. Both halves of that sentence deserve a closer look, because the interesting design work is not in the count, it is in how a single config flag (`toolProfile: 'auto'`) decides at runtime which tools a given model sees, which prompt sections it gets, and how the answer changes the moment you switch models. This post walks through the mechanics: the consolidation itself, the parameter-count heuristic, the 5-layer config hierarchy that resolves `tune`, the interaction with development modes, and what local-model workflows gain from a profile that re-resolves live on model switch.
