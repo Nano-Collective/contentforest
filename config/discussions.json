@@ -1,0 +1,13 @@
+{
+	"repo": "Nano-Collective/organisation",
+	"mappings": {
+		"release": {
+			"category": "Annoucements",
+			"labels": ["Released", "Package"]
+		},
+		"backlog-article": {
+			"category": "Articles",
+			"labels": ["Article"]
+		}
+	}
+}

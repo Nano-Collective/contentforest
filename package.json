@@ -35,6 +35,7 @@
 		"parse-personal-request": "tsx scripts/parse-personal-request.ts",
 		"x-daily": "tsx scripts/x-daily.ts",
 		"plan-calendar": "tsx scripts/plan-calendar.ts",
+		"publish-discussions": "tsx scripts/publish-discussions.ts",
 		"sync-team-members": "tsx scripts/sync-team-members.ts",
 		"sync-pack-options": "tsx scripts/sync-pack-options.ts",
 		"sync-change-targets": "tsx scripts/sync-change-targets.ts",
