@@ -19,7 +19,7 @@ calendar days. The calendar page renders the result.
 - **Planner:** `scripts/plan-calendar.ts` (`pnpm plan-calendar`)
 - **Ledgers:** `content/_calendar/<monday>.json` (one per ISO week)
 - **UI:** `/calendar` (month grid), `/calendar/<YYYY-MM>`, `/calendar/week/<monday>`
-- **Workflows:** `.github/workflows/calendar-plan.yaml`, `.github/workflows/x-daily.yaml`
+- **Workflows:** `.github/workflows/calendar-plan.yaml`, `.github/workflows/x-daily.yaml`, `.github/workflows/discussion-publish.yaml`
 
 ## Scheduling rules
 
@@ -131,11 +131,51 @@ they don't work from a local dev server; viewing does.
   and opens (or force-updates) a single **"Refresh content calendar" PR** off a
   long-lived `auto/calendar` branch. Merging it lands the ledgers on `main` and
   triggers a Cloudflare Pages rebuild — how the live calendar refreshes.
+- **Discussion publisher** — `discussion-publish.yaml`, on push to
+  `content/_calendar/**` (i.e. merging the calendar PR) and cron `0 9 * * 1-5`
+  (09:00 UTC weekdays). Auto-posts due `github-discussion` items — see below.
 
 > **One rolling PR.** The ledgers are a derived index that changes daily, so the
 > planner keeps a single PR that it force-updates each run rather than opening a
 > new one each time. Review is a formality; merge to publish the latest
 > schedule. (`main` requires PRs, so the planner can't commit to it directly.)
+
+## Auto-published GitHub Discussions
+
+The `github-discussion` channel is the one channel that posts **itself**:
+`discussion-publish.yaml` runs `pnpm publish-discussions`, which scans the
+ledgers on `main` for github-discussion items due today or earlier whose file
+is still unused, posts each to **Discussions on `Nano-Collective/organisation`**
+via the GraphQL API, and then stamps `distributed_at` with the same
+direct-to-main commit the distribute Worker makes. Every other channel stays
+copy-paste + **Mark distributed**.
+
+It triggers two ways, because ledgers only land on `main` when the rolling
+calendar PR is merged: **merging that PR publishes anything due immediately**
+(the merge is the human "go"), and the **09:00 UTC weekday cron** is the
+backstop for items already on `main` whose day has since arrived.
+
+- **Category + labels** come from `config/discussions.json`, mapped from the
+  item's `type`: `release` → category *Annoucements* (the category name in the
+  org repo is genuinely spelled that way) with labels *Released* + *Package*;
+  `backlog-article` → category *Articles* with label *Article*. Names are
+  resolved against the live repo at run time and fail loudly if renamed.
+- **Idempotent + self-healing:** frontmatter is the single source of truth, so
+  a stamped item is never re-posted. If a run posts but dies before stamping,
+  the next run finds the discussion by title and only stamps. Overdue items
+  (a red run, a skipped day) catch up on the next run. To veto a post, mark it
+  **won't use** before merging the calendar PR / before the 09:00 cron.
+- **Auth:** the `DISCUSSIONS_TOKEN` secret — a fine-grained PAT with
+  Discussions read/write + Issues read on the org repo and Contents read/write
+  on this repo.
+
+```bash
+pnpm publish-discussions --dry-run          # list what today's run would post
+pnpm publish-discussions --date 2026-07-21  # publish as of a specific day (needs DISCUSSIONS_TOKEN)
+```
+
+The workflow can also be dispatched manually with a `date` and a `dry-run`
+flag.
 
 ## Backfilling after a change
 

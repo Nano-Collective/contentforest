@@ -1,0 +1,95 @@
+name: Publish Scheduled Discussions
+
+# The auto-publish half of the calendar's `github-discussion` channel. When a
+# scheduled day arrives this posts each due item to GitHub Discussions on the
+# org repo (category + labels mapped from config/discussions.json via the
+# GraphQL API), then stamps `distributed_at` into the item's frontmatter with
+# the same direct-to-main Contents-API commit the distribute Worker makes —
+# which in turn retriggers the planner and the Pages deploy as usual.
+#
+# Idempotent + self-healing: frontmatter is the single source of truth, so a
+# stamped item is never re-posted; an item that was posted but not stamped
+# (crash between the two) is found by title on the next run and only stamped.
+# Overdue items from a failed run are caught up on the next one.
+#
+# Two triggers, because ledgers only reach main when the rolling
+# "Refresh content calendar" PR is merged:
+#   - push on content/_calendar/** — merging that PR is the natural "go"
+#     signal, so anything due publishes right after the merge instead of
+#     waiting for tomorrow's cron;
+#   - cron at 09:00 UTC weekdays (content is only scheduled Mon–Fri) — the
+#     backstop for items already on main whose day has now arrived, at a
+#     human hour rather than alongside the midnight crons.
+# The stamp commit touches the content file, not content/_calendar/**, so the
+# publisher never retriggers itself; the planner rerun it does trigger only
+# updates the rolling PR.
+#
+# Secret: DISCUSSIONS_TOKEN — fine-grained PAT with Discussions: read+write and
+# Issues: read (labels) on Nano-Collective/organisation, plus Contents:
+# read+write on this repo for the stamp commit (main requires PRs for the
+# workflow token, but the PAT bypasses that the same way the Worker's does).
+
+on:
+  schedule:
+    # 09:00 UTC Mon-Fri — a human posting hour, well after the 00:45 planner.
+    - cron: "0 9 * * 1-5"
+  push:
+    branches: [main]
+    paths:
+      - "content/_calendar/**"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Publish items due on/before this date YYYY-MM-DD (omit for today, UTC)"
+        required: false
+        type: string
+      dry-run:
+        description: "List what would be posted without posting or stamping"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: discussion-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        # pin: actions/checkout@v4.3.1
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Set up PNPM
+        # pin: pnpm/action-setup@v4.4.0
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        # pin: actions/setup-node@v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Publish due discussions
+        env:
+          DISCUSSIONS_TOKEN: ${{ secrets.DISCUSSIONS_TOKEN }}
+          INPUT_DATE: ${{ inputs.date }}
+          INPUT_DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [ -n "${INPUT_DATE:-}" ]; then ARGS+=(--date "$INPUT_DATE"); fi
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then ARGS+=(--dry-run); fi
+          pnpm publish-discussions "${ARGS[@]}"
