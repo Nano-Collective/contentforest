@@ -7,6 +7,7 @@ angle: "Tool results get scrubbed too"
 generated_at: "2026-07-13T04:03:10.082Z"
 model: "minimax-m3"
 char_count: 272
+distributed_at: "2026-07-21T19:54:18.747Z"
 ---
 
 Your `ls` output is part of your prompt. So is `git log`, `cat`, and `grep`.
