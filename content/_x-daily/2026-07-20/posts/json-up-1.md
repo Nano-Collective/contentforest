@@ -7,6 +7,7 @@ angle: "Migrations are chainable async or sync, mixed"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 241
+distributed_at: "2026-07-22T11:48:20.896Z"
 ---
 
 Most migration APIs force an all-or-nothing choice: sync or async, end to end.
