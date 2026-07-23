@@ -7,6 +7,7 @@ angle: "The cache flag reuses work without changing output"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 259
+distributed_at: "2026-07-23T16:31:54.074Z"
 ---
 
 A 1000-page crawl with `--cache` isn't a clever optimisation. It's the normal case.
