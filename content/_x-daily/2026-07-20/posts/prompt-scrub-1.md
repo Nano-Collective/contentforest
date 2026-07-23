@@ -7,6 +7,7 @@ angle: "The threat model is the content layer, not the wire"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 280
+distributed_at: "2026-07-23T16:30:56.222Z"
 ---
 
 A VPN hides where the request came from, not what it says. Prompt privacy is a content problem.
