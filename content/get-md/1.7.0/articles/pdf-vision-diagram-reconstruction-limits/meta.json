@@ -1,0 +1,7 @@
+{
+  "slug": "pdf-vision-diagram-reconstruction-limits",
+  "title": "Reconstructing diagrams from PDFs by vision model - and the limits we kept",
+  "focus": "Make the opinionated case for why the PDF vision path is remote-provider-only, capped at 10 pages, and deliberately unhelpful on pure-scan PDFs - arguing that each limit encodes a real tradeoff (context budget, local-llama text-only, empty-result short-circuit) the user should understand before relying on it.",
+  "generated_at": "2026-07-26T18:51:01.751Z",
+  "model": "minimax-m3"
+}

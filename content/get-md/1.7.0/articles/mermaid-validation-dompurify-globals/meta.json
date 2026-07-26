@@ -1,0 +1,7 @@
+{
+  "slug": "mermaid-validation-dompurify-globals",
+  "title": "Why Mermaid validation was rejecting valid diagrams - and what fixed it",
+  "focus": "Walk through the DOMPurify-global-scope bug that made mermaid.parse throw on any diagram with node labels, and the headless-DOM install/restore dance (including saving process and handling getter-only navigator) that makes validateMermaid trustworthy in plain Node.",
+  "generated_at": "2026-07-26T18:51:01.751Z",
+  "model": "minimax-m3"
+}
