@@ -1,0 +1,14 @@
+{
+  "issue_number": 223,
+  "requester": "will-lamerton",
+  "scope": "whole-pack",
+  "article_slug": null,
+  "file_path": null,
+  "request": "Please re-angle all content to be from the perspective of a first release announcement. There has never been an announcement of sentinel despite being on alpha.2/3 so treat this pack as the official announcement running through features etc.",
+  "context": null,
+  "generated_at": "2026-07-26T21:37:15.593Z",
+  "model": "minimax-m3",
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}

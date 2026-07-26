@@ -5,41 +5,38 @@ channel: reddit
 title: ""
 generated_at: "2026-07-26T21:27:46.762Z"
 model: "minimax-m3"
-char_count: 0
+char_count: 5887
 ---
 
-Hey r/opensource and r/programming, we just shipped Sentinel alpha v0.1.0-alpha.2. This is a "boring" release on purpose, and we want to talk about what that means.
+Hey r/opensource and r/programming, we are publishing the first public build of Sentinel, a Nanocoder-driven workflow for running continuous, configurable security and code audits across the repositories in a GitHub organisation and filing the findings as issues for a human to act on. The version you can install today is v0.1.0-alpha.2. This post is the announcement.
 
-## Background
+## What Sentinel is
 
-Sentinel is a Nanocoder-driven workflow that runs continuous, configurable security and code audits across the repositories in your GitHub organisation and files what it finds as issues for a human to act on. You install it into your org, point it at the repos you care about, write the rule packs that describe what to look for, and a scheduled GitHub Actions workflow does the audit pass. Local models are a first-class path, so the audited code never has to leave hardware you own.
+You install Sentinel into a GitHub organisation, point it at the repos you care about, write the rule packs that describe what to look for, and a scheduled GitHub Actions workflow does the audit pass. Each finding is filed against the target repo as a labelled issue. If the same finding is seen again, it is not refiled; the existing issue is updated. If a finding has not been seen in N scheduled runs, the issue is auto-closed.
 
-Alpha.0 was the first published prerelease, alpha.1 was the first installable build, and alpha.2 is what this post is about.
+Local models are a first-class path, so the audited code does not have to leave hardware you own. Sentinel ships no rule packs of its own; the value comes from the packs the installing organisation writes for the code it actually ships.
 
-## Why this release is "no new features"
+## What this first public build does
 
-We ran the full audit loop live against a real repository for the first time in alpha.1. The happy path worked end to end: the scaffolder generated the config, the workflow fired on schedule, the model returned findings, the parser accepted them, and the filer opened issues. That is a real milestone and alpha.1 covers it.
+A few of the things that have shaped the version you can install today:
 
-The unhappy paths are what this release is about, and several of them turned out to be correctness bugs rather than missing features. So alpha.2 has no new features. It fixes the bits of alpha.1 that would have bitten a real install within the first week. If you are running alpha.1 today, this is the version you want.
+**The audit loop is a Nanocoder run.** You give it a rule pack, a repo, and the model you want to use. It returns a JSON array of findings, each with a rule, a file, a category, a human-readable description, and a line range. The line range is recorded for the human reader but is not part of the finding's identity, because models drift on line ranges between runs. The parser handles a truncated model response by recovering the leading complete findings, dropping the truncated tail, and flagging the truncation in the run summary.
 
-## The two bugs that mattered most
+**Dedup uses `rule + file + category` as the identity.** Every scheduled run produces a fresh batch of findings. The thing standing between a clean run and a torrent of duplicate issues is a stable identity per finding. Line ranges sounded precise, and they are, but they are exactly the kind of thing models report inconsistently between runs. The same finding, run twice, would come back with `42-47` one time and `43-48` the next. Using `rule + file + category` keeps the identity stable. If you have tuned `sentinel.yaml` to suppress specific content hashes from an earlier build, the run summary logs the new identity per finding so it is straightforward to capture.
 
-**1. Dedup was unstable.** The previous content hash included the line range the model reported. That sounds precise, and it is, but line ranges are exactly the kind of thing models drift on between runs. The same finding, run twice, would come back with `42-47` one time and `43-48` the next. Each variant got a different hash, the dedup store treated them as two different findings, and the filer refiled the issue as a duplicate. The fix is to use `rule + file + category` as the identity. Line ranges are still recorded on the issue for the human reader, but they no longer participate in dedup.
+**The filer creates its own labels.** A fresh repo does not have the `sentinel` label or the suppression labels. The filer creates the ones it needs before the first issue is filed, and tolerates the case where they already exist. A first run on a new repo lands cleanly without manual label setup.
 
-This is a behaviour change for anyone whose suppression rules depend on the old hash. If you have tuned `sentinel.yaml` to suppress specific content hashes, you will need to re-derive them from the new identity the next time a finding is filed. The run summary now logs the new identity per finding, so it is straightforward to capture.
+**One bad issue call does not abort the run.** Individual `gh issue create` / `gh issue edit` / `gh issue close` calls can fail for reasons that have nothing to do with the finding itself: transient API errors, a label race, a permission hiccup. Each create/update/close is tolerated individually, the failure is logged, and the run continues. The run summary at the end lists which findings failed to file and why.
 
-**2. Filing on a fresh repo did not work.** Alpha.1 assumed the filer's labels already existed on the target repo. They do not, on a fresh repo, and `gh issue create --label sentinel` against an unknown label exits non-zero. Alpha.1 propagated that failure and aborted the batch before the rest of the findings were filed. We found this one on our own test repo, where the very first scheduled run failed to file a single finding and we did not have a label called `sentinel` on the repo.
+**Dry-run is honest.** Before pointing a live run at a repo, you can preview what would be filed: would-file-as-new, would-match-dedup, would-skip-below-threshold. If a pack fails validation, the failure surfaces in the preview itself, with the reason and the run that produced it. You see that a pack is broken before you commit to a live run.
 
-Alpha.2 creates the labels it needs (`sentinel` and the suppression labels) before the first issue is filed, and tolerates the case where they already exist. A first run on a new repo now lands cleanly without manual label setup.
+**Auto-resolution is tunable.** A finding that has not been seen in N scheduled runs can have its issue auto-closed. The default is conservative: a finding has to be missing for several runs before the issue is closed, on the assumption that a single missed run is more likely a flaky check than a resolved finding. Some teams want a tighter loop, some want a looser one, and some want it off. `--resolve-after-misses <N>` on `sentinel run` is the knob.
 
-## The smaller fixes
+## What Sentinel does not do
 
-A few rough edges round out the release:
+Sentinel is a triage layer. It does not rewrite code, open PRs, or push fixes. It does not ship rule packs. It does not, on its own, decide what counts as a bug worth filing; that is what the rule packs are for, and writing them is the work the installing organisation does. The audit loop is a model in a workflow, and the model is what the model is: a model. Findings are a starting point for a human review, not a verdict.
 
-- **A single filing failure no longer aborts the run.** Even with labels in place, individual `gh issue create` / `gh issue edit` / `gh issue close` calls can fail for reasons that have nothing to do with the finding: transient API errors, a label race, a permission hiccup. Alpha.1 treated any one of those as a hard failure and skipped the rest of the batch. Alpha.2 tolerates each create/update/close individually, logs the failure, and continues. The run summary at the end lists which findings failed to file and why. This is the kind of fix you only appreciate on a flaky network.
-- **Dry-run no longer hides audit failures.** The dry-run mode prints a grouped preview of what would have been filed. The previous implementation only ran the grouping when the audit itself succeeded. A pack that failed validation reported as a clean dry run, because the grouping step never ran. Alpha.2 surfaces the validation failure in the preview itself, with the failure reason and the run that produced it. If a pack is broken, you see that it is broken before you point a live run at it.
-- **Truncated model output is salvaged.** A long audit run can come back with the JSON array cut off mid-finding, either because the model hit its output limit or the connection dropped. The previous parser threw the whole batch away in that case. Alpha.2 recovers the leading complete findings from the array, drops the truncated tail, and files what it has. The run summary flags the truncation so it is not silent.
-- **New `--resolve-after-misses` flag.** Auto-resolution is the part of the filer that closes issues that have not been seen in N runs. The default is conservative: a finding has to be missing for several runs in a row before the issue is auto-closed, on the assumption that a single missed run is more likely a flaky check than a resolved finding. Some teams want a tighter loop, some want a looser one, and some want it off. `--resolve-after-misses <N>` on `sentinel run` is the knob. The default is unchanged for existing installs.
+This is intentional. The judgement about what to fix, in what order, and how, stays with the people who own the code.
 
 ## Install
 
@@ -47,13 +44,13 @@ A few rough edges round out the release:
 npx @nanocollective/sentinel@0.1.0-alpha.2 init
 ```
 
-If you have alpha.1 already, `init` is idempotent for the existing files and will refresh the workflow to pick up the new filer. Re-run the init prompts and re-push.
+`init` scaffolds the config, the workflow, and a starter `sentinel.yaml`. It is idempotent for existing files and will refresh the workflow to pick up the latest filer if you re-run it.
 
 ## What is coming
 
-Alpha.3 will address the rest of the rough edges from the same live-repo run, including the failure mode where two rules in the same pack produce identical `rule + file + category` identities (rare, but real). The v1 surface is otherwise stable. If you want a feature to land in v1, the most useful thing you can do is run alpha.2 against your own repos and tell us what breaks.
+V1.0 is the goal. The contract for the audit loop, the rule pack format, the filer, and the auto-resolution knobs should not change between now and v1 unless a real install breaks. The rough edges we have found so far, including the rare case where two rules in the same pack produce identical `rule + file + category` identities, will be addressed in the next alpha. The most useful thing you can do to shape v1 is run Sentinel against your own repos and tell us what breaks. We are testing on our own repos and a handful of external projects at this stage.
 
-We are testing on our own repos and a handful of external projects at this stage. Expect breaking changes between alphas. If you want your project audited as part of that loop, get in touch on Discord.
+Expect breaking changes between alphas. If you want your project audited as part of that loop, get in touch on Discord.
 
 ## Where to find us
 
