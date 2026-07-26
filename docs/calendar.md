@@ -29,12 +29,20 @@ calendar days. The calendar page renders the result.
 | R2 | **At least one article per week** — an unused `github-discussion` deep-dive plus its supporting reddit/x/linkedin, drawn from the backlog. Runs regardless of whether there are releases. |
 | R3 | **New-version announcements land promptly** — a release's top-level channel posts are slotted into the current week as soon as they're detected. |
 | R4 | **≤1 release *set* per day.** If two products release, their announcements spread across separate days. |
+| R5 | **A release day carries no article.** Release content and evergreen articles never share a day. |
 
 A **release set is only the announcement** (a version's top-level
 `channels/*.md`). A release's deep-dive **articles are backlog**, not part of the
 release — they drip through R2 one per week. So once you've distributed a
 release's announcement, that release is "done" and its articles simply flow into
 the normal rotation.
+
+R5 is resolved in the release's favour: an announcement is time-sensitive, an
+evergreen article isn't, so when a release lands on a day that already holds an
+article, **the article moves** to the earliest weekday free of both. Two cases
+leave the collision in place (and raise a validator *warning*, not a failure):
+an article that already has a distributed post is pinned where it was posted,
+and a week with a release on every weekday has nowhere clean to move one.
 
 ### Reflow (what happens if you don't post something)
 

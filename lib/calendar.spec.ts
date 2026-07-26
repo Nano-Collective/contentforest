@@ -254,6 +254,77 @@ test('R2: prefers a day with no release set', t => {
 	t.true(tuesdayHasBacklog);
 });
 
+// ── R5: releases and articles never share a day ──────────────────────────────
+
+/** A prior ledger with the backlog article already placed on `day`. */
+function parkedArticle(day: string): WeekSchedule {
+	return {
+		week_of: WEEK,
+		generated_at: 'x',
+		days: {
+			[day]: [
+				{
+					slot: 'github-discussion-1',
+					channel: 'github-discussion',
+					type: 'backlog-article',
+					ref: backlog.anchorRef,
+				},
+				...backlog.siblings.map((s, i) => ({
+					slot: `${s.channel}-${i + 1}`,
+					channel: s.channel,
+					type: 'backlog-article' as const,
+					ref: s.ref,
+				})),
+			],
+		},
+	};
+}
+
+test('R5: a release displaces an already-placed article off its day', t => {
+	// Monday holds last run's backlog article; a release then arrives. The
+	// release keeps Monday (it's time-sensitive) and the article slides off.
+	const week = run({
+		existing: parkedArticle(WEEK),
+		pools: poolsFrom({
+			releaseSets: [releaseSet('aaa@2.0.0', 'aaa')],
+			backlogArticles: [backlog],
+		}),
+	});
+	t.true(week.days[WEEK].some(i => i.type === 'release'));
+	t.false(week.days[WEEK].some(i => i.type === 'backlog-article'));
+	t.is(
+		week.days['2026-07-07'].filter(i => i.type === 'backlog-article').length,
+		3,
+		'the whole article moves together to the next free weekday',
+	);
+});
+
+test('R5: an article with a distributed post is pinned, release or not', t => {
+	const week = run({
+		existing: parkedArticle(WEEK),
+		pools: poolsFrom({
+			releaseSets: [releaseSet('aaa@2.0.0', 'aaa')],
+			backlogArticles: [backlog],
+			statusOverrides: {[backlog.anchorRef]: 'distributed'},
+		}),
+	});
+	t.true(
+		week.days[WEEK].some(i => i.type === 'backlog-article'),
+		'a part-posted article stays where it was posted',
+	);
+});
+
+test('R5: displacement is stable across reruns', t => {
+	const pools = () =>
+		poolsFrom({
+			releaseSets: [releaseSet('aaa@2.0.0', 'aaa')],
+			backlogArticles: [backlog],
+		});
+	const first = run({existing: parkedArticle(WEEK), pools: pools()});
+	const second = run({existing: first, pools: pools()});
+	t.deepEqual(second.days, first.days);
+});
+
 // ── pinning + reflow ─────────────────────────────────────────────────────────
 
 // A release set placed on a later day, described as a prior ledger.

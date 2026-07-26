@@ -15,6 +15,8 @@
  *       drawn from the unused backlog. Independent of releases.
  *   R3  A new product version's release posts are slotted promptly.
  *   R4  ≤1 release *set* per day — two products releasing spread over ≥2 days.
+ *   R5  A release day carries no backlog article — release and evergreen article
+ *       content never share a day.
  *
  * buildWeek is deterministic and idempotent: given the same content, the same
  * prior ledger and the same `today`, it returns the same schedule. It "reflows"
@@ -574,6 +576,9 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 			i => i.release_set && !input.pools.announcedSetIds.has(i.release_set),
 		);
 
+	const backlogItemsOn = (date: string): ScheduledItem[] =>
+		days[date].filter(i => i.type === 'backlog-article');
+
 	// 2. R3 + R4: (re)place release sets on the earliest free future weekday.
 	//    Held sets (fully-unused, un-pinned above) go first so a release reflows
 	//    BACKWARD onto today / an earlier day when one frees up; then brand-new
@@ -616,8 +621,27 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		input.consumedSetIds.add(set.id);
 	}
 
-	// 3. R2: guarantee one backlog article + its unused siblings this week,
-	//    preferring a day with no release set.
+	// 3. R5: a release announcement and an evergreen article never share a day.
+	//    The release keeps the day — it's the time-sensitive half (R3) — so the
+	//    ARTICLE is what moves, onto the earliest weekday free of both. An article
+	//    with any already-distributed post is pinned where it was posted and stays
+	//    put (you can't un-post it); likewise if there's no free day, it stays and
+	//    the collision is tolerated rather than dropping the article.
+	for (const date of future) {
+		if (!dayHasReleaseSet(date)) continue;
+		const article = backlogItemsOn(date);
+		if (article.length === 0) continue;
+		if (article.some(i => status(i.ref) !== 'unused')) continue;
+		const target = future.find(
+			d => d !== date && !dayHasReleaseSet(d) && backlogItemsOn(d).length === 0,
+		);
+		if (!target) continue;
+		days[date] = days[date].filter(i => i.type !== 'backlog-article');
+		days[target].push(...article);
+	}
+
+	// 4. R2: guarantee one backlog article + its unused siblings this week,
+	//    on a day with no release set (R5).
 	if (!weekHasBacklog) {
 		const pick = input.pools.backlogArticles.find(
 			a =>
@@ -641,7 +665,7 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		}
 	}
 
-	// 4. R1: fill each future day up to xPerDay X posts from the evergreen pool,
+	// 5. R1: fill each future day up to xPerDay X posts from the evergreen pool,
 	//    avoiding repeating a source on the same day where possible.
 	const queue = interleaveBySource(
 		input.pools.evergreenX.filter(
@@ -671,7 +695,7 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		}
 	}
 
-	// 5. Assign human-readable slot labels: one running counter per channel per
+	// 6. Assign human-readable slot labels: one running counter per channel per
 	//    day (x-1..x-6, github-discussion-1, ...). Purely cosmetic / for the UI.
 	for (const date of dates) {
 		const counters = new Map<string, number>();
