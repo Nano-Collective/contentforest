@@ -1,0 +1,7 @@
+{
+  "slug": "privacy-context-prompt-scrubbing",
+  "title": "PrivacyContext - scrubbing prompts without breaking the conversation",
+  "focus": "The architecture of the new privacy-aware prompt scrubbing system - how sensitive content is detected and replaced with stable placeholders before leaving the machine, how tool arguments get rehydrated locally so the model still sees the values it needs, the /privacy command and rule-pack model, and what this release means for running cloud models on private codebases.",
+  "generated_at": "2026-07-26T19:36:06.832Z",
+  "model": "minimax-m3"
+}

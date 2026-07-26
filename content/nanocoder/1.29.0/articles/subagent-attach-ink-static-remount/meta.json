@@ -1,0 +1,7 @@
+{
+  "slug": "subagent-attach-ink-static-remount",
+  "title": "Attaching to a running subagent without losing the transcript",
+  "focus": "How v1.29.0's Ctrl+S subagent attach works under the hood - the Ink <Static> remount-per-agent trick that fixes the transcript-not-printing bug, how parallel subagent cycles are tracked, and what the new detach UX means for debugging multi-agent runs interactively.",
+  "generated_at": "2026-07-26T19:36:06.832Z",
+  "model": "minimax-m3"
+}
