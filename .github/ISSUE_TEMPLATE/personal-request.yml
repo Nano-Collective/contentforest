@@ -33,6 +33,7 @@ body:
       description: |
         Pick the existing pack to ground the personal-pack in. List is auto-generated from `content/` on `main`, sorted newest-first. `<product>/<version>` for release packs; `_collective/<slug>` for collective packs.
       options:
+        - sentinel/0.1.0-alpha.2
         - nanocoder/1.29.0
         - get-md/1.7.0
         - _collective/100000-downloads
