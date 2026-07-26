@@ -1,6 +1,6 @@
 {
   "week_of": "2026-07-27",
-  "generated_at": "2026-07-26T19:02:43.491Z",
+  "generated_at": "2026-07-26T19:35:02.838Z",
   "days": {
     "2026-07-27": [
       {
@@ -39,59 +39,35 @@
         "release_set": "get-md@1.7.0"
       },
       {
-        "slot": "github-discussion-2",
-        "channel": "github-discussion",
-        "type": "backlog-article",
-        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/github-discussion.md"
-      },
-      {
-        "slot": "linkedin-2",
-        "channel": "linkedin",
-        "type": "backlog-article",
-        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/linkedin.md"
-      },
-      {
-        "slot": "reddit-2",
-        "channel": "reddit",
-        "type": "backlog-article",
-        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/reddit.md"
-      },
-      {
         "slot": "x-2",
-        "channel": "x",
-        "type": "backlog-article",
-        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/x.md"
-      },
-      {
-        "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-20/posts/collective-4.md",
         "source": "collective"
       },
       {
-        "slot": "x-4",
+        "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-20/posts/get-md-4.md",
         "source": "get-md"
       },
       {
-        "slot": "x-5",
+        "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-20/posts/json-up-4.md",
         "source": "json-up"
       },
       {
-        "slot": "x-6",
+        "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-20/posts/nanocoder-3.md",
         "source": "nanocoder"
       },
       {
-        "slot": "x-7",
+        "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-20/posts/nanotune-3.md",
@@ -140,6 +116,30 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-07-20/posts/nanotune-4.md",
         "source": "nanotune"
+      },
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/x.md"
       }
     ],
     "2026-07-29": [
