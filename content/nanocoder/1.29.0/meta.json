@@ -1,0 +1,28 @@
+{
+  "product": "nanocoder",
+  "version": "1.29.0",
+  "product_url": "https://github.com/Nano-Collective/nanocoder",
+  "generated_at": "2026-07-26T19:36:06.832Z",
+  "model": "minimax-m3",
+  "generation_attempts": 4,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "subagent-attach-ink-static-remount",
+      "title": "Attaching to a running subagent without losing the transcript",
+      "focus": "How v1.29.0's Ctrl+S subagent attach works under the hood - the Ink <Static> remount-per-agent trick that fixes the transcript-not-printing bug, how parallel subagent cycles are tracked, and what the new detach UX means for debugging multi-agent runs interactively.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "privacy-context-prompt-scrubbing",
+      "title": "PrivacyContext - scrubbing prompts without breaking the conversation",
+      "focus": "The architecture of the new privacy-aware prompt scrubbing system - how sensitive content is detected and replaced with stable placeholders before leaving the machine, how tool arguments get rehydrated locally so the model still sees the values it needs, the /privacy command and rule-pack model, and what this release means for running cloud models on private codebases.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
