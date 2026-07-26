@@ -1660,8 +1660,10 @@ function validateCalendarLedger(
 			continue;
 		}
 		const releaseSets = new Set<string>();
+		let hasBacklogArticle = false;
 		rawItems.forEach((raw, i) => {
 			const it = raw as Record<string, unknown>;
+			if (it.type === 'backlog-article') hasBacklogArticle = true;
 			for (const field of ['slot', 'channel', 'ref']) {
 				if (
 					typeof it[field] !== 'string' ||
@@ -1702,6 +1704,16 @@ function validateCalendarLedger(
 				rule: 'ledger-one-release-set-per-day',
 				expected: '≤1 release_set per day',
 				actual: `${releaseSets.size} (${[...releaseSets].join(', ')})`,
+			});
+		}
+		// R5. A warning, not a failure: the planner leaves a part-posted article
+		// pinned on a release day rather than un-posting it, and a week with a
+		// release every weekday has nowhere clean to put one.
+		if (releaseSets.size > 0 && hasBacklogArticle) {
+			warnings.push({
+				file: fileRel,
+				rule: 'ledger-release-day-has-article',
+				message: `${date} carries both a release set and a backlog article`,
 			});
 		}
 	}
