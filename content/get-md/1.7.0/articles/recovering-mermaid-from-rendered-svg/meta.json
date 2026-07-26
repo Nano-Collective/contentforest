@@ -1,0 +1,7 @@
+{
+  "slug": "recovering-mermaid-from-rendered-svg",
+  "title": "Turning rendered SVG back into Mermaid source - the recovery precedence",
+  "focus": "Use the five-strategy recovery precedence (script tag, data attributes, pre text, hidden templates, SVG accessibility nodes) as the spine to explain how get-md reverses client-side mermaid.js rendering on GitHub, MkDocs, and Docusaurus pages, and why the strict guard against 'Created with Mermaid' aria-labels matters.",
+  "generated_at": "2026-07-26T18:51:01.751Z",
+  "model": "minimax-m3"
+}

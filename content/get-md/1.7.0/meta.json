@@ -1,0 +1,36 @@
+{
+  "product": "get-md",
+  "version": "1.7.0",
+  "product_url": "https://github.com/Nano-Collective/get-md",
+  "generated_at": "2026-07-26T18:51:01.751Z",
+  "model": "minimax-m3",
+  "generation_attempts": 5,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "mermaid-validation-dompurify-globals",
+      "title": "Why Mermaid validation was rejecting valid diagrams - and what fixed it",
+      "focus": "Walk through the DOMPurify-global-scope bug that made mermaid.parse throw on any diagram with node labels, and the headless-DOM install/restore dance (including saving process and handling getter-only navigator) that makes validateMermaid trustworthy in plain Node.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "recovering-mermaid-from-rendered-svg",
+      "title": "Turning rendered SVG back into Mermaid source - the recovery precedence",
+      "focus": "Use the five-strategy recovery precedence (script tag, data attributes, pre text, hidden templates, SVG accessibility nodes) as the spine to explain how get-md reverses client-side mermaid.js rendering on GitHub, MkDocs, and Docusaurus pages, and why the strict guard against 'Created with Mermaid' aria-labels matters.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "pdf-vision-diagram-reconstruction-limits",
+      "title": "Reconstructing diagrams from PDFs by vision model - and the limits we kept",
+      "focus": "Make the opinionated case for why the PDF vision path is remote-provider-only, capped at 10 pages, and deliberately unhelpful on pure-scan PDFs - arguing that each limit encodes a real tradeoff (context budget, local-llama text-only, empty-result short-circuit) the user should understand before relying on it.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
