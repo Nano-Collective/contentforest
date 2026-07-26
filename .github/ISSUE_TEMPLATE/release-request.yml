@@ -21,6 +21,7 @@ body:
       options:
         - nanocoder
         - nanotune
+        - sentinel
         - get-md
         - json-up
         - prompt-scrub
