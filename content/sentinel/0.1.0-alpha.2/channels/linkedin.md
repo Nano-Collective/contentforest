@@ -5,25 +5,28 @@ channel: linkedin
 title: ""
 generated_at: "2026-07-26T21:27:46.762Z"
 model: "minimax-m3"
-char_count: 2321
+char_count: 2689
 ---
 
-Sentinel alpha v0.1.0-alpha.2 is out. It has no new features. It exists because we ran the full audit loop live against a real repository, and several of the rough edges we found affect correctness, not just polish.
+We are publishing the first public build of Sentinel, the Nano Collective's Nanocoder-driven workflow for running continuous, configurable security and code audits across the repositories in a GitHub organisation and filing the findings as issues for a human to act on. The version you can install today is v0.1.0-alpha.2.
 
-The two that matter most:
+Sentinel is a triage layer. You install it into your org, point it at the repos you care about, and write the rule packs that describe what to look for. A scheduled GitHub Actions workflow does the audit pass, and each finding is filed against the target repo as a labelled issue. The same finding is not refiled on every run; the existing issue is updated. If a finding has not been seen in N runs, the issue is auto-closed. Local models are a first-class path, so the audited code does not have to leave hardware you own.
 
-1. Dedup was unstable. The previous identity included the line range the model reported, and line ranges are exactly the kind of thing models drift on between runs. The same finding would come back with a slightly different range, get a different content hash, and get refiled as a new issue. The fix is to use `rule + file + category` as the identity. Line ranges are still recorded for the human reader, but they no longer participate in dedup.
+A few of the things that have shaped this first public build:
 
-2. Filing on a fresh repo did not work. Alpha.1 assumed the filer's labels already existed. They do not, on a fresh repo, and the first `gh issue create --label sentinel` crashed the batch. Alpha.2 creates the labels it needs (`sentinel` and the suppression labels) before the first issue is filed, and tolerates the case where they already exist.
+- **Stable dedup.** The finding identity is `rule + file + category`. Line ranges are recorded for the human reader but are not part of the identity, because models tend to drift on line ranges between runs.
+- **Works on a fresh repo.** The filer creates the labels it needs (`sentinel` and the suppression labels) before the first issue is filed, and tolerates the case where they already exist.
+- **One bad issue call does not abort the run.** Each `gh issue create` / `edit` / `close` is tolerated individually, logged, and the run continues. The run summary lists which findings failed to file and why.
+- **Dry-run is honest.** If a pack fails validation, the failure surfaces in the preview, with the reason and the run that produced it.
+- **Truncated model output is salvaged.** A long audit run that comes back with the JSON array cut off mid-finding is recovered: the leading complete findings are filed, the truncated tail is dropped, and the run summary flags the truncation.
+- **Tunable auto-resolution.** `--resolve-after-misses <N>` on `sentinel run` controls how many runs a finding has to be missing before its issue is auto-closed. The default is conservative.
 
-A few smaller ones round it out: a single filing failure no longer aborts the batch (each create/update/close is tolerated and reported), dry-run no longer hides audit failures (a pack that fails validation shows up in the preview), and a truncated model output is salvaged (the leading complete findings are recovered rather than thrown out). There is also a new `--resolve-after-misses` flag on `sentinel run` for tuning auto-resolution.
+Sentinel is an alpha. It ships no rule packs of its own; the value comes from the packs the installing organisation writes for the code it actually ships. We are testing on our own repos and a handful of external projects at this stage. Expect breaking changes between alphas. If you want your project audited as part of that loop, get in touch on Discord.
 
-If you installed alpha.1, this is the version you want. It is installed the same way:
+Install:
 
 `npx @nanocollective/sentinel@0.1.0-alpha.2 init`
 
-Sentinel is the Nano Collective's Nanocoder-driven workflow for running continuous, configurable security and code audits across the repositories in a GitHub organisation, with the findings filed as issues for a human to act on. It ships no rule packs of its own; the value comes from the packs the installing organisation writes for the code it actually ships.
-
-Alpha.3 will address the rest of the rough edges from the same live-repo run. We are testing on our own repos and a handful of external projects at this stage. If you want your project included in that loop, get in touch on Discord. Expect breaking changes between alphas.
-
 Repo and full notes: https://github.com/Nano-Collective/sentinel
+
+Built by the Nano Collective: a community collective building AI tooling not for profit, but for the community.
