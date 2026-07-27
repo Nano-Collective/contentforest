@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 5619
+distributed_at: "2026-07-27T20:38:12.752Z"
 ---
 
 We've just shipped get-md v1.7.0, and we wanted to explain why this one matters even if you don't use Mermaid.
