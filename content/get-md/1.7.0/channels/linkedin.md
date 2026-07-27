@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 1831
+distributed_at: "2026-07-27T19:30:12.711Z"
 ---
 
 get-md v1.7.0 is out. The headline is that Mermaid diagrams now survive HTML, URL, and Markdown conversions, end to end.
