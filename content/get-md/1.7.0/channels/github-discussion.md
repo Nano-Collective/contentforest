@@ -6,6 +6,7 @@ title: "get-md v1.7.0: Mermaid diagrams survive the conversion, end to end"
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 12281
+distributed_at: "2026-07-27T12:23:59.070Z"
 ---
 
 get-md v1.7.0 is out. Where 1.6.0 taught the library to read PDF, DOCX, and Markdown, this release is about not throwing away the one thing a Markdown converter usually destroys: **Mermaid diagrams**. v1.7.0 preserves Mermaid fences it finds, recovers the source from diagrams a browser has already rendered to `<svg>`, optionally reconstructs diagrams drawn into a PDF using a vision model, and optionally checks that whatever comes out actually parses. It also fixes a handful of real bugs surfaced along the way, including a validation path that was almost always wrong.
