@@ -7,6 +7,7 @@ angle: "1.12GB model, zero network round-trip"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 166
+distributed_at: "2026-07-27T19:12:55.792Z"
 ---
 
 1.12GB on your disk. Zero API calls. get-md's local LLM path runs ReaderLM-v2 via node-llama-cpp, so better Markdown conversion costs you storage, not metered tokens.
