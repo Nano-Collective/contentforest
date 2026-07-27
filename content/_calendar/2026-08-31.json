@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-08-31",
+  "generated_at": "2026-07-27T04:26:04.632Z",
+  "days": {
+    "2026-08-31": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/x.md"
+      }
+    ],
+    "2026-09-01": [],
+    "2026-09-02": [],
+    "2026-09-03": [],
+    "2026-09-04": [],
+    "2026-09-05": [],
+    "2026-09-06": []
+  }
+}
