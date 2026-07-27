@@ -17,7 +17,7 @@
 
 import {mkdirSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join, relative} from 'node:path';
 import test from 'ava';
 import {runValidate, type ValidatorConfig} from './validate-content';
 
@@ -2240,6 +2240,50 @@ test('fail: two release sets on one day → ledger-one-release-set-per-day', t =
 		t.true(
 			report.failures.some(f => f.rule === 'ledger-one-release-set-per-day'),
 		);
+	} finally {
+		cleanup(root);
+	}
+});
+
+// R4 only guards release sets that haven't gone out yet, matching the planner's
+// `dayHasReleaseSet` (lib/calendar.ts): a day carrying a posted release's
+// history must stay free to host a fresh one, or a genuinely-missed release gets
+// bumped off today by content that already shipped.
+test('happy: a posted release set does not block a fresh one on the same day', t => {
+	const root = makeTmpRoot();
+	try {
+		const posted = join(root, 'posted.md');
+		// Quoted, as the pipeline writes it — a bare timestamp would parse as a
+		// Date, and status is string-only (mirrors `statusOf` in lib/calendar.ts).
+		writeFileSync(
+			posted,
+			'---\ndistributed_at: "2026-07-27T09:00:00Z"\n---\nout\n',
+		);
+		writeLedger(root, LEDGER_WEEK, {
+			week_of: LEDGER_WEEK,
+			generated_at: 'x',
+			days: {
+				[LEDGER_WEEK]: [
+					item({
+						type: 'release',
+						channel: 'github-discussion',
+						release_set: 'a@1',
+						ref: relative(process.cwd(), posted),
+					}),
+					item({
+						type: 'release',
+						channel: 'github-discussion',
+						release_set: 'b@1',
+					}),
+				],
+			},
+		});
+		const report = runValidate({
+			contentRoot: root,
+			packFilter: LEDGER_PACK_ID,
+			config: CONFIG,
+		});
+		t.deepEqual(report.failures, []);
 	} finally {
 		cleanup(root);
 	}

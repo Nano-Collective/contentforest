@@ -1577,6 +1577,25 @@ function validateXDailyPack(args: {
 }
 
 /**
+ * True when a ledger `ref` is still awaiting distribution — its frontmatter has
+ * neither `distributed_at` nor `wont_use_at`. A ref that can't be read counts as
+ * pending: a missing file is flagged by `ledger-ref-exists` on its own, and we'd
+ * rather keep R4 strict than quietly excuse a day because a path was wrong.
+ */
+function refAwaitsDistribution(ref: string): boolean {
+	const has = (v: unknown) => typeof v === 'string' && v.length > 0;
+	try {
+		const fm = matter(readFileSync(join(ROOT, ref), 'utf8')).data as Record<
+			string,
+			unknown
+		>;
+		return !has(fm.distributed_at) && !has(fm.wont_use_at);
+	} catch {
+		return true;
+	}
+}
+
+/**
  * Validates one week's calendar ledger at content/_calendar/<week>.json.
  *
  * A ledger is a derived index the planner writes (see scripts/plan-calendar.ts)
@@ -1586,6 +1605,11 @@ function validateXDailyPack(args: {
  * release set per day) holds. A `ref` whose target file is missing is a
  * warning, not a failure: the planner prunes dangling refs, but a hand-edit or
  * a race could leave one, and we'd rather flag than block.
+ *
+ * R4 is scoped to release sets still awaiting announcement, matching the
+ * planner's `dayHasReleaseSet`: a day that merely carries an already-posted
+ * release's history is free to host a fresh release, so a genuinely-missed one
+ * isn't bumped off today by content that already went out (see lib/calendar.ts).
  */
 function validateCalendarLedger(
 	week: string,
@@ -1659,7 +1683,10 @@ function validateCalendarLedger(
 			});
 			continue;
 		}
+		// Every release set placed on the day, and the subset still awaiting
+		// announcement — R4/R5 guard the latter (see the doc comment above).
 		const releaseSets = new Set<string>();
+		const pendingReleaseSets = new Set<string>();
 		let hasBacklogArticle = false;
 		rawItems.forEach((raw, i) => {
 			const it = raw as Record<string, unknown>;
@@ -1685,7 +1712,12 @@ function validateCalendarLedger(
 					actual: String(it.type),
 				});
 			}
-			if (typeof it.release_set === 'string') releaseSets.add(it.release_set);
+			if (typeof it.release_set === 'string') {
+				releaseSets.add(it.release_set);
+				if (typeof it.ref !== 'string' || refAwaitsDistribution(it.ref)) {
+					pendingReleaseSets.add(it.release_set);
+				}
+			}
 			if (
 				typeof it.ref === 'string' &&
 				it.ref.length > 0 &&
@@ -1698,18 +1730,18 @@ function validateCalendarLedger(
 				});
 			}
 		});
-		if (releaseSets.size > 1) {
+		if (pendingReleaseSets.size > 1) {
 			failures.push({
 				file: fileRel,
 				rule: 'ledger-one-release-set-per-day',
-				expected: '≤1 release_set per day',
-				actual: `${releaseSets.size} (${[...releaseSets].join(', ')})`,
+				expected: '≤1 undistributed release_set per day',
+				actual: `${pendingReleaseSets.size} (${[...pendingReleaseSets].join(', ')})`,
 			});
 		}
 		// R5. A warning, not a failure: the planner leaves a part-posted article
 		// pinned on a release day rather than un-posting it, and a week with a
 		// release every weekday has nowhere clean to put one.
-		if (releaseSets.size > 0 && hasBacklogArticle) {
+		if (pendingReleaseSets.size > 0 && hasBacklogArticle) {
 			warnings.push({
 				file: fileRel,
 				rule: 'ledger-release-day-has-article',
@@ -2067,17 +2099,20 @@ function main() {
 				console.log(`  ${w.file} [${w.rule}] ${w.message}`);
 			}
 		}
-		if (report.failures.length > 0) {
-			console.log(`\n✗ ${report.failures.length} failure(s):`);
-			for (const f of report.failures) {
-				console.log(
-					`  ${f.file} [${f.rule}] expected ${f.expected}, got ${f.actual}`,
-				);
-			}
-		} else {
-			console.log('\n✓ All hard rules passed.');
-		}
+		if (report.failures.length === 0) console.log('\n✓ All hard rules passed.');
 		console.log(`\nReport: ${reportPath}`);
+	}
+
+	// Failures print even under --quiet: the flag exists to silence the
+	// per-pack chatter of a green run, not to make a red one undiagnosable
+	// (CI loops over every pack with --quiet — see calendar-plan.yaml).
+	if (report.failures.length > 0) {
+		console.log(`\n✗ ${report.failures.length} failure(s):`);
+		for (const f of report.failures) {
+			console.log(
+				`  ${f.file} [${f.rule}] expected ${f.expected}, got ${f.actual}`,
+			);
+		}
 	}
 
 	process.exit(report.failures.length > 0 ? 1 : 0);
