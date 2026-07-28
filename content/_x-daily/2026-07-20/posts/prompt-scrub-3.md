@@ -7,6 +7,7 @@ angle: "Scrub survives the agent loop, not just one prompt"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 274
+distributed_at: "2026-07-28T13:39:36.148Z"
 ---
 
 Your agent's `ls`, `git log`, `cat`, and `grep` outputs go to the next LLM turn in the clear. The cloud sees your repo layout and your hosts file.
