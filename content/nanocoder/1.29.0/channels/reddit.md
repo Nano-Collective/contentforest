@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-07-28T21:05:22.075Z"
 ---
 
 We just shipped Nanocoder v1.29.0, and this one felt worth writing up. The headline is a native VS Code GUI: the extension now spawns and drives `nanocoder --acp` itself, so there is nothing to run in a terminal. Sessions persist, slash commands work, interactive tools render as buttons, and a resumed thread looks like the conversation you left. Legacy WebSocket companion mode is now opt-in.
