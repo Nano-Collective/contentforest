@@ -6,6 +6,7 @@ title: "Nanocoder v1.29.0: native VS Code GUI, subagent attach, prompt scrubbing
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-07-28T11:17:41.999Z"
 ---
 
 Nanocoder v1.29.0 is out. The headline is a native VS Code GUI powered by the Agent Client Protocol: the extension now spawns and drives `nanocoder --acp` itself, so there is nothing to run in a terminal. Alongside that: you can press `Ctrl+S` to attach to a running subagent session and watch what it is doing in real time, a new `PrivacyContext` scrubs sensitive content out of prompts before they leave your machine, and each development mode can now have its own provider and model.
