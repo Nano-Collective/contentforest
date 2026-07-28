@@ -7,6 +7,7 @@ angle: "A custom version key avoids a breaking rename"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 254
+distributed_at: "2026-07-28T13:41:14.983Z"
 ---
 
 Your data already has rows with a version field, and renaming it is a migration of the migration. json-up's migrate() takes a key parameter, so pass `key: 'version'` (or whatever you used) and nothing breaks. One parameter, no migration of the migration.
