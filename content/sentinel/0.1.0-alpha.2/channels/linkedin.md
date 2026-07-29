@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-26T21:27:46.762Z"
 model: "minimax-m3"
 char_count: 2689
+distributed_at: "2026-07-29T10:46:03.709Z"
 ---
 
 We are publishing the first public build of Sentinel, the Nano Collective's Nanocoder-driven workflow for running continuous, configurable security and code audits across the repositories in a GitHub organisation and filing the findings as issues for a human to act on. The version you can install today is v0.1.0-alpha.2.
