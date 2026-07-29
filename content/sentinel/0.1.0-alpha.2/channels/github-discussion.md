@@ -6,6 +6,7 @@ title: "Introducing Sentinel: a Nanocoder-driven audit workflow for your GitHub 
 generated_at: "2026-07-26T21:27:46.762Z"
 model: "minimax-m3"
 char_count: 8246
+distributed_at: "2026-07-29T09:55:08.128Z"
 ---
 
 # Introducing Sentinel: a Nanocoder-driven audit workflow for your GitHub org
