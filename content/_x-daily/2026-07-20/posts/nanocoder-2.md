@@ -7,6 +7,7 @@ angle: "Tune is the runtime layer small models actually need"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 274
+distributed_at: "2026-07-30T14:53:05.161Z"
 ---
 
 A 4B model forgetting the question by the second tool call isn't a model problem. It's a prompt problem. Nanocoder's `/tune` `nano` profile shrinks the system prompt from ~700 to ~150 tokens and drops MCP tool sprawl, which is why a small model can actually finish the loop.
