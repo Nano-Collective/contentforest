@@ -7,6 +7,7 @@ angle: "ValidationError points at the path, not the message"
 generated_at: "2026-07-20T04:06:43.119Z"
 model: "minimax-m3"
 char_count: 277
+distributed_at: "2026-07-30T14:51:45.829Z"
 ---
 
 A migration throws and the stack trace tells you nothing about which field broke. json-up's ValidationError carries a Zod issues array, so error.issues.forEach(i => console.error(i.path.join('.'), i.message)) prints the exact path and message - the catch tells you what to fix.
