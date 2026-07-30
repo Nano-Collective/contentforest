@@ -6,6 +6,7 @@ title: "Why we updated how we describe Nanocoder"
 generated_at: "2026-05-31T23:19:02.091Z"
 model: "minimax-m3"
 char_count: 2943
+distributed_at: "2026-07-30T11:08:04.924Z"
 ---
 
 We updated the headline description of Nanocoder. This post explains why (the thinking behind the change, what the old framing was getting wrong, and what the new one gets right).
