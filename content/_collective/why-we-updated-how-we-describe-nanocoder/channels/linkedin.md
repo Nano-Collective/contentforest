@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-05-31T23:19:02.091Z"
 model: "minimax-m3"
 char_count: 1587
+distributed_at: "2026-07-30T15:19:19.890Z"
 ---
 
 We changed the headline description of Nanocoder. Not because the tool changed (the principles are the same), but because the old framing was doing the product a disservice.
