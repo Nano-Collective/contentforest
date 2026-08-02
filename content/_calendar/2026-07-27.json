@@ -1,6 +1,6 @@
 {
   "week_of": "2026-07-27",
-  "generated_at": "2026-07-30T03:44:55.663Z",
+  "generated_at": "2026-08-02T04:16:48.362Z",
   "days": {
     "2026-07-27": [
       {
@@ -244,12 +244,6 @@
         "channel": "linkedin",
         "type": "backlog-article",
         "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/linkedin.md"
-      },
-      {
-        "slot": "reddit-1",
-        "channel": "reddit",
-        "type": "backlog-article",
-        "ref": "content/_collective/why-we-updated-how-we-describe-nanocoder/channels/reddit.md"
       },
       {
         "slot": "x-5",
