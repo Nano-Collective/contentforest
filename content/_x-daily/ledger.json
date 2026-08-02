@@ -628,5 +628,215 @@
     "angle": "Supporter tier at $250/mo, no roadmap leverage",
     "archetype": "til",
     "preview": "$250/mo puts your logo on Nano Collective surfaces. What it does not buy is also on the page: no roa"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanocoder",
+    "angle": "Bundle skills version together",
+    "archetype": "til",
+    "preview": "A skill that knows its own parts."
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanotune",
+    "angle": "LoRA exports to GGUF without compiling llama.cpp",
+    "archetype": "til",
+    "preview": "Fine-tuning is the easy part. Getting llama.cpp to compile so you can actually run the model is the "
+  },
+  {
+    "date": "2026-07-27",
+    "source": "sentinel",
+    "angle": "Sentinel files no default rule packs",
+    "archetype": "origin",
+    "preview": "A default rule pack would have to be wrong about most codebases. Sentinel ships the format, authorin"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "get-md",
+    "angle": "node-llama-cpp is an optional peer dep",
+    "archetype": "til",
+    "preview": "Most get-md installs skip node-llama-cpp. Since v1.4.0 it's an optional peer, not a direct dep - so "
+  },
+  {
+    "date": "2026-07-27",
+    "source": "json-up",
+    "angle": "Version zero is a real state",
+    "archetype": "by-the-numbers",
+    "preview": "Version 0 is a real state, not a missing field. In json-up, JSON without a version key reads as v0 -"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "prompt-scrub",
+    "angle": "Scrubbing is content-layer, not network-layer",
+    "archetype": "contrarian",
+    "preview": "A privacy tool you route traffic through protects your IP. prompt-scrub isn't that. It rewrites the "
+  },
+  {
+    "date": "2026-07-27",
+    "source": "collective",
+    "angle": "No retrospective term changes ever",
+    "archetype": "problem-relief",
+    "preview": "You start a bounty Monday. Wednesday the charter revises. Are your terms still your terms?"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanocoder",
+    "angle": "ACP is the same protocol Gemini speaks",
+    "archetype": "one-tip",
+    "preview": "Editor integrations shouldn't be bespoke. Nanocoder's ACP server speaks the same JSON-RPC protocol G"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanotune",
+    "angle": "Loss divergence is the early stop signal",
+    "archetype": "one-tip",
+    "preview": "Validation loss climbing while training loss drops isn't progress. It's overfitting. Nanotune's trai"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "sentinel",
+    "angle": "Severity is a four-tier scale with confidence",
+    "archetype": "by-the-numbers",
+    "preview": "Four tiers, not three. Sentinel rates findings low, medium, high, critical, with confidence on a sep"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "get-md",
+    "angle": "Mermaid diagrams survive the conversion",
+    "archetype": "problem-relief",
+    "preview": "You paste a docs page through a converter and the Mermaid blocks vanish. get-md keeps the fences and"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "json-up",
+    "angle": "Schema without up is migration-shaped anyway",
+    "archetype": "sharp-take",
+    "preview": "The discipline of writing both, even when only the schema changes, is what stops a 'just bump the ve"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "prompt-scrub",
+    "angle": "Secret detector wins collisions on purpose",
+    "archetype": "origin",
+    "preview": "A leaked token in your prompt is a 3am incident. A missed email is a bug. So prompt-scrub puts Secre"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "collective",
+    "angle": "Whitepaper merge is not endorsement",
+    "archetype": "til",
+    "preview": "A Nano Collective whitepaper merges. Easy to read that as 'we're building this.'"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanocoder",
+    "angle": "Tune profiles shrink the prompt for small models",
+    "archetype": "by-the-numbers",
+    "preview": "A 1B model burns a quarter of its context window on the system prompt."
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanotune",
+    "angle": "Benchmark reports show timing per test",
+    "archetype": "by-the-numbers",
+    "preview": "A model with 99% accuracy can still break a coding agent."
+  },
+  {
+    "date": "2026-07-27",
+    "source": "sentinel",
+    "angle": "Close as false-positive and it never refiles",
+    "archetype": "til",
+    "preview": "Dismiss a finding once and Sentinel never refiles it. The audit reads the false-positive label and d"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "get-md",
+    "angle": "Sitemap crawl has a kill switch",
+    "archetype": "contrarian",
+    "preview": "Most sitemap crawlers trust whatever the index returns. Run one against a big ecommerce sitemap and "
+  },
+  {
+    "date": "2026-07-27",
+    "source": "json-up",
+    "angle": "Three error types for migration failures",
+    "archetype": "problem-relief",
+    "preview": "\"migration failed\" in your logs tells you nothing. json-up throws ValidationError, MigrationError, V"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "prompt-scrub",
+    "angle": "CodeTell is opt-in for a reason",
+    "archetype": "problem-relief",
+    "preview": "A custom identifier in your code is the one thing a regex won't catch. Generic terms on a code paylo"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "collective",
+    "angle": "Funded balance is zero, on the record",
+    "archetype": "by-the-numbers",
+    "preview": "The community fund holds $0. The $30 payout minimum is bigger than the pool. The Nano Collective pub"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanocoder",
+    "angle": "Subagents can use a different provider",
+    "archetype": "problem-relief",
+    "preview": "Paying a cloud model to read 40 files is a bad deal."
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanotune",
+    "angle": "The judge is configured, not coded",
+    "archetype": "origin",
+    "preview": "\"Is this helpful\" is not a feature you build. It is a model you point at criteria. Nanotune writes a"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "sentinel",
+    "angle": "Dry-run before the first live run",
+    "archetype": "one-tip",
+    "preview": "The first live Sentinel run files everything at once. Pick dry-run from workflow_dispatch first. You"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "get-md",
+    "angle": "CLI stdin detects the file type",
+    "archetype": "til",
+    "preview": "A PDF through a converter usually means a flag, or a per-format branch in your script. `cat doc.pdf "
+  },
+  {
+    "date": "2026-07-27",
+    "source": "json-up",
+    "angle": "Async and sync migrations chain freely",
+    "archetype": "til",
+    "preview": "Most migration chains make you pick sync or async on day one and rewrite if you change your mind. js"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "prompt-scrub",
+    "angle": "Rule packs are npm packages",
+    "archetype": "til",
+    "preview": "A rule pack for prompt-scrub is just an npm package. Install it, list it under prompt-scrub.rulePack"
+  },
+  {
+    "date": "2026-07-27",
+    "source": "collective",
+    "angle": "Maintainership is real workload, rotating is welcome",
+    "archetype": "contrarian",
+    "preview": "Most open source projects chain a maintainer to a repo until they burn out, then let them slip away "
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanocoder",
+    "angle": "Schedules.json is dead, skills own cron now",
+    "archetype": "origin",
+    "preview": "Two systems for one job was the bug."
+  },
+  {
+    "date": "2026-07-27",
+    "source": "nanotune",
+    "angle": "Add examples for the failures, then retrain",
+    "archetype": "problem-relief",
+    "preview": "A retrain that just adds more data usually adds the same blind spots."
   }
 ]
