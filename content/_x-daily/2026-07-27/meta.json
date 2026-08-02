@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-07-27",
+  "generated_at": "2026-08-02T21:36:20.043Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Bundle skills version together",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "LoRA exports to GGUF without compiling llama.cpp",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "Sentinel files no default rule packs",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "node-llama-cpp is an optional peer dep",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Version zero is a real state",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Scrubbing is content-layer, not network-layer",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "No retrospective term changes ever",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "ACP is the same protocol Gemini speaks",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "Loss divergence is the early stop signal",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "Severity is a four-tier scale with confidence",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Mermaid diagrams survive the conversion",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Schema without up is migration-shaped anyway",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Secret detector wins collisions on purpose",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Whitepaper merge is not endorsement",
+      "archetype": "til"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Tune profiles shrink the prompt for small models",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Benchmark reports show timing per test",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Close as false-positive and it never refiles",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "Sitemap crawl has a kill switch",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Three error types for migration failures",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "CodeTell is opt-in for a reason",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Funded balance is zero, on the record",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Subagents can use a different provider",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "The judge is configured, not coded",
+      "archetype": "origin"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Dry-run before the first live run",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "CLI stdin detects the file type",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Async and sync migrations chain freely",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "Rule packs are npm packages",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Maintainership is real workload, rotating is welcome",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Schedules.json is dead, skills own cron now",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Add examples for the failures, then retrain",
+      "archetype": "problem-relief"
+    }
+  ],
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}
