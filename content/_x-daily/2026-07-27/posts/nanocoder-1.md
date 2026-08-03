@@ -7,6 +7,7 @@ angle: "Bundle skills version together"
 generated_at: "2026-08-02T21:36:20.043Z"
 model: "minimax-m3"
 char_count: 232
+distributed_at: "2026-08-03T12:46:24.702Z"
 ---
 
 A skill that knows its own parts.
