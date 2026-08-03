@@ -1,6 +1,6 @@
 {
   "week_of": "2026-08-10",
-  "generated_at": "2026-08-02T04:16:48.362Z",
+  "generated_at": "2026-08-03T04:19:57.181Z",
   "days": {
     "2026-08-10": [
       {
@@ -26,6 +26,13 @@
         "channel": "x",
         "type": "backlog-article",
         "ref": "content/nanocoder/1.27.0/articles/daemon-event-triggered-runs/channels/x.md"
+      },
+      {
+        "slot": "x-2",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-07-27/posts/nanotune-5.md",
+        "source": "nanotune"
       }
     ],
     "2026-08-11": [],
