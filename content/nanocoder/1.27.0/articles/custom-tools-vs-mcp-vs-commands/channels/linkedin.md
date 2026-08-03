@@ -6,6 +6,7 @@ title: "Choosing your Nanocoder extension point"
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-08-03T13:38:45.287Z"
 ---
 
 Nanocoder v1.27.0 ships three distinct surfaces for adding custom behaviour. Most users reach for one and then discover they picked the wrong one partway through. Here is the short map.
