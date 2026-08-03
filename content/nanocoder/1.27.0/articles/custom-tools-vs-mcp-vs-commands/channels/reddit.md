@@ -6,6 +6,7 @@ title: "Choosing your Nanocoder extension point"
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-08-03T16:06:32.244Z"
 ---
 
 A decision that comes up a lot in Nanocoder's GitHub discussions: when do you reach for a custom command, a Custom Tool, or an MCP server? v1.27.0 ships all three, and they are easy to mix up.
