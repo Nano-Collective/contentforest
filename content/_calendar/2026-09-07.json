@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-09-07",
+  "generated_at": "2026-08-03T04:19:57.181Z",
+  "days": {
+    "2026-09-07": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/subagent-attach-ink-static-remount/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/subagent-attach-ink-static-remount/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/subagent-attach-ink-static-remount/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/subagent-attach-ink-static-remount/channels/x.md"
+      }
+    ],
+    "2026-09-08": [],
+    "2026-09-09": [],
+    "2026-09-10": [],
+    "2026-09-11": [],
+    "2026-09-12": [],
+    "2026-09-13": []
+  }
+}
