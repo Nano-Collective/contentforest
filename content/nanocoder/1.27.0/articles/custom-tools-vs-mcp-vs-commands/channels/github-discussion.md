@@ -6,6 +6,7 @@ title: "Choosing your Nanocoder extension point"
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-08-03T10:51:27.083Z"
 ---
 
 Nanocoder v1.27.0 gives you three distinct surfaces for adding custom behaviour. Custom commands, Custom Tools, and MCP servers each solve a different problem and map to different trade-offs. Picking the right one from the start saves you retrofitting work later.
