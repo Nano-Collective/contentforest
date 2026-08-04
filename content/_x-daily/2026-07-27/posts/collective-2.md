@@ -7,6 +7,7 @@ angle: "Whitepaper merge is not endorsement"
 generated_at: "2026-08-02T21:36:20.043Z"
 model: "minimax-m3"
 char_count: 254
+distributed_at: "2026-08-04T10:05:03.854Z"
 ---
 
 A Nano Collective whitepaper merges. Easy to read that as 'we're building this.'
