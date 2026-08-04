@@ -7,7 +7,7 @@ angle: "Schema without up is migration-shaped anyway"
 generated_at: "2026-08-02T21:36:20.043Z"
 model: "minimax-m3"
 char_count: 228
-distributed_at: "2026-08-04T10:05:43.388Z"
+distributed_at: "2026-08-04T10:06:41.789Z"
 ---
 
 The discipline of writing both, even when only the schema changes, is what stops a 'just bump the version' edit from quietly corrupting old data. json-up makes the up function mandatory. The schema alone was never the migration.
