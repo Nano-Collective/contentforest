@@ -1,0 +1,20 @@
+{
+  "product": "nanotune",
+  "version": "1.6.0",
+  "product_url": "https://github.com/Nano-Collective/nanotune",
+  "generated_at": "2026-08-09T21:17:17.767Z",
+  "model": "minimax-m3",
+  "generation_attempts": 3,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "non-tty-pipelines",
+      "title": "Running Nanotune end to end in CI, scripts, and Docker without a TTY",
+      "focus": "Walks through chaining nanotune data validate, train, export, benchmark, and status in non-interactive contexts (CI jobs, pipes, Docker without -t, cron) and explains the render-and-exit vs interactive-only split that v1.6.0 introduced.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
