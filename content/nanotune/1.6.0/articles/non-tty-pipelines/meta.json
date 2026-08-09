@@ -1,0 +1,7 @@
+{
+  "slug": "non-tty-pipelines",
+  "title": "Running Nanotune end to end in CI, scripts, and Docker without a TTY",
+  "focus": "Walks through chaining nanotune data validate, train, export, benchmark, and status in non-interactive contexts (CI jobs, pipes, Docker without -t, cron) and explains the render-and-exit vs interactive-only split that v1.6.0 introduced.",
+  "generated_at": "2026-08-09T21:17:17.767Z",
+  "model": "minimax-m3"
+}
