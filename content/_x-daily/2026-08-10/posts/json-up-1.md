@@ -7,6 +7,7 @@ angle: "Zod schema gates the migration"
 generated_at: "2026-08-10T02:35:54.441Z"
 model: "minimax-m3"
 char_count: 278
+distributed_at: "2026-08-10T15:49:02.891Z"
 ---
 
 The migration runs, the next schema rejects the output, and the stored JSON is silently trust-me-broken. json-up runs Zod against every up() and throws ValidationError with issues pointing at the exact path, so the failing field is the message - not a generic migration failed.
