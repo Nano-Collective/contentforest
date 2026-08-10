@@ -6,6 +6,7 @@ title: "Nanotune v1.6.0: Nanotune works without a terminal"
 generated_at: "2026-08-09T21:17:17.767Z"
 model: "minimax-m3"
 char_count: 5186
+distributed_at: "2026-08-10T09:28:30.332Z"
 ---
 
 # Nanotune v1.6.0: Nanotune works without a terminal
