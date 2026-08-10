@@ -7,6 +7,7 @@ angle: "Add examples for the failures, then retrain"
 generated_at: "2026-08-02T21:36:20.043Z"
 model: "minimax-m3"
 char_count: 263
+distributed_at: "2026-08-10T15:46:28.108Z"
 ---
 
 A retrain that just adds more data usually adds the same blind spots.
