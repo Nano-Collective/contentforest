@@ -7,6 +7,7 @@ angle: "Tune profiles shrink the prompt for small models"
 generated_at: "2026-08-02T21:36:20.043Z"
 model: "minimax-m3"
 char_count: 240
+distributed_at: "2026-08-10T15:47:48.757Z"
 ---
 
 A 1B model burns a quarter of its context window on the system prompt.
