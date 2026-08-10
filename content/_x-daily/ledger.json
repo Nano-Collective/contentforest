@@ -838,5 +838,215 @@
     "angle": "Add examples for the failures, then retrain",
     "archetype": "problem-relief",
     "preview": "A retrain that just adds more data usually adds the same blind spots."
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanocoder",
+    "angle": "Daemon listens for file changes",
+    "archetype": "origin",
+    "preview": "File watchers that only run while your terminal is open aren't file watchers. nanocoder's daemon exi"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanotune",
+    "angle": "Judge pairs with benchmark report",
+    "archetype": "til",
+    "preview": "Open-ended tests usually hand you a number and trust you on the why. Nanotune's llm-judge tests put "
+  },
+  {
+    "date": "2026-08-10",
+    "source": "sentinel",
+    "angle": "No defaults on purpose",
+    "archetype": "problem-relief",
+    "preview": "Security scanners either ship rules for someone else's stack or hand you an empty editor and leave. "
+  },
+  {
+    "date": "2026-08-10",
+    "source": "get-md",
+    "angle": "Stdin type detection by content",
+    "archetype": "til",
+    "preview": "Pipe a file with no useful extension into get-md and it reads the bytes, not the name. `%PDF` on std"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "json-up",
+    "angle": "Zod schema gates the migration",
+    "archetype": "problem-relief",
+    "preview": "The migration runs, the next schema rejects the output, and the stored JSON is silently trust-me-bro"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "prompt-scrub",
+    "angle": "Secrets win collisions",
+    "archetype": "sharp-take",
+    "preview": "Collision resolution is policy, not a tie-breaker. prompt-scrub states the hierarchy upfront: secret"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "collective",
+    "angle": "Sponsors cannot buy the roadmap",
+    "archetype": "origin",
+    "preview": "Most sponsorship buys influence. The Nano Collective's doesn't. The sponsor page and contributor res"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanocoder",
+    "angle": "Twenty-plus providers one tool",
+    "archetype": "by-the-numbers",
+    "preview": "20+ model providers and you still switch tools every time the API key changes. nanocoder treats them"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanotune",
+    "angle": "Fine-tune on a laptop",
+    "archetype": "problem-relief",
+    "preview": "A fine-tune used to mean renting a box, compiling llama.cpp, and a weekend of YAML. Nanotune targets"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "sentinel",
+    "angle": "False positives are a first-class surface",
+    "archetype": "sharp-take",
+    "preview": "An LLM auditor will be wrong. Build for the misses. Sentinel dedups by content hash, takes false-pos"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "get-md",
+    "angle": "Four paths for Mermaid",
+    "archetype": "til",
+    "preview": "A rendered Mermaid diagram is gone unless the source lives in the DOM. get-md reads it back from the"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "json-up",
+    "angle": "Untracked data is implicit version 0",
+    "archetype": "origin",
+    "preview": "Every migration library we've shipped wanted a one-time import script for pre-migration data. json-u"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "prompt-scrub",
+    "angle": "Scrub every turn not just the prompt",
+    "archetype": "one-tip",
+    "preview": "A path leaks the moment you run `ls`. prompt-scrub takes the whole messages array, so every tool res"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "collective",
+    "angle": "Stage 0 is sanity not gate",
+    "archetype": "problem-relief",
+    "preview": "Every hour contributors spend arguing whether a new project is in scope is stolen from something alr"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanocoder",
+    "angle": "Zero telemetry is the default",
+    "archetype": "contrarian",
+    "preview": "Most CLI agents phone home the moment you run them. Nanocoder's default is the opposite: zero instal"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanotune",
+    "angle": "Benchmark failures drive the next dataset",
+    "archetype": "one-tip",
+    "preview": "Adding data on instinct burns evenings. nanotune benchmark writes a markdown report with a failed-te"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "sentinel",
+    "angle": "First-class local model path",
+    "archetype": "til",
+    "preview": "An audit that calls a cloud model is not a private audit. Sentinel's first-class local path (Ollama,"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "get-md",
+    "angle": "URL into clean Markdown under 100ms",
+    "archetype": "one-tip",
+    "preview": "Under 100ms per page, no API key, no rate limit. get-md runs Turndown plus Mozilla Readability local"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "json-up",
+    "angle": "Async migrations only where they pay",
+    "archetype": "one-tip",
+    "preview": "A chain of sync migrations doesn't need Promise overhead. Mark up() async only when it actually awai"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "prompt-scrub",
+    "angle": "Zero API quota for scrub",
+    "archetype": "by-the-numbers",
+    "preview": "0 tokens shipped for an unscrubbed prompt that mentions an `Email_1` placeholder. prompt-scrub runs "
+  },
+  {
+    "date": "2026-08-10",
+    "source": "collective",
+    "angle": "Open ledger published in real time",
+    "archetype": "by-the-numbers",
+    "preview": "Two streams, one ledger. Every payment in and every payment out of the Nano Collective lands on a pu"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanocoder",
+    "angle": "ACP socket for any editor",
+    "archetype": "til",
+    "preview": "Most coding agents ship a separate extension per editor. Nanocoder exposes one ACP socket, so any ed"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanotune",
+    "angle": "Validate before train not after",
+    "archetype": "one-tip",
+    "preview": "Most failed training runs are not hyperparameter bugs. They are data bugs caught in seconds. Run nan"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "sentinel",
+    "angle": "Dedup is content hash not line range",
+    "archetype": "til",
+    "preview": "An LLM might flag the same issue at lines 4–6 today and 5–5 tomorrow. Sentinel's dedup hash is rule "
+  },
+  {
+    "date": "2026-08-10",
+    "source": "get-md",
+    "angle": "Concurrency knob for batch",
+    "archetype": "by-the-numbers",
+    "preview": "Default 5 parallel converters sounds fast until your LLM provider starts throttling. `get-md` lets y"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "json-up",
+    "angle": "Errors carry the version they failed at",
+    "archetype": "til",
+    "preview": "Your catch knows the migration broke, not which step. json-up tags ValidationError, MigrationError, "
+  },
+  {
+    "date": "2026-08-10",
+    "source": "prompt-scrub",
+    "angle": "Composability beats ownership",
+    "archetype": "contrarian",
+    "preview": "Most privacy tools want to own your whole stack. prompt-scrub only scrubs text. Pair it with the VPN"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "collective",
+    "angle": "Sponsorship gets placement not leverage",
+    "archetype": "contrarian",
+    "preview": "Sponsorship gets placement, not say. Most projects can't promise that, because investors and paid ti"
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanocoder",
+    "angle": "Small models still get full capability",
+    "archetype": "problem-relief",
+    "preview": "A cheap local model that cannot reliably call tools is a dead end. Turn fails, retry, fail again."
+  },
+  {
+    "date": "2026-08-10",
+    "source": "nanotune",
+    "angle": "The iterative loop has no manual step",
+    "archetype": "sharp-take",
+    "preview": "A model performance question should never be answered on a feeling. Nanotune's loop is train, benchm"
   }
 ]
