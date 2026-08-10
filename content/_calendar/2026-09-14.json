@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-09-14",
+  "generated_at": "2026-08-10T02:57:39.385Z",
+  "days": {
+    "2026-09-14": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.6.0/articles/non-tty-pipelines/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.6.0/articles/non-tty-pipelines/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.6.0/articles/non-tty-pipelines/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.6.0/articles/non-tty-pipelines/channels/x.md"
+      }
+    ],
+    "2026-09-15": [],
+    "2026-09-16": [],
+    "2026-09-17": [],
+    "2026-09-18": [],
+    "2026-09-19": [],
+    "2026-09-20": []
+  }
+}
