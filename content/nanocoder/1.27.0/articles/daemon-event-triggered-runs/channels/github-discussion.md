@@ -6,6 +6,7 @@ title: "How Nanocoder's daemon replaces the scheduler"
 generated_at: "2026-05-26T22:38:17.346Z"
 model: "minimax-m3"
 char_count: 0
+distributed_at: "2026-08-11T10:00:30.863Z"
 ---
 
 Nanocoder v1.27.0 removes the old scheduler module entirely. What replaced it is a per-project background daemon that handles two event kinds (`file.changed` and `schedule.cron`) for skill subscriptions. This post walks through the daemon's architecture, the design decisions behind it, and what changed from the old model.
