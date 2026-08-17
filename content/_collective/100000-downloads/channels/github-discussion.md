@@ -6,6 +6,7 @@ title: "100,000 downloads, a milestone worth marking honestly"
 generated_at: "2026-07-12T17:20:59.425Z"
 model: "minimax-m3"
 char_count: 4968
+distributed_at: "2026-08-17T09:41:09.153Z"
 ---
 
 The Nano Collective crossed 100,000 total downloads across its open-source AI tooling: Nanocoder, Nanotune, get-md, and json-up. The number felt big enough to mark, and small enough to be honest about what it represents.
