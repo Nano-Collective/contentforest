@@ -1048,5 +1048,215 @@
     "angle": "The iterative loop has no manual step",
     "archetype": "sharp-take",
     "preview": "A model performance question should never be answered on a feeling. Nanotune's loop is train, benchm"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanocoder",
+    "angle": "No paid tier is structural",
+    "archetype": "sharp-take",
+    "preview": "Nanocoder will never have a paid tier. Not \"not yet\", not \"free for now\". It's structural: no invest"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanotune",
+    "angle": "Fine-tune on a laptop on purpose",
+    "archetype": "contrarian",
+    "preview": "Fine-tuning doesn't need a GPU cluster. Nanotune ships for Apple Silicon with MLX, wraps the tooling"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "sentinel",
+    "angle": "No rule packs is the design",
+    "archetype": "contrarian",
+    "preview": "Most scanners hand you a ruleset on day one. Sentinel ships with none. A pack written for one stack "
+  },
+  {
+    "date": "2026-08-17",
+    "source": "get-md",
+    "angle": "Four paths to keep Mermaid",
+    "archetype": "problem-relief",
+    "preview": "Your diagram was right there in the source. Then HTML-to-Markdown happened, and it's gone."
+  },
+  {
+    "date": "2026-08-17",
+    "source": "json-up",
+    "angle": "Validate at every step",
+    "archetype": "sharp-take",
+    "preview": "A migration chain is only as trustworthy as the step you're on. Every up() output gets Zod-validated"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "prompt-scrub",
+    "angle": "Tool results scrub too",
+    "archetype": "origin",
+    "preview": "Secrets don't only arrive in the prompt. They arrive in the next turn, inside the ls, git log, and c"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "collective",
+    "angle": "Sponsors fund, they do not direct",
+    "archetype": "sharp-take",
+    "preview": "Sponsorship buys you a logo on the supporters page. Not the roadmap. Not who gets paid. The Nano Col"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanocoder",
+    "angle": "Per-project daemon owns events",
+    "archetype": "origin",
+    "preview": "The old scheduler lived inside the TUI. Close the terminal and file watches stopped, cron stopped, t"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanotune",
+    "angle": "The recommended starting recipe",
+    "archetype": "by-the-numbers",
+    "preview": "Fine-tuning has too many knobs to guess from zero. Nanotune ships a starting recipe: 150 iterations,"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "sentinel",
+    "angle": "Three layers of suppression",
+    "archetype": "by-the-numbers",
+    "preview": "Three layers of suppression, three different jobs. Sentinel deduplicates by content hash by default,"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "get-md",
+    "angle": "Sitemap mode has a hard cap",
+    "archetype": "contrarian",
+    "preview": "The default crawl sees a sitemap and recurses forever. get-md shipped the kill switch: --max-urls ca"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "json-up",
+    "angle": "Repurpose an existing version field",
+    "archetype": "one-tip",
+    "preview": "Your data already tracks a version under whatever name you picked. `json-up` does not ask you to ren"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "prompt-scrub",
+    "angle": "Hallucinated placeholders pass through",
+    "archetype": "til",
+    "preview": "When the model invents a placeholder that isn't in the session map, prompt-scrub doesn't crash and d"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "collective",
+    "angle": "Open a docs issue before the whitepaper",
+    "archetype": "one-tip",
+    "preview": "A month of whitepaper writing is a lot to lose to a one-paragraph redirect. Before you draft one for"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanocoder",
+    "angle": "Strip a tool from every sightline",
+    "archetype": "one-tip",
+    "preview": "One tool keeps pulling the model back, even after you've said no. Add it to `nanocoder.disabledTools"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanotune",
+    "angle": "Iterate to the failures",
+    "archetype": "origin",
+    "preview": "A fine-tune without feedback is just training in the dark. Nanotune's loop is train, benchmark, read"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "sentinel",
+    "angle": "False positives are designed in",
+    "archetype": "origin",
+    "preview": "An LLM audit will get things wrong. Sentinel designs for that instead of around it: every finding ca"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "get-md",
+    "angle": "Batches stream, not buffer",
+    "archetype": "origin",
+    "preview": "Buffer the whole batch and you OOM before the last URL resolves. get-md's convertBatch yields as eac"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "json-up",
+    "angle": "Unversioned data is v0",
+    "archetype": "til",
+    "preview": "Your old JSON already has a version: 0."
+  },
+  {
+    "date": "2026-08-17",
+    "source": "prompt-scrub",
+    "angle": "Scrub happens after every tool call",
+    "archetype": "problem-relief",
+    "preview": "Your agent reads `ls /Users/me/work` and the next turn has your full path tree. Same for `cat deploy"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "collective",
+    "angle": "If a proposer disappears, anyone can pick it up",
+    "archetype": "til",
+    "preview": "A whitepaper with a proposer who goes quiet doesn't die quietly. After 60 days idle, the Nano Collec"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanocoder",
+    "angle": "Seven local server integrations",
+    "archetype": "by-the-numbers",
+    "preview": "Seven local model servers show up as first-class providers in nanocoder: Ollama, llama.cpp, llama-sw"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanotune",
+    "angle": "Verify the judge before using it",
+    "archetype": "one-tip",
+    "preview": "A benchmark that scores on vibes is worse than no benchmark. After `nanotune judge configure`, run `"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "sentinel",
+    "angle": "Close it once, never see it again",
+    "archetype": "problem-relief",
+    "preview": "Closing an LLM-audit issue because the model misread the code, then finding the same finding re-file"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "get-md",
+    "angle": "100ms or 10 seconds on purpose",
+    "archetype": "by-the-numbers",
+    "preview": "<100ms with Turndown, 5-10 seconds with the local ReaderLM-v2 path. get-md gives you both, and the c"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "json-up",
+    "angle": "Sync and async chain freely",
+    "archetype": "by-the-numbers",
+    "preview": "One async up() flips the whole chain. json-up gives you two builders: createMigrations() stays sync,"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "prompt-scrub",
+    "angle": "Off is the safe default for detectors",
+    "archetype": "sharp-take",
+    "preview": "A sloppy detector is worse than no detector. prompt-scrub ships NameDetector and CodeTellDetector of"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "collective",
+    "angle": "Thirty dollars is the minimum payout",
+    "archetype": "by-the-numbers",
+    "preview": "30 USD is the minimum balance before Open Source Collective will process a contributor expense. It i"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanocoder",
+    "angle": "Headless runs end with an answer",
+    "archetype": "problem-relief",
+    "preview": "Your CI fires an unattended agent, it dies on a stuck loop, exit non-zero, no usable output, morning"
+  },
+  {
+    "date": "2026-08-17",
+    "source": "nanotune",
+    "angle": "Watch the loss curve, not the LR",
+    "archetype": "sharp-take",
+    "preview": "Your configured iterations are a guess. The loss curve is the answer. Nanotune plots training vs val"
   }
 ]

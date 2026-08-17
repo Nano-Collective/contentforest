@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-08-17",
+  "generated_at": "2026-08-17T01:56:19.919Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "No paid tier is structural",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Fine-tune on a laptop on purpose",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "No rule packs is the design",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Four paths to keep Mermaid",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Validate at every step",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Tool results scrub too",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Sponsors fund, they do not direct",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Per-project daemon owns events",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "The recommended starting recipe",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "Three layers of suppression",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Sitemap mode has a hard cap",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Repurpose an existing version field",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Hallucinated placeholders pass through",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Open a docs issue before the whitepaper",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Strip a tool from every sightline",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Iterate to the failures",
+      "archetype": "origin"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "False positives are designed in",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "Batches stream, not buffer",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Unversioned data is v0",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Scrub happens after every tool call",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "If a proposer disappears, anyone can pick it up",
+      "archetype": "til"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Seven local server integrations",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Verify the judge before using it",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Close it once, never see it again",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "100ms or 10 seconds on purpose",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Sync and async chain freely",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "Off is the safe default for detectors",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Thirty dollars is the minimum payout",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Headless runs end with an answer",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Watch the loss curve, not the LR",
+      "archetype": "sharp-take"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
