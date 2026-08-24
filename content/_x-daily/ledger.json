@@ -1048,5 +1048,215 @@
     "angle": "The iterative loop has no manual step",
     "archetype": "sharp-take",
     "preview": "A model performance question should never be answered on a feeling. Nanotune's loop is train, benchm"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanocoder",
+    "angle": "Provider neutrality is the contract",
+    "archetype": "sharp-take",
+    "preview": "A coding agent should answer to the developer, not to the foundation that funds a model lab."
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanotune",
+    "angle": "Commands, not a YAML notebook",
+    "archetype": "origin",
+    "preview": "Fine-tuning shouldn't depend on whoever wrote the last config. Nanotune encodes the loop as five ver"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "sentinel",
+    "angle": "Zero default rule packs by design",
+    "archetype": "contrarian",
+    "preview": "Hundreds of out-of-the-box rules, and most of them were written for someone else's stack. You scroll"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "get-md",
+    "angle": "HTML to MD should not route through a cloud",
+    "archetype": "sharp-take",
+    "preview": "A converter you reach for during LLM prep should not phone home by default. get-md's Turndown and Re"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "json-up",
+    "angle": "JSON migrations should live in one file",
+    "archetype": "contrarian",
+    "preview": "Most \"JSON migrations\" are scattered `if (old.field)` guards across the codebase, with no record of "
+  },
+  {
+    "date": "2026-08-24",
+    "source": "prompt-scrub",
+    "angle": "Tool outputs are also prompts",
+    "archetype": "problem-relief",
+    "preview": "You can scrub your message and still leak. `ls`, `cat`, `git log`, `grep` - whatever a tool prints i"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "collective",
+    "angle": "The community fund is a mechanism, not a balance",
+    "archetype": "sharp-take",
+    "preview": "An empty fund that says so is worth more than a full one that lies. The Nano Collective's Economics "
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanocoder",
+    "angle": "API keys belong in env, not on disk",
+    "archetype": "one-tip",
+    "preview": "A checked-in API key is a leak waiting for a bot. nanocoder reads NANOCODER_PROVIDERS (or NANOCODER_"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanotune",
+    "angle": "Five commands, zero YAML, one shipped model",
+    "archetype": "by-the-numbers",
+    "preview": "Five commands. No YAML. No flags. By lunch you have fine-tuned a model and exported a GGUF running i"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "sentinel",
+    "angle": "Three suppression layers beat one smart filter",
+    "archetype": "origin",
+    "preview": "A suppression filter that learns from feedback will learn to swallow the next real bug. Sentinel (al"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "get-md",
+    "angle": "Four Mermaid paths because input shape is the truth",
+    "archetype": "origin",
+    "preview": "Mermaid in source, an SVG already rendered, and a vector drawing in a PDF are three different proble"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "json-up",
+    "angle": "ValidationError names the field that broke",
+    "archetype": "til",
+    "preview": "\"Validation failed\" with no field path is a grep you didn't budget for. json-up's `ValidationError` "
+  },
+  {
+    "date": "2026-08-24",
+    "source": "prompt-scrub",
+    "angle": "Stable placeholders across turns",
+    "archetype": "til",
+    "preview": "Randomising placeholders per turn looks safer. It isn't. If \"Email_1\" becomes \"Email_3\" next turn, t"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "collective",
+    "angle": "Flag a fundamental pivot and the clock resets",
+    "archetype": "one-tip",
+    "preview": "A 30-day review held against a proposal you quietly rewrote is worthless. When a whitepaper pivot ch"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanocoder",
+    "angle": "The setup wizard exists because no one should memorise JSON",
+    "archetype": "origin",
+    "preview": "Your first prompt shouldn't require memorising twenty-plus provider config blocks. Nanocoder's /setu"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanotune",
+    "angle": "Iteration speed beats config depth",
+    "archetype": "contrarian",
+    "preview": "The default for fine-tuning is a wall of YAML and flags you read for an hour before you see a number"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "sentinel",
+    "angle": "False positives cost the user less than the tool",
+    "archetype": "problem-relief",
+    "preview": "Close one false positive fast enough and your brain flags the next five as noise. That is how a real"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "get-md",
+    "angle": "PDF vision is opt-in, never the default",
+    "archetype": "contrarian",
+    "preview": "Most converters render PDFs to images and route them through cloud vision by default, then bill you "
+  },
+  {
+    "date": "2026-08-24",
+    "source": "json-up",
+    "angle": "Three error types for one migrate call",
+    "archetype": "by-the-numbers",
+    "preview": "3 errors, one migrate() call. ValidationError and MigrationError point at your data. VersionError po"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "prompt-scrub",
+    "angle": "Compose with a network tool of your choice",
+    "archetype": "one-tip",
+    "preview": "Your prompts travel through a network the LLM provider can read. Run prompt-scrub on the content, th"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "collective",
+    "angle": "The charter is versioned in the docs repo, not signed by a lawyer",
+    "archetype": "til",
+    "preview": "No lawyer signed our Economics Charter. It is a Markdown file under version control, with git as the"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanocoder",
+    "angle": "Local models are first-class, not a weekend project",
+    "archetype": "contrarian",
+    "preview": "Most coding agents put the cloud key in the first paragraph and the local providers in the fifth. Na"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanotune",
+    "angle": "Export writes GGUF directly",
+    "archetype": "til",
+    "preview": "The slow part of fine-tuning is never the training run. It's the convert-and-pray that comes after. "
+  },
+  {
+    "date": "2026-08-24",
+    "source": "sentinel",
+    "angle": "Sentinel inherits your Nanocoder provider stack",
+    "archetype": "til",
+    "preview": "Your audit tool shouldn't need its own model config. Sentinel runs its scheduled audit through Nanoc"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "get-md",
+    "angle": "HTML in under 100 milliseconds",
+    "archetype": "by-the-numbers",
+    "preview": "Under 100ms for a typical HTML page, no service in the path, no rate limit to dodge. When your conve"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "json-up",
+    "angle": "Validate outputs, not inputs",
+    "archetype": "sharp-take",
+    "preview": "A migration that runs cleanly can still hand back garbage. json-up checks the up() result against th"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "prompt-scrub",
+    "angle": "Content layer, not network layer",
+    "archetype": "origin",
+    "preview": "A scrubber that reaches for the network ends up doing two jobs badly. prompt-scrub stops at the text"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "collective",
+    "angle": "Five stages because the build decision must be separate from the merge",
+    "archetype": "origin",
+    "preview": "A merged whitepaper used to function as a build endorsement. The Nano Collective treats that as a bu"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanocoder",
+    "angle": "Disable timeouts for local models",
+    "archetype": "til",
+    "preview": "A local agent doesn't crash loudly. It stalls on a long token, then dies at the 2-minute default. na"
+  },
+  {
+    "date": "2026-08-24",
+    "source": "nanotune",
+    "angle": "Retrain on the bench failures",
+    "archetype": "problem-relief",
+    "preview": "You run the benchmark and every failure lands on the same two prompts you forgot to train on. Nanotu"
   }
 ]
