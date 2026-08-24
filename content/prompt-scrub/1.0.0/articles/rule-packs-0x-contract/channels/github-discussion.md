@@ -6,6 +6,7 @@ title: "Authoring a prompt-scrub rule pack from scratch"
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 16810
+distributed_at: "2026-08-24T09:48:01.138Z"
 ---
 
 # Authoring a prompt-scrub rule pack from scratch
