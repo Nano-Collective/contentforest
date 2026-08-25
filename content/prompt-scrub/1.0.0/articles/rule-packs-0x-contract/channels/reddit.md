@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 6348
+distributed_at: "2026-08-25T16:36:58.337Z"
 ---
 
 We just shipped the rule-pack contract for `prompt-scrub` and we want to walk through it, because the contract is small enough that you can read it on a coffee break and substantive enough that you can publish a real pack in an afternoon.
