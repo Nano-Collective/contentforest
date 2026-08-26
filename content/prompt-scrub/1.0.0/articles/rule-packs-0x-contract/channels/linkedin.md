@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 2752
+distributed_at: "2026-08-25T16:33:16.880Z"
 ---
 
 If you have ever wanted to add a custom detector to `prompt-scrub` without forking the package, the rule-pack contract is what you are looking for. It is small enough to read in one sitting and consistent enough that a published pack can rely on it.

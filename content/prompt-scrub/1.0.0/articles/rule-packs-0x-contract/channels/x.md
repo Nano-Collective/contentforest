@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-09T19:23:12.277Z"
 model: "minimax-m3"
 char_count: 230
+distributed_at: "2026-08-25T16:34:19.516Z"
 ---
 
 The prompt-scrub rule-pack contract in one screen: the Detector interface, why value/placeholderPrefix but never replacement, three export shapes, config and package.json wiring.
