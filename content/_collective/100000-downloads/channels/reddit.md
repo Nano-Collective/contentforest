@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-07-12T17:20:59.425Z"
 model: "minimax-m3"
 char_count: 2371
+distributed_at: "2026-08-26T20:05:44.733Z"
 ---
 
 The Nano Collective just passed 100,000 total downloads across its open-source projects: Nanocoder, Nanotune, get-md, and json-up. Sharing here because this community tends to care about tools that stay open, run locally, and don't route your work through a third-party platform.
