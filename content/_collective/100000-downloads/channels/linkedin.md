@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-07-12T17:20:59.425Z"
 model: "minimax-m3"
 char_count: 1021
+distributed_at: "2026-08-26T20:08:18.113Z"
 ---
 
 The Nano Collective just crossed 100,000 total downloads across its open-source projects: Nanocoder, Nanotune, get-md, and json-up.
