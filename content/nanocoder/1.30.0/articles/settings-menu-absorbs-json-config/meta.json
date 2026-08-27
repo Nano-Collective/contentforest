@@ -1,0 +1,7 @@
+{
+  "slug": "settings-menu-absorbs-json-config",
+  "title": "How /settings ate the JSON config (and what stayed in code)",
+  "focus": "A walk through the new Appearance, Input, Behavior, Providers, MCP, and Advanced tabs, why the wizard landing page and mode-specific providers were reshaped, how the in-app agents.config.json editor edits strings with the cursor inside the quotes and saves atomically, and what the NANOCODER_* env vars and the theme-aware StyledSelectInput fix look like in practice.",
+  "generated_at": "2026-08-27T09:50:38.257Z",
+  "model": "minimax-m3"
+}

@@ -1,0 +1,7 @@
+{
+  "slug": "vscode-1-30-queued-work-and-cancel",
+  "title": "VS Code in 1.30: queued work, real cancel, CLI you can find",
+  "focus": "How the new chat panel surfaces tool calls as a queued, running, done checklist with plain English labels and live Open Diff buttons, why Escape and the nanocoder.cancel command now reliably tear down the in-flight request and clear pending approvals, how session renaming rides on a new renameSession ACP extMethod, and what changed in CLI discovery so Windows, NVM, Volta, fnm, pnpm, and bun users can actually start the extension.",
+  "generated_at": "2026-08-27T09:50:38.257Z",
+  "model": "minimax-m3"
+}
