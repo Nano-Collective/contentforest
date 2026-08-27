@@ -20,6 +20,10 @@ body:
       description: |
         Pick what to edit. `<product>/<version>` targets the release pack itself (channels, meta, or a single file under it). `<product>/<version>/articles/<slug>` targets one article inside a pack. List is auto-generated from `content/` on `main`, sorted newest-first.
       options:
+        - nanocoder/1.30.0
+        - nanocoder/1.30.0/articles/defending-the-context-window
+        - nanocoder/1.30.0/articles/settings-menu-absorbs-json-config
+        - nanocoder/1.30.0/articles/vscode-1-30-queued-work-and-cancel
         - nanotune/1.6.0
         - nanotune/1.6.0/articles/non-tty-pipelines
         - sentinel/0.1.0-alpha.2
