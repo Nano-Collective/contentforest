@@ -6,6 +6,7 @@ title: "Nanocoder v1.30.0: /settings, /commit, usage footer, VS Code chips"
 generated_at: "2026-08-27T09:50:38.257Z"
 model: "minimax-m3"
 char_count: 19104
+distributed_at: "2026-08-27T10:16:03.768Z"
 ---
 
 Nanocoder v1.30.0 is out. The shape of this release is consolidation. The biggest change is that almost every remaining CLI setting now lives inside `/settings`, so you can configure Nanocoder without editing `.json` files by hand. Alongside that: a new `/commit` slash command generates Conventional Commit messages from your staged diff using the active LLM, every assistant response now shows provider-reported token usage and an estimated cost, the VS Code extension gained context attachment with file chips and `@` mention autocomplete, and the long list of fixes is mostly about tool results staying inside the context window instead of eating it.
