@@ -1,31 +1,42 @@
 {
   "week_of": "2026-08-31",
-  "generated_at": "2026-08-30T05:48:11.028Z",
+  "generated_at": "2026-08-30T18:45:55.873Z",
   "days": {
     "2026-08-31": [
       {
         "slot": "github-discussion-1",
         "channel": "github-discussion",
-        "type": "backlog-article",
-        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/github-discussion.md"
+        "type": "release",
+        "ref": "content/nanotune/1.7.0/channels/github-discussion.md",
+        "release_set": "nanotune@1.7.0"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "release",
+        "ref": "content/nanotune/1.7.0/channels/hacker-news.md",
+        "release_set": "nanotune@1.7.0"
       },
       {
         "slot": "linkedin-1",
         "channel": "linkedin",
-        "type": "backlog-article",
-        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/linkedin.md"
+        "type": "release",
+        "ref": "content/nanotune/1.7.0/channels/linkedin.md",
+        "release_set": "nanotune@1.7.0"
       },
       {
         "slot": "reddit-1",
         "channel": "reddit",
-        "type": "backlog-article",
-        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/reddit.md"
+        "type": "release",
+        "ref": "content/nanotune/1.7.0/channels/reddit.md",
+        "release_set": "nanotune@1.7.0"
       },
       {
         "slot": "x-1",
         "channel": "x",
-        "type": "backlog-article",
-        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/x.md"
+        "type": "release",
+        "ref": "content/nanotune/1.7.0/channels/x.md",
+        "release_set": "nanotune@1.7.0"
       },
       {
         "slot": "x-2",
@@ -105,6 +116,30 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-10/posts/sentinel-4.md",
         "source": "sentinel"
+      },
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanocoder/1.29.0/articles/privacy-context-prompt-scrubbing/channels/x.md"
       }
     ],
     "2026-09-02": [
