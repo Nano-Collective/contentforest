@@ -1,0 +1,7 @@
+{
+  "slug": "graceful-ctrl-c-checkpoint-safety",
+  "title": "How nanotune training now survives a Ctrl+C without lying about it",
+  "focus": "A behind-the-scenes look at the signal-handling rewrite: why MLX checkpointing needed a graceful path, how the temp-file-then-rename pattern protects adapters and judge.json, and what the new exit-130 and second-Ctrl-C semantics actually do for users.",
+  "generated_at": "2026-08-30T18:34:36.252Z",
+  "model": "minimax-m3"
+}

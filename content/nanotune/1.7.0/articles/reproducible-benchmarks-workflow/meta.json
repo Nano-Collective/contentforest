@@ -1,0 +1,7 @@
+{
+  "slug": "reproducible-benchmarks-workflow",
+  "title": "Re-baselining your nanotune project after v1.7.0",
+  "focus": "A practitioner's guide to the new reproducible-by-default benchmark workflow: when to reach for --base vs a plain run vs compare, why existing pass rates will move, and how to rebuild a trustworthy baseline without losing old history.",
+  "generated_at": "2026-08-30T18:34:36.252Z",
+  "model": "minimax-m3"
+}
