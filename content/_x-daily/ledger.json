@@ -1468,5 +1468,215 @@
     "angle": "Retrain on the bench failures",
     "archetype": "problem-relief",
     "preview": "You run the benchmark and every failure lands on the same two prompts you forgot to train on. Nanotu"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanocoder",
+    "angle": "Skills unify commands, subagents, and tools",
+    "archetype": "origin",
+    "preview": "Commands, subagents, tools, and cron/file triggers used to live in four places and drift apart. Nano"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanotune",
+    "angle": "/keep closes the loop in chat",
+    "archetype": "problem-relief",
+    "preview": "You catch a model failure mid-chat, fix the system prompt, then watch the same mistake come back nex"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "sentinel",
+    "angle": "Dry-run is the calibration path",
+    "archetype": "one-tip",
+    "preview": "Tuning a rule pack by guessing is how you bury your own issues later. Sentinel's dry-run prints a gr"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "get-md",
+    "angle": "JSONL streaming for batch pipelines",
+    "archetype": "til",
+    "preview": "A batch tool that buffers everything before exiting is a batch tool you can't pipe. get-md --json wr"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "json-up",
+    "angle": "Sync and async chain in one builder",
+    "archetype": "til",
+    "preview": "You don't have to pick a builder type before you know which migrations need I/O. `createAsyncMigrati"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "prompt-scrub",
+    "angle": "Detect secrets first, always",
+    "archetype": "by-the-numbers",
+    "preview": "8 detectors, 1 priority chain. Secret wins, then Email, Url, Path, Phone, Address, Name, CodeTell. W"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "collective",
+    "angle": "Merging a whitepaper is not endorsement",
+    "archetype": "sharp-take",
+    "preview": "Merging a whitepaper is not a vote to build it. A Nano Collective whitepaper merges when the argumen"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanocoder",
+    "angle": "ACP means the editor is the UI",
+    "archetype": "til",
+    "preview": "The editor isn't displaying your agent. It IS the agent. nanocoder --acp streams JSON-RPC over stdio"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanotune",
+    "angle": "Local LLM judge, same config shape",
+    "archetype": "by-the-numbers",
+    "preview": "7 providers, 1 config shape. nanotune judge configure treats OpenRouter, OpenAI, Anthropic, Gemini, "
+  },
+  {
+    "date": "2026-08-31",
+    "source": "sentinel",
+    "angle": "Line range is not part of the identity",
+    "archetype": "contrarian",
+    "preview": "Most dedup keys include line range, so a model that drifts a few lines between runs hashes a differe"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "get-md",
+    "angle": "Sitemap mode refuses to crawl forever",
+    "archetype": "contrarian",
+    "preview": "\"Convert everything\" is the wrong default for a sitemap crawl. get-md stops at 10,000 URLs and maxDe"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "json-up",
+    "angle": "Three errors named for what broke",
+    "archetype": "problem-relief",
+    "preview": "A bad migration that ships today becomes the incident you debug weeks later. `json-up` names the fai"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "prompt-scrub",
+    "angle": "Scrub stays at the content layer",
+    "archetype": "sharp-take",
+    "preview": "A privacy tool that picks your proxy for you has too many opinions. prompt-scrub's threat model draw"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "collective",
+    "angle": "If the proposer disappears, anyone picks it up",
+    "archetype": "til",
+    "preview": "When a Nano Collective whitepaper's proposer goes quiet, the paper doesn't stall. Any other contribu"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanocoder",
+    "angle": "Auto-compact falls back silently",
+    "archetype": "til",
+    "preview": "Today I learned Nanocoder's auto-compact silently swaps to mechanical truncation when the LLM summar"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanotune",
+    "angle": "Two seeds, two jobs",
+    "archetype": "one-tip",
+    "preview": "Two seeds, two jobs. `--seed` only runs the split when `valid.jsonl` is missing, so it's a silent no"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "sentinel",
+    "angle": "Rule packs are the only thing you ship",
+    "archetype": "origin",
+    "preview": "An audit tool that ships its own rule packs is telling you what *it* thinks your code should look li"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "get-md",
+    "angle": "React Native runs the same code",
+    "archetype": "til",
+    "preview": "Most \"browser HTML to Markdown\" libs hit a wall the moment you ship to a phone. `get-md` swaps JSDOM"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "json-up",
+    "angle": "Validation guards every step",
+    "archetype": "by-the-numbers",
+    "preview": "1 schema per migration step. json-up validates each up() output against its own Zod schema before th"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "prompt-scrub",
+    "angle": "Rule packs are npm packages",
+    "archetype": "til",
+    "preview": "Most plugin systems ship with a new DSL to learn. prompt-scrub rule packs use the runtime contract d"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "collective",
+    "angle": "Honest about an empty fund",
+    "archetype": "problem-relief",
+    "preview": "The fastest way to lose trust with an open-source fund is announcing capacity you don't have. The Na"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanocoder",
+    "angle": "Checkpoint before you take the risk",
+    "archetype": "problem-relief",
+    "preview": "An AI refactor turns ugly at step 30. No undo. nanocoder's /checkpoint create snapshots files, git d"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanotune",
+    "angle": "Benchmark by default is deterministic",
+    "archetype": "til",
+    "preview": "A benchmark score that moves could be the model, or it could be the sampler. nanotune benchmark defa"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "sentinel",
+    "angle": "Self-hosted runner is the intended path",
+    "archetype": "sharp-take",
+    "preview": "Audit work is exactly where reaching for a cloud model exposes you. Sentinel alpha runs the model th"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "get-md",
+    "angle": "Cache re-runs hit disk, not the network",
+    "archetype": "one-tip",
+    "preview": "Iterating on a conversion pipeline means the network is your bottleneck. get-md --cache with its def"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "json-up",
+    "angle": "Reuse your existing version key",
+    "archetype": "til",
+    "preview": "Retrofitting a migrations library onto data you didn't design usually starts with `rename version to"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "prompt-scrub",
+    "angle": "Opt-in detectors stay off for a reason",
+    "archetype": "contrarian",
+    "preview": "Defaulting every detector to on sounds thorough, until names in code start getting stripped as PII. "
+  },
+  {
+    "date": "2026-08-31",
+    "source": "collective",
+    "angle": "Designated donations scope before money moves",
+    "archetype": "origin",
+    "preview": "Before a Nano Collective donor gives money, they agree what the money is for. The scope, the deliver"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanocoder",
+    "angle": "Tune shrinks the prompt for small models",
+    "archetype": "by-the-numbers",
+    "preview": "The system prompt drops from 500-700 tokens to 150-250 on small models. nanocoder's /tune nano profi"
+  },
+  {
+    "date": "2026-08-31",
+    "source": "nanotune",
+    "angle": "Hardware presets skip the flag wall",
+    "archetype": "one-tip",
+    "preview": "Five flags to tune a benchmark, and you only need one. Nanotune's --preset low|medium|high|ultra set"
   }
 ]

@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-08-31",
+  "generated_at": "2026-08-31T05:38:10.141Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Skills unify commands, subagents, and tools",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "/keep closes the loop in chat",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "Dry-run is the calibration path",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "JSONL streaming for batch pipelines",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Sync and async chain in one builder",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Detect secrets first, always",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merging a whitepaper is not endorsement",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "ACP means the editor is the UI",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "Local LLM judge, same config shape",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "Line range is not part of the identity",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Sitemap mode refuses to crawl forever",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Three errors named for what broke",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Scrub stays at the content layer",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "If the proposer disappears, anyone picks it up",
+      "archetype": "til"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Auto-compact falls back silently",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Two seeds, two jobs",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Rule packs are the only thing you ship",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "React Native runs the same code",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Validation guards every step",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Rule packs are npm packages",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Honest about an empty fund",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Checkpoint before you take the risk",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Benchmark by default is deterministic",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Self-hosted runner is the intended path",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Cache re-runs hit disk, not the network",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Reuse your existing version key",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "Opt-in detectors stay off for a reason",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Designated donations scope before money moves",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Tune shrinks the prompt for small models",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Hardware presets skip the flag wall",
+      "archetype": "one-tip"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
