@@ -6,6 +6,7 @@ title: "Nanotune v1.7.0: benchmarks are reproducible, chat streams, training is 
 generated_at: "2026-08-30T18:34:36.252Z"
 model: "minimax-m3"
 char_count: 100
+distributed_at: "2026-08-31T16:45:12.762Z"
 ---
 
 # Nanotune v1.7.0: benchmarks are reproducible, chat streams, training is flag-driven
