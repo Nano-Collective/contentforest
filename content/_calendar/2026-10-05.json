@@ -1,0 +1,38 @@
+{
+  "week_of": "2026-10-05",
+  "generated_at": "2026-08-31T16:45:30.953Z",
+  "days": {
+    "2026-10-05": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/graceful-ctrl-c-checkpoint-safety/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/graceful-ctrl-c-checkpoint-safety/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/graceful-ctrl-c-checkpoint-safety/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/graceful-ctrl-c-checkpoint-safety/channels/x.md"
+      }
+    ],
+    "2026-10-06": [],
+    "2026-10-07": [],
+    "2026-10-08": [],
+    "2026-10-09": [],
+    "2026-10-10": [],
+    "2026-10-11": []
+  }
+}
