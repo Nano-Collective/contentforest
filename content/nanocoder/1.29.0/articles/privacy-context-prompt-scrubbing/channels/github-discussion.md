@@ -6,6 +6,7 @@ title: "PrivacyContext: scrubbing prompts without breaking the conversation"
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 17534
+distributed_at: "2026-09-01T13:58:00.260Z"
 ---
 
 Nanocoder v1.29.0 ships a feature we have wanted for a while: when you point Nanocoder at a cloud model on a private codebase, the model only ever sees placeholders for the identifying bits of your prompt. Locally, the placeholders resolve back to the values the agent actually needs to keep working. This post walks through how the scrub pipeline is wired into the chat request, what is and is not a content-layer problem, and the two design decisions that took the most iteration: which detectors to run in the agent context, and where the placeholder map lives.
