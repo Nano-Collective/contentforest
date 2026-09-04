@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 1743
+distributed_at: "2026-09-04T12:01:11.959Z"
 ---
 
 Nanocoder v1.29.0 ships a privacy-aware prompt scrubbing layer we have wanted for a while. When you point Nanocoder at a cloud model on a private codebase, the model only sees placeholders for the identifying bits of your prompt. Locally, the placeholders resolve back to the values the agent actually needs.
