@@ -6,6 +6,7 @@ title: "Attaching to a running subagent without losing the transcript"
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 13426
+distributed_at: "2026-09-07T14:50:25.057Z"
 ---
 
 Nanocoder v1.29.0 ships a subagent inspector: press `Ctrl+S` while a subagent is running and you jump into its live transcript, including the reason it picked a particular tool and the text it is streaming in. Press `Ctrl+S` again to cycle across parallel subagents, or `Esc` to drop back to the parent session. Under the hood the feature is small, but two of the bugs we hit while building it are worth writing up because they are the kind of thing that only shows up when you actually try to use the thing in anger, and the fix in each case came from a place in Ink we had not looked at before.
