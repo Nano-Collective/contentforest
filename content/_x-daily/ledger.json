@@ -1678,5 +1678,215 @@
     "angle": "Hardware presets skip the flag wall",
     "archetype": "one-tip",
     "preview": "Five flags to tune a benchmark, and you only need one. Nanotune's --preset low|medium|high|ultra set"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanocoder",
+    "angle": "agents-config-blocks-subagent-spawning",
+    "archetype": "sharp-take",
+    "preview": "A coding agent that can spawn itself isn't autonomous, it's a recursion hazard. nanocoder ships with"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanotune",
+    "angle": "three-finetune-regimes-one-command",
+    "archetype": "sharp-take",
+    "preview": "One fine-tuning command should own every regime. Nanotune's train exposes LoRA, DoRA, and full FT th"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "sentinel",
+    "angle": "starter-pack-ships-disabled-on-purpose",
+    "archetype": "problem-relief",
+    "preview": "Nothing worse than installing a security tool and waking up to 200 filed issues you didn't ask for. "
+  },
+  {
+    "date": "2026-09-07",
+    "source": "get-md",
+    "angle": "useLLM-without-block-reads-local-readerlm",
+    "archetype": "sharp-take",
+    "preview": "Tools that need an API key to read your file aren't local-first. `get-md` with `useLLM: true` and no"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "json-up",
+    "angle": "zod-schema-drives-validation-and-types",
+    "archetype": "sharp-take",
+    "preview": "One schema should own the whole contract. json-up's Zod schema does: it validates each migration's o"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "prompt-scrub",
+    "angle": "rule-packs-are-npm-packages",
+    "archetype": "sharp-take",
+    "preview": "A custom detector should install like any other dep, not through a plugin loader. prompt-scrub rule "
+  },
+  {
+    "date": "2026-09-07",
+    "source": "collective",
+    "angle": "seven-stage-public-proposal-pipeline",
+    "archetype": "one-tip",
+    "preview": "You don't need a track record to ship a project at the Nano Collective. Open an issue on the docs re"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanocoder",
+    "angle": "slash-commands-are-skill-bundles",
+    "archetype": "one-tip",
+    "preview": "A slash command shouldn't need a separate install. In nanocoder it's one `.md` in `.nanocoder/comman"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanotune",
+    "angle": "chat-keeps-llama-server-warm",
+    "archetype": "by-the-numbers",
+    "preview": "142ms to first token on reply 20, same as reply 1. nanotune chat starts one llama-server once and ke"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "sentinel",
+    "angle": "severity-threshold-gates-issue-filing",
+    "archetype": "til",
+    "preview": "The audit ran on every file. Nothing filed. Sentinel's severity_threshold is the gate: findings belo"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "get-md",
+    "angle": "json-flag-streams-jsonl-for-jq",
+    "archetype": "problem-relief",
+    "preview": "A JSON array from a CLI looks great in the README and breaks the moment you try to pipe it. One elem"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "json-up",
+    "angle": "migrate-walks-version-by-version",
+    "archetype": "one-tip",
+    "preview": "A schema bump that rewrites your store loses records that don't fit the new shape. Tip: keep the old"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "prompt-scrub",
+    "angle": "session-map-persists-to-os-config-dir",
+    "archetype": "one-tip",
+    "preview": "Your session map has no value if it dies with the tab. prompt-scrub stores it as JSON in ~/.config/p"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "collective",
+    "angle": "bring-existing-projects-on-a-14-day-window",
+    "archetype": "problem-relief",
+    "preview": "Waiting 30 days for review on code that's already running is friction without signal. The Nano Colle"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanocoder",
+    "angle": "plan-mode-boots-read-only-audit",
+    "archetype": "contrarian",
+    "preview": "Most \"plan mode\" is the model promising to behave. `--mode plan` in Nanocoder strips write tools fro"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanotune",
+    "angle": "dry-run-validates-without-gpu-seconds",
+    "archetype": "contrarian",
+    "preview": "Most fine-tunes are debugged at hour three of a six-hour run. Nanotune's `train --dry-run` validates"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "sentinel",
+    "angle": "rule-pack-identity-is-the-body-hash",
+    "archetype": "by-the-numbers",
+    "preview": "One rule, two file locations, same identity. Sentinel rule packs are hashed by their body content, n"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "get-md",
+    "angle": "sitemap-mode-globs-with-hard-caps",
+    "archetype": "by-the-numbers",
+    "preview": "A docs site with 50,000 URLs in its sitemap shouldn't take down your disk on a Tuesday. `get-md --si"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "json-up",
+    "angle": "builder-returns-a-typed-new-instance",
+    "archetype": "contrarian",
+    "preview": "Most migration chains hand you an `any` between steps. `json-up`'s builder doesn't: each `.add()` re"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "prompt-scrub",
+    "angle": "scrub-rehydrate-round-trips-lossless",
+    "archetype": "contrarian",
+    "preview": "Most redaction tools are one-way: once the original is replaced, it's gone. prompt-scrub's scrub and"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "collective",
+    "angle": "four-canonical-channel-cross-links",
+    "archetype": "one-tip",
+    "preview": "Restating shared terms in every README is how the collective drifts. The Nano Collective keeps four "
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanocoder",
+    "angle": "scheduler-feature-is-a-skill-now",
+    "archetype": "origin",
+    "preview": "`/schedule create|add|start` and `schedules.json` are gone. The nanocoder scheduler used to be its o"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanotune",
+    "angle": "resume-restores-from-checkpoint",
+    "archetype": "origin",
+    "preview": "A six-hour fine-tune dies at hour five if the laptop sleeps. Nanotune saves checkpoints every --save"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "sentinel",
+    "angle": "provider-and-model-flags-pin-the-judge",
+    "archetype": "problem-relief",
+    "preview": "Find a different set of \"critical\" issues every Monday morning, and your auditor is the wrong tool f"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "get-md",
+    "angle": "manifest-sidecar-summarises-the-crawl",
+    "archetype": "problem-relief",
+    "preview": "A crawl can finish and still leave you guessing which pages failed. get-md fixes that with `--manife"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "json-up",
+    "angle": "three-error-types-each-name-the-cause",
+    "archetype": "origin",
+    "preview": "String matching `err.message` to decide what to do is how you write a bug that ships. `json-up` thro"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "prompt-scrub",
+    "angle": "detectors-stay-opt-in-by-design",
+    "archetype": "sharp-take",
+    "preview": "A redaction tool that picks what to redact on first run has already lost. prompt-scrub ships every d"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "collective",
+    "angle": "no-cla-mit-copyright-stays-with-contributor",
+    "archetype": "by-the-numbers",
+    "preview": "0 CLAs at the Nano Collective. Every project ships MIT, the contributor keeps the copyright, and no "
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanocoder",
+    "angle": "explorer-search-filters-the-cwd-nested",
+    "archetype": "origin",
+    "preview": "Most file-tree search only filters what's expanded. A fuzzy match five directories down stays invisi"
+  },
+  {
+    "date": "2026-09-07",
+    "source": "nanotune",
+    "angle": "judge-runs-fully-local-three-providers",
+    "archetype": "by-the-numbers",
+    "preview": "3 local providers, 0 bytes leaving the box. nanotune's llm-judge accepts Ollama, a local llama.cpp s"
   }
 ]
