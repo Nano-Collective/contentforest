@@ -1,0 +1,116 @@
+{
+  "week_of": "2026-10-12",
+  "generated_at": "2026-09-12T05:01:03.293Z",
+  "days": {
+    "2026-10-12": [
+      {
+        "slot": "github-discussion-1",
+        "channel": "github-discussion",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/github-discussion.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/reddit.md"
+      },
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "backlog-article",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/x.md"
+      },
+      {
+        "slot": "x-2",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/collective-4.md",
+        "source": "collective"
+      },
+      {
+        "slot": "x-3",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/get-md-4.md",
+        "source": "get-md"
+      },
+      {
+        "slot": "x-4",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/nanocoder-4.md",
+        "source": "nanocoder"
+      },
+      {
+        "slot": "x-5",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/nanotune-3.md",
+        "source": "nanotune"
+      },
+      {
+        "slot": "x-6",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/prompt-scrub-3.md",
+        "source": "prompt-scrub"
+      }
+    ],
+    "2026-10-13": [
+      {
+        "slot": "x-1",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/sentinel-3.md",
+        "source": "sentinel"
+      },
+      {
+        "slot": "x-2",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/nanocoder-5.md",
+        "source": "nanocoder"
+      },
+      {
+        "slot": "x-3",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/nanotune-4.md",
+        "source": "nanotune"
+      },
+      {
+        "slot": "x-4",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/prompt-scrub-4.md",
+        "source": "prompt-scrub"
+      },
+      {
+        "slot": "x-5",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/sentinel-4.md",
+        "source": "sentinel"
+      },
+      {
+        "slot": "x-6",
+        "channel": "x",
+        "type": "evergreen-x",
+        "ref": "content/_x-daily/2026-08-17/posts/nanotune-5.md",
+        "source": "nanotune"
+      }
+    ],
+    "2026-10-14": [],
+    "2026-10-15": [],
+    "2026-10-16": [],
+    "2026-10-17": [],
+    "2026-10-18": []
+  }
+}
