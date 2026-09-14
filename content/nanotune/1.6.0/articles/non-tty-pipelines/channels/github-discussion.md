@@ -6,6 +6,7 @@ title: "Running Nanotune end to end in CI, scripts, and Docker without a TTY"
 generated_at: "2026-08-09T21:17:17.767Z"
 model: "minimax-m3"
 char_count: 16341
+distributed_at: "2026-09-14T15:42:11.542Z"
 ---
 
 # Running Nanotune end to end in CI, scripts, and Docker without a TTY
