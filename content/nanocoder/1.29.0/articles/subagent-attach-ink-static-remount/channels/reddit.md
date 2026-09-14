@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 9535
+distributed_at: "2026-09-14T09:38:37.744Z"
 ---
 
 We just shipped a feature in Nanocoder v1.29.0 that is one keystroke: press `Ctrl+S` while a subagent is running and you jump into its live transcript. Press it again to cycle through parallel subagents. Press `Esc` to detach. The user-facing loop is small, but the under-the-hood story is worth writing up because almost none of it was obvious at the start.
