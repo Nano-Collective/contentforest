@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-07-26T19:36:06.832Z"
 model: "minimax-m3"
 char_count: 2094
+distributed_at: "2026-09-14T09:33:35.317Z"
 ---
 
 Nanocoder v1.29.0's `Ctrl+S` subagent attach is the small feature with the most interesting under-the-hood story this release. The user-facing loop is one keystroke: press `Ctrl+S`, jump into a running subagent's live transcript, watch its reasoning and tool calls stream in real time; press `Ctrl+S` again to cycle through parallel subagents, or `Esc` to detach.
