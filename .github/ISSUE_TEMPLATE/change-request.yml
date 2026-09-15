@@ -20,6 +20,10 @@ body:
       description: |
         Pick what to edit. `<product>/<version>` targets the release pack itself (channels, meta, or a single file under it). `<product>/<version>/articles/<slug>` targets one article inside a pack. List is auto-generated from `content/` on `main`, sorted newest-first.
       options:
+        - prompt-scrub/1.4.0
+        - prompt-scrub/1.4.0/articles/design-of-the-encrypted-session-envelope
+        - prompt-scrub/1.4.0/articles/migrating-plaintext-sessions-without-locking-yourself-out
+        - prompt-scrub/1.4.0/articles/setting-up-encryption-without-leaking-the-key
         - nanotune/1.7.0
         - nanotune/1.7.0/articles/graceful-ctrl-c-checkpoint-safety
         - nanotune/1.7.0/articles/reproducible-benchmarks-workflow
