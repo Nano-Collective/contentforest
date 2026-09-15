@@ -6,6 +6,7 @@ title: "prompt-scrub v1.4.0: encrypt local session files at rest"
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 6892
+distributed_at: "2026-09-15T19:45:02.744Z"
 ---
 
 # prompt-scrub v1.4.0: encrypt local session files at rest
