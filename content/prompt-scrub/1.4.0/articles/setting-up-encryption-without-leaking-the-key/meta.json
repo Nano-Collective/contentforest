@@ -1,0 +1,7 @@
+{
+  "slug": "setting-up-encryption-without-leaking-the-key",
+  "title": "Setting up prompt-scrub encryption without leaking the key",
+  "focus": "A practical guide to turning encryption on safely: why PROMPT_SCRUB_KEY=... inline is the wrong way, how read -rs and secret-manager export differ in their residual exposure (incl. /proc/<pid>/environ), and the TTY-detection rule that turns a piped invocation into a clean failure instead of a hang.",
+  "generated_at": "2026-09-15T19:13:26.875Z",
+  "model": "minimax-m3"
+}

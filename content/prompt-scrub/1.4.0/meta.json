@@ -1,0 +1,36 @@
+{
+  "product": "prompt-scrub",
+  "version": "1.4.0",
+  "product_url": "https://github.com/Nano-Collective/prompt-scrubber",
+  "generated_at": "2026-09-15T19:13:26.875Z",
+  "model": "minimax-m3",
+  "generation_attempts": 5,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "setting-up-encryption-without-leaking-the-key",
+      "title": "Setting up prompt-scrub encryption without leaking the key",
+      "focus": "A practical guide to turning encryption on safely: why PROMPT_SCRUB_KEY=... inline is the wrong way, how read -rs and secret-manager export differ in their residual exposure (incl. /proc/<pid>/environ), and the TTY-detection rule that turns a piped invocation into a clean failure instead of a hang.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "design-of-the-encrypted-session-envelope",
+      "title": "The encrypted session envelope, annotated",
+      "focus": "A walk-through of the v1 envelope format and the reasoning behind each choice - AES-256-GCM over CBC, per-file random salt+IV, scrypt with N=16384/r=8/p=1 instead of PBKDF2, the KDF-param bounds check, the derived-key cache keyed by (passphrase, salt, params), and the write-side rule that prevents toggling encryptionEnabled from quietly rewriting an encrypted session in plaintext.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "migrating-plaintext-sessions-without-locking-yourself-out",
+      "title": "Migrating plaintext sessions without locking yourself out",
+      "focus": "An operator-focused look at the prompt-scrub sessions encrypt path: why the command refuses to fabricate a session id that does not exist, why --rekey demands the OLD passphrase and never silently overwrites a file it cannot decrypt, what the encrypted/skipped/missing counts mean in the summary, and how the new SessionDecryptionError makes wrong-key and tampered-file cases distinguishable from genuinely expired sessions.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
