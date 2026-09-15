@@ -1,0 +1,7 @@
+{
+  "slug": "migrating-plaintext-sessions-without-locking-yourself-out",
+  "title": "Migrating plaintext sessions without locking yourself out",
+  "focus": "An operator-focused look at the prompt-scrub sessions encrypt path: why the command refuses to fabricate a session id that does not exist, why --rekey demands the OLD passphrase and never silently overwrites a file it cannot decrypt, what the encrypted/skipped/missing counts mean in the summary, and how the new SessionDecryptionError makes wrong-key and tampered-file cases distinguishable from genuinely expired sessions.",
+  "generated_at": "2026-09-15T19:13:26.875Z",
+  "model": "minimax-m3"
+}
