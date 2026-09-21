@@ -6,6 +6,7 @@ title: "Why Mermaid validation was rejecting valid diagrams - and what fixed it"
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 11763
+distributed_at: "2026-09-21T14:25:37.095Z"
 ---
 
 A bug in the v1.6.0 release of `validateMermaid` only showed up once we tried to use the option for what it was built for. The validator was annotating valid output, including correct diagrams the vision path had reconstructed from a PDF, as broken. The root cause was not Mermaid. It was a piece of browser-only code Mermaid ships with: DOMPurify.
