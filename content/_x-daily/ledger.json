@@ -1888,5 +1888,215 @@
     "angle": "judge-runs-fully-local-three-providers",
     "archetype": "by-the-numbers",
     "preview": "3 local providers, 0 bytes leaving the box. nanotune's llm-judge accepts Ollama, a local llama.cpp s"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanocoder",
+    "angle": "Nano profile shrinks the system prompt",
+    "archetype": "til",
+    "preview": "Your 3B local model isn't bad. Its context is just stuffed with instructions about itself. nanocoder"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanotune",
+    "angle": "Five interactive commands, zero yaml",
+    "archetype": "problem-relief",
+    "preview": "200 lines of training YAML and half the flags don't exist in the version you have. nanotune ships in"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "sentinel",
+    "angle": "Rule packs you own, not ones you inherit",
+    "archetype": "sharp-take",
+    "preview": "Most SAST ships a ruleset you didn't choose and a backlog of findings you don't trust. Sentinel alph"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "get-md",
+    "angle": "Four paths for mermaid diagrams",
+    "archetype": "origin",
+    "preview": "One button can't fix four inputs."
+  },
+  {
+    "date": "2026-09-21",
+    "source": "json-up",
+    "angle": "Validation after every step",
+    "archetype": "one-tip",
+    "preview": "Stop trusting that your up() returned what the next version expects. In json-up, each migration carr"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "prompt-scrub",
+    "angle": "A filtered run never goes quiet",
+    "archetype": "problem-relief",
+    "preview": "Raise --min-confidence and the output looks clean. But \"clean\" and \"had nothing to clean\" look ident"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "collective",
+    "angle": "Merge is not endorsement",
+    "archetype": "sharp-take",
+    "preview": "Merging a whitepaper is not the same as approving it. The Nano Collective runs a 30-day public revie"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanocoder",
+    "angle": "Auto-resolves tool profile from model size",
+    "archetype": "problem-relief",
+    "preview": "Five config fields, every model swap. None of them right by default. nanocoder's auto profile picks "
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanotune",
+    "angle": "Benchmarks are deterministic by default",
+    "archetype": "sharp-take",
+    "preview": "Two benchmark runs differ and you blame the sampler. Default temperature 0 and a fixed seed make tha"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "sentinel",
+    "angle": "Fills the gap between hosted SAST and manual audits",
+    "archetype": "origin",
+    "preview": "Hosted scanners are strong on common stacks and blind to yours. Manual audits are right for a launch"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "get-md",
+    "angle": "First ten pages only for PDF vision",
+    "archetype": "sharp-take",
+    "preview": "A PDF beyond page 10 isn't a document to an LLM. It's a context bomb. `get-md` renders only the firs"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "json-up",
+    "angle": "Three errors that each name the cause",
+    "archetype": "problem-relief",
+    "preview": "`migrate()` threw. The stack says \"Error\" and nothing about which version or why. json-up splits it:"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "prompt-scrub",
+    "angle": "The threat model is the doc",
+    "archetype": "origin",
+    "preview": "\"Private AI\" tools rarely say what they actually protect. prompt-scrub's threat model does: wins (se"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "collective",
+    "angle": "Mechanism exists, balance does not",
+    "archetype": "problem-relief",
+    "preview": "You close a ticket on a Nano Collective repo and go looking for the bounty. The pot is empty today. "
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanocoder",
+    "angle": "Twenty-plus providers, zero telemetry",
+    "archetype": "by-the-numbers",
+    "preview": "A 20-provider CLI is only useful if your code stays your code. nanocoder phones nothing home: no usa"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanotune",
+    "angle": "Calibrate the judge before you trust it",
+    "archetype": "til",
+    "preview": "An LLM judge is a model with opinions. `nanotune judge test` sends a known pair and prints the score"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "sentinel",
+    "angle": "Dry-run before any issue lands",
+    "archetype": "one-tip",
+    "preview": "First Sentinel dispatch files everything above threshold. There's no summary-only warm-up. Before it"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "get-md",
+    "angle": "Recover mermaid from rendered svgs",
+    "archetype": "problem-relief",
+    "preview": "You fetched the docs page and every diagram came back as flat text. get-md's recoverMermaid pass hun"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "json-up",
+    "angle": "Minimal surface for maximal clarity",
+    "archetype": "by-the-numbers",
+    "preview": "Most migration libraries feel like a framework to learn. json-up is two builders, two runners, three"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "prompt-scrub",
+    "angle": "Confidence scores per detector",
+    "archetype": "by-the-numbers",
+    "preview": "A vendor key matches at 0.99. A capitalised word matches at 0.50. prompt-scrub prints the score of e"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "collective",
+    "angle": "If the proposer disappears, anyone picks it up",
+    "archetype": "til",
+    "preview": "A Nano Collective whitepaper has no gatekeeper. The proposer is a frontmatter field anyone can amend"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanocoder",
+    "angle": "Three tool-calling paths plus repair",
+    "archetype": "one-tip",
+    "preview": "Fine-tuned 7B fails the agent loop not because it's small, but because it emits broken tool calls. N"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanotune",
+    "angle": "Local-first before cloud-first",
+    "archetype": "contrarian",
+    "preview": "Most fine-tuning tutorials assume a cloud GPU at the other end of the command. Nanotune ships for Ap"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "sentinel",
+    "angle": "Line range is not part of the identity",
+    "archetype": "by-the-numbers",
+    "preview": "4-6 today, 5-5 tomorrow, same issue. Sentinel alpha's dedup hash covers rule, file, and category, an"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "get-md",
+    "angle": "Markdown strings need input type",
+    "archetype": "til",
+    "preview": "Your mermaid fence came back with backslashes in front of every backtick."
+  },
+  {
+    "date": "2026-09-21",
+    "source": "json-up",
+    "angle": "Fail loudly on bad ordering",
+    "archetype": "sharp-take",
+    "preview": "A migration run with versions out of order or duplicated should not return partial state. Silent dri"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "prompt-scrub",
+    "angle": "Inspect before you commit to a threshold",
+    "archetype": "one-tip",
+    "preview": "Pick `--min-confidence` blind and you'll drop a real key or keep a false one. prompt-scrub's `inspec"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "collective",
+    "angle": "Written down before you invest your time",
+    "archetype": "origin",
+    "preview": "The hard part of contributing is knowing what you signed up for. The Nano Collective's Economics Cha"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanocoder",
+    "angle": "Slash commands are skills now",
+    "archetype": "sharp-take",
+    "preview": "A slash command should fire when work happens, not when you remember to type it. nanocoder Skills su"
+  },
+  {
+    "date": "2026-09-21",
+    "source": "nanotune",
+    "angle": "Three regimes, one command",
+    "archetype": "one-tip",
+    "preview": "Fine-tune drifting toward overfit or underfit? nanotune train takes --fine-tune-type lora, dora, or "
   }
 ]
