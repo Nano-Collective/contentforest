@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-09-21",
+  "generated_at": "2026-09-21T04:58:49.308Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Nano profile shrinks the system prompt",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Five interactive commands, zero yaml",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "Rule packs you own, not ones you inherit",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Four paths for mermaid diagrams",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Validation after every step",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "A filtered run never goes quiet",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merge is not endorsement",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Auto-resolves tool profile from model size",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "Benchmarks are deterministic by default",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "Fills the gap between hosted SAST and manual audits",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "First ten pages only for PDF vision",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Three errors that each name the cause",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "The threat model is the doc",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Mechanism exists, balance does not",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Twenty-plus providers, zero telemetry",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Calibrate the judge before you trust it",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Dry-run before any issue lands",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "Recover mermaid from rendered svgs",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Minimal surface for maximal clarity",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Confidence scores per detector",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "If the proposer disappears, anyone picks it up",
+      "archetype": "til"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Three tool-calling paths plus repair",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Local-first before cloud-first",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Line range is not part of the identity",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Markdown strings need input type",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Fail loudly on bad ordering",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-4.md",
+      "source": "prompt-scrub",
+      "angle": "Inspect before you commit to a threshold",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "collective-4.md",
+      "source": "collective",
+      "angle": "Written down before you invest your time",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanocoder-5.md",
+      "source": "nanocoder",
+      "angle": "Slash commands are skills now",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-5.md",
+      "source": "nanotune",
+      "angle": "Three regimes, one command",
+      "archetype": "one-tip"
+    }
+  ],
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}
