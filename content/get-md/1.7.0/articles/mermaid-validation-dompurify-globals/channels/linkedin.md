@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 1616
+distributed_at: "2026-09-21T16:37:00.571Z"
 ---
 
 A bug in `validateMermaid` shipped in get-md v1.6.0 that we finally tracked down in 1.7.0: every labelled diagram was being flagged as broken syntax.
