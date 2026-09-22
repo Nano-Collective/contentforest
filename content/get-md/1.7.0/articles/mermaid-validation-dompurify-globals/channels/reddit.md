@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 6027
+distributed_at: "2026-09-22T10:16:10.448Z"
 ---
 
 Here's a debugging story from the get-md 1.7.0 release that I think is worth sharing.
