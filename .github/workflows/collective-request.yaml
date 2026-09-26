@@ -91,11 +91,16 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/Nano-Collective/nanocoder.git /tmp/nanocoder
           cd /tmp/nanocoder
-          npm install
-          npm run build
-          npm link
-          which nanocoder
-          nanocoder --version || true
+          # Nanocoder is a pnpm project: its lockfile and patchedDependencies
+          # (e.g. the ink patch that adds Key.raw) are ignored by npm, so
+          # build with the exact pnpm version it pins in packageManager.
+          PNPM="$(node -p 'require("./package.json").packageManager')"
+          npx --yes "$PNPM" install --frozen-lockfile
+          npx --yes "$PNPM" run build
+          mkdir -p /tmp/nanocoder-bin
+          ln -sf /tmp/nanocoder/dist/cli.js /tmp/nanocoder-bin/nanocoder
+          echo "/tmp/nanocoder-bin" >> "$GITHUB_PATH"
+          /tmp/nanocoder-bin/nanocoder --version || true
 
       - name: Configure git
         if: steps.gate.outputs.member == 'true'
