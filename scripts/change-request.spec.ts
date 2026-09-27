@@ -93,7 +93,8 @@ test('buildPrompt: substitutes core variables into the change-request template',
 	t.regex(prompt, /nanocoder/);
 	t.regex(prompt, /1\.25\.2/);
 	t.regex(prompt, /Tighten the LinkedIn post\./);
-	t.regex(prompt, /minimax-m3/);
+	// The maintainer doc comment at the top of the template is not sent.
+	t.false(prompt.includes('TEMPLATE —'));
 	// Verify the placeholders this function owns are resolved.
 	t.notRegex(prompt, /\{\{PRODUCT_SLUG\}\}/);
 	t.notRegex(prompt, /\{\{VERSION\}\}/);

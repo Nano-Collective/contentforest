@@ -122,3 +122,12 @@ test('buildAutoFixPrompt: substitutes attempt counters and error report', t => {
 	t.notRegex(prompt, /\{\{ERROR_REPORT\}\}/);
 	t.notRegex(prompt, /\{\{ORIGINAL_PROMPT\}\}/);
 });
+
+test('substitute: strips the leading doc comment but keeps inline ones', t => {
+	const template =
+		'<!--\n  {{BODY}}  the body\n-->\n\nBody: {{BODY}}\nLeave <!-- a note --> here.';
+	t.is(
+		substitute(template, {BODY: 'x'}),
+		'Body: x\nLeave <!-- a note --> here.',
+	);
+});

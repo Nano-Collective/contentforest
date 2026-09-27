@@ -260,7 +260,10 @@ export function substitute(
 	template: string,
 	vars: Record<string, string>,
 ): string {
-	let out = template;
+	// Drop the leading maintainer doc comment. It lists every {{VAR}}, so
+	// substituting it would send each value (release notes included) twice.
+	// Inline comments further down can be instructions, so leave those.
+	let out = template.replace(/^\s*<!--[\s\S]*?-->\s*/, '');
 	for (const [key, value] of Object.entries(vars)) {
 		out = out.replaceAll(`{{${key}}}`, value);
 	}
