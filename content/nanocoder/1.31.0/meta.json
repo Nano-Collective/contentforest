@@ -1,0 +1,36 @@
+{
+  "product": "nanocoder",
+  "version": "1.31.0",
+  "product_url": "https://github.com/Nano-Collective/nanocoder",
+  "generated_at": "2026-09-27T14:25:17.704Z",
+  "model": "minimax-m3",
+  "generation_attempts": 5,
+  "auto_fix_attempts": 0,
+  "final_status": "passed",
+  "articles": [
+    {
+      "slug": "lifecycle-hooks",
+      "title": "Lifecycle hooks in v1.31: rules that fire every time, for free",
+      "focus": "How Nanocoder v1.31 introduces hooks at six lifecycle points (session-start, session-end, user-prompt-submit, pre-tool-use, post-tool-use, pre-compact), why they are the right tool for enforceable rules instead of skill subscriptions, and how pre-tool-use can veto a tool call before any approval prompt appears.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "architect-mode",
+      "title": "Architect mode: review the turn, not the edit",
+      "focus": "How v1.31 new Architect mode replaces per-file approvals with a per-turn checkpoint taken at the first file mutation, with a one-keypress undo at the end that lets you judge the finished result and roll it back wholesale instead of approving each edit on the way.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    },
+    {
+      "slug": "vscode-sidebar-overhaul",
+      "title": "The Nanocoder VS Code extension, rebuilt as a native sidebar chat",
+      "focus": "How the v1.31 extension moved from an opt-in WebSocket companion over a terminal session to a native sidebar chat driven by the Agent Client Protocol, with collapsible per-turn work summaries, file-change chips, code lenses, and live subagent progress streamed straight into the editor.",
+      "final_status": "passed",
+      "attempts": 1,
+      "failures": []
+    }
+  ]
+}
