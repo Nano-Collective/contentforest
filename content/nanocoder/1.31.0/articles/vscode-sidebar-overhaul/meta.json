@@ -1,0 +1,7 @@
+{
+  "slug": "vscode-sidebar-overhaul",
+  "title": "The Nanocoder VS Code extension, rebuilt as a native sidebar chat",
+  "focus": "How the v1.31 extension moved from an opt-in WebSocket companion over a terminal session to a native sidebar chat driven by the Agent Client Protocol, with collapsible per-turn work summaries, file-change chips, code lenses, and live subagent progress streamed straight into the editor.",
+  "generated_at": "2026-09-27T14:25:17.704Z",
+  "model": "minimax-m3"
+}

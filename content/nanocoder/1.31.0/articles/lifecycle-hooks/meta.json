@@ -1,0 +1,7 @@
+{
+  "slug": "lifecycle-hooks",
+  "title": "Lifecycle hooks in v1.31: rules that fire every time, for free",
+  "focus": "How Nanocoder v1.31 introduces hooks at six lifecycle points (session-start, session-end, user-prompt-submit, pre-tool-use, post-tool-use, pre-compact), why they are the right tool for enforceable rules instead of skill subscriptions, and how pre-tool-use can veto a tool call before any approval prompt appears.",
+  "generated_at": "2026-09-27T14:25:17.704Z",
+  "model": "minimax-m3"
+}
