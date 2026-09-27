@@ -34,6 +34,7 @@ import {execSync, spawnSync} from 'node:child_process';
 import {
 	existsSync,
 	mkdirSync,
+	mkdtempSync,
 	readFileSync,
 	rmSync,
 	writeFileSync,
@@ -219,11 +220,26 @@ export function buildAutoFixPrompt(args: {
  */
 /* c8 ignore start */
 function runNanocoder(prompt: string, model: string): number {
+	// Pass the prompt as a file, not argv: Linux caps a single argument at
+	// 128 KiB, and prompts that embed release notes exceed it (E2BIG).
+	const promptDir = mkdtempSync(join(tmpdir(), 'cf-prompt-'));
+	const promptFile = join(promptDir, 'prompt.md');
+	writeFileSync(promptFile, prompt);
 	const result = spawnSync(
 		'nanocoder',
-		['run', prompt, '--mode', 'yolo', '--model', model, '--trust-directory'],
+		[
+			'run',
+			'--prompt-file',
+			promptFile,
+			'--mode',
+			'yolo',
+			'--model',
+			model,
+			'--trust-directory',
+		],
 		{cwd: ROOT, stdio: 'inherit', env: process.env},
 	);
+	rmSync(promptDir, {recursive: true, force: true});
 	if (result.error) {
 		if ((result.error as NodeJS.ErrnoException).code === 'ENOENT') {
 			console.error(
