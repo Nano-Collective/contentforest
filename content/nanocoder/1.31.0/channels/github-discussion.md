@@ -6,6 +6,7 @@ title: "Nanocoder v1.31.0: Anthropic caching, auto titles, retry caps, .nanocode
 generated_at: "2026-09-27T14:25:00.000Z"
 model: "minimax-m3"
 char_count: 16691
+distributed_at: "2026-09-28T09:53:17.876Z"
 ---
 
 Nanocoder v1.31.0 is out. The shape of this release is trust: trust that session titles will not be silently overwritten, that prompt caching actually fires (and bills at cache rates, not full input rates), that bracketed paste works properly in the terminal, and that the agent loop will not silently spend your tokens calling a tool that does not exist. Plus a new provider template (Cheaper Inference), a published JSON Schema for `agents.config.json`, `.nanocoderignore` for context hygiene, configurable retry limits, real `nanocoder config list|show|diff` introspection, and a long list of fixes that mostly stop the model from being lied to about its own UI.
