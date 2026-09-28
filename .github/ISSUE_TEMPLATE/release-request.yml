@@ -21,6 +21,7 @@ body:
       options:
         - nanocoder
         - nanotune
+        - roster
         - sentinel
         - get-md
         - json-up
