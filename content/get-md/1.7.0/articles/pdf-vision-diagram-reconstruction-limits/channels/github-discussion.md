@@ -6,6 +6,7 @@ title: "The three limits the PDF vision path keeps on purpose"
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 14387
+distributed_at: "2026-09-29T15:24:28.426Z"
 ---
 
 The new opt-in PDF diagram reconstruction in get-md 1.7.0 is, by the numbers, a small feature. A handful of source files, an optional peer dependency pair, and a 10-page cap. The interesting part is not the feature itself. It is the three deliberate limits around it: remote providers only, a 10-page render cap, and a hard short-circuit on pure-scan PDFs. Each one of those limits looks, at first glance, like something a more complete implementation would lift. None of them should be lifted, and this post is the case for keeping them.
