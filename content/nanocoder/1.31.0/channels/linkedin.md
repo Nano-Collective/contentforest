@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-09-27T14:25:00.000Z"
 model: "minimax-m3"
 char_count: 3332
+distributed_at: "2026-10-01T16:57:57.118Z"
 ---
 
 Nanocoder v1.31.0 is out. The theme of this release is trust: session titles that are not silently overwritten, prompt caching that actually fires (and bills at cache rates, not full input rates), bracketed paste that works properly, and an agent loop that will not silently spend your tokens calling a tool that does not exist.
