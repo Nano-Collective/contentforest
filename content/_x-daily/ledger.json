@@ -2098,5 +2098,215 @@
     "angle": "Three regimes, one command",
     "archetype": "one-tip",
     "preview": "Fine-tune drifting toward overfit or underfit? nanotune train takes --fine-tune-type lora, dora, or "
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanocoder",
+    "angle": "Skill bundles ship in the repo, not in a registry",
+    "archetype": "origin",
+    "preview": "A skill marketplace drifts out of step with the code it's meant to extend. nanocoder puts skill bund"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanotune",
+    "angle": "Three regimes exist because fine-tuning is not one job",
+    "archetype": "origin",
+    "preview": "The fine-tune that won't fit your GPU is the fine-tune you don't have. nanotune puts `lora`, `dora`,"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "roster",
+    "angle": "The framework only writes templates, on purpose",
+    "archetype": "origin",
+    "preview": "A reusable workflow in a private repo can only be called from inside its own organisation. So Roster"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "sentinel",
+    "angle": "Rule packs are the only thing you ship",
+    "archetype": "origin",
+    "preview": "Generic SAST can only audit against someone else's idea of your code. Sentinel ships no rule packs o"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "get-md",
+    "angle": "Mermaid gets four paths because input shape is the truth",
+    "archetype": "origin",
+    "preview": "Most converters make one decision for diagrams. That is why Mermaid keeps getting lost or made up. `"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "json-up",
+    "angle": "Zod is a peer so you audit the version you ship",
+    "archetype": "origin",
+    "preview": "Bundling Zod would mean json-up picks a version for you. It might not be the one your stack ships wi"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "prompt-scrub",
+    "angle": "Detectors are pluggable, the engine is not",
+    "archetype": "til",
+    "preview": "Most \"extensible\" tools invite you to fork the runner. prompt-scrub flips that: new detectors ship a"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "collective",
+    "angle": "Public review is the floor, not the strategy",
+    "archetype": "problem-relief",
+    "preview": "\"Public review\" that closes before anyone reads it, merge reads as the green light. At the Nano Coll"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanocoder",
+    "angle": "A subagent is a fresh process tree, not a thread",
+    "archetype": "contrarian",
+    "preview": "A subagent that shared your context would fill it by lunchtime. nanocoder spawns each one as its own"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanotune",
+    "angle": "The judge is a config, not a hack",
+    "archetype": "sharp-take",
+    "preview": "A judge you bolted on gives you a number, not an answer. Nanotune's llm-judge reads the same provide"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "roster",
+    "angle": "Boot reads INDEX.md in full, notes on demand",
+    "archetype": "one-tip",
+    "preview": "A fat memory file on boot burns tokens you'll never spend. Roster (alpha) reads INDEX.md in full but"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "sentinel",
+    "angle": "False positives cost the user less than the tool",
+    "archetype": "problem-relief",
+    "preview": "A noisy linter makes you mute the channel. A quiet one ships the CVE. Sentinel (alpha) leans toward "
+  },
+  {
+    "date": "2026-10-05",
+    "source": "get-md",
+    "angle": "useLLM without --block reads the local reader-lm",
+    "archetype": "sharp-take",
+    "preview": "Your markdown converter shouldn't phone home to read a PDF. `get-md` ships a local reader-lm, so `us"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "json-up",
+    "angle": "Three error types each name the cause",
+    "archetype": "til",
+    "preview": "When a migration blows up, the stack trace is the wrong place to find out why. json-up throws Valida"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "prompt-scrub",
+    "angle": "Scrub stays at the content layer, not the network",
+    "archetype": "contrarian",
+    "preview": "Most prompt privacy ships as middleware, a thing in your egress path that can fail or get breached. "
+  },
+  {
+    "date": "2026-10-05",
+    "source": "collective",
+    "angle": "The economics table is the offer, not a starting position",
+    "archetype": "sharp-take",
+    "preview": "The Nano Collective publishes bounty scope, deliverable, and amount before you start. That's the off"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanocoder",
+    "angle": "ACP makes the editor the agent's host",
+    "archetype": "til",
+    "preview": "None of the chat panel, file tree, or diff viewer is the agent. With ACP, nanocoder speaks JSON-RPC "
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanotune",
+    "angle": "Hardware presets skip the flag wall",
+    "archetype": "by-the-numbers",
+    "preview": "Four presets stand in for a dozen flags you'd otherwise memorise. Nanotune's `--preset low|medium|hi"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "roster",
+    "angle": "A staff member is a private repo, not a username",
+    "archetype": "til",
+    "preview": "A staff member in Roster (alpha) isn't a username, it's a private repo. Clone it and you have the wh"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "sentinel",
+    "angle": "Severity threshold is the only switch between log and issue",
+    "archetype": "til",
+    "preview": "One number decides whether Sentinel talks to GitHub or stays silent. severity_threshold: findings be"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "get-md",
+    "angle": "PDF and DOCX are routed by magic bytes",
+    "archetype": "one-tip",
+    "preview": "You shouldn't have to tell a converter what it's about to read. Pass `get-md` a `.pdf` or `.docx` an"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "json-up",
+    "angle": "migrate walks version by version, not all at once",
+    "archetype": "one-tip",
+    "preview": "When your stored JSON drifts from its schema, guessing which version broke it is the slow part. json"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "prompt-scrub",
+    "angle": "Stable placeholders round-trip across turns",
+    "archetype": "origin",
+    "preview": "A model that says \"the key you mentioned earlier\" needs to land on the same key on turn one and turn"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "collective",
+    "angle": "Sixty days of silence is a state change",
+    "archetype": "one-tip",
+    "preview": "A stalled project is not the same as a backlogged one. At the Nano Collective, sixty days of silence"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanocoder",
+    "angle": "Hooks run before the tool call, not after",
+    "archetype": "problem-relief",
+    "preview": "\"Never touch .env\" lives in the prompt until the model forgets. nanocoder's `pre-tool-use` runs a sh"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "nanotune",
+    "angle": "Dry-run validates the recipe before the GPU",
+    "archetype": "problem-relief",
+    "preview": "The fine-tune that bombs at hour four was wrong at hour zero. Nanotune's `train --dry-run` walks the"
+  },
+  {
+    "date": "2026-10-05",
+    "source": "roster",
+    "angle": "The charter is the one file the system will not write for you",
+    "archetype": "sharp-take",
+    "preview": "A staff member can ship a PR at 07:00 because the charter said what to do when nobody was watching. "
+  },
+  {
+    "date": "2026-10-05",
+    "source": "sentinel",
+    "angle": "Sentinel inherits the provider stack, not the workflow",
+    "archetype": "sharp-take",
+    "preview": "You should not have to pick the model twice for one job."
+  },
+  {
+    "date": "2026-10-05",
+    "source": "get-md",
+    "angle": "Cache re-runs hit disk, not the network",
+    "archetype": "by-the-numbers",
+    "preview": "1 hour TTL on a per-URL cache means a flaky CI step re-runs in milliseconds, not seconds."
+  },
+  {
+    "date": "2026-10-05",
+    "source": "json-up",
+    "angle": "Type safety is end-to-end or it is not type safety",
+    "archetype": "problem-relief",
+    "preview": "A Zod schema that infers a wider TS type than it actually parses is the worst kind of bug. It compil"
   }
 ]
