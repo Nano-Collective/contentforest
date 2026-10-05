@@ -6,6 +6,7 @@ title: "How nanotune training now survives a Ctrl+C without lying about it"
 generated_at: "2026-08-30T18:34:36.252Z"
 model: "minimax-m3"
 char_count: 15152
+distributed_at: "2026-10-05T17:59:03.952Z"
 ---
 
 # How nanotune training now survives a Ctrl+C without lying about it
