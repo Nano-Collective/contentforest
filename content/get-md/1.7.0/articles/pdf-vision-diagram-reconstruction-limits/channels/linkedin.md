@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 1892
+distributed_at: "2026-10-07T11:49:15.689Z"
 ---
 
 Three limits in get-md 1.7.0's PDF diagram vision path, and why each one is on purpose.
