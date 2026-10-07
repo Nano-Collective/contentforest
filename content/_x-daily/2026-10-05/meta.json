@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-10-05",
+  "generated_at": "2026-10-05T05:44:01.896Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Skill bundles ship in the repo, not in a registry",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Three regimes exist because fine-tuning is not one job",
+      "archetype": "origin"
+    },
+    {
+      "file": "roster-1.md",
+      "source": "roster",
+      "angle": "The framework only writes templates, on purpose",
+      "archetype": "origin"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "Rule packs are the only thing you ship",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Mermaid gets four paths because input shape is the truth",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Zod is a peer so you audit the version you ship",
+      "archetype": "origin"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Detectors are pluggable, the engine is not",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Public review is the floor, not the strategy",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "A subagent is a fresh process tree, not a thread",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "The judge is a config, not a hack",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "roster-2.md",
+      "source": "roster",
+      "angle": "Boot reads INDEX.md in full, notes on demand",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "False positives cost the user less than the tool",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "useLLM without --block reads the local reader-lm",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Three error types each name the cause",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Scrub stays at the content layer, not the network",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "The economics table is the offer, not a starting position",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "ACP makes the editor the agent's host",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Hardware presets skip the flag wall",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "roster-3.md",
+      "source": "roster",
+      "angle": "A staff member is a private repo, not a username",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Severity threshold is the only switch between log and issue",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "PDF and DOCX are routed by magic bytes",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "migrate walks version by version, not all at once",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Stable placeholders round-trip across turns",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Sixty days of silence is a state change",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Hooks run before the tool call, not after",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Dry-run validates the recipe before the GPU",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "roster-4.md",
+      "source": "roster",
+      "angle": "The charter is the one file the system will not write for you",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Sentinel inherits the provider stack, not the workflow",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Cache re-runs hit disk, not the network",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Type safety is end-to-end or it is not type safety",
+      "archetype": "problem-relief"
+    }
+  ],
+  "attempts": 1,
+  "final_status": "passed",
+  "failures": []
+}
