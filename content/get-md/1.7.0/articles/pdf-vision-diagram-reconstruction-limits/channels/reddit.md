@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-07-26T18:51:01.751Z"
 model: "minimax-m3"
 char_count: 3485
+distributed_at: "2026-10-07T11:51:38.072Z"
 ---
 
 A short post about a part of get-md 1.7.0 I want to defend before someone files a "this should work for X too" issue.
