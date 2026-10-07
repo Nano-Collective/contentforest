@@ -1,245 +1,245 @@
 {
-  "week_of": "2026-11-02",
+  "week_of": "2026-11-09",
   "generated_at": "2026-10-07T06:27:05.482Z",
   "days": {
-    "2026-11-02": [
+    "2026-11-09": [
       {
         "slot": "github-discussion-1",
         "channel": "github-discussion",
         "type": "backlog-article",
-        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/github-discussion.md"
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/github-discussion.md"
       },
       {
         "slot": "linkedin-1",
         "channel": "linkedin",
         "type": "backlog-article",
-        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/linkedin.md"
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/linkedin.md"
       },
       {
         "slot": "reddit-1",
         "channel": "reddit",
         "type": "backlog-article",
-        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/reddit.md"
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/reddit.md"
       },
       {
         "slot": "x-1",
         "channel": "x",
         "type": "backlog-article",
-        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/x.md"
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/x.md"
       },
       {
         "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/collective-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/collective-4.md",
         "source": "collective"
       },
       {
         "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/get-md-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/get-md-4.md",
         "source": "get-md"
       },
       {
         "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/json-up-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/json-up-4.md",
         "source": "json-up"
       },
       {
         "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/nanocoder-3.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanocoder-2.md",
         "source": "nanocoder"
       },
       {
         "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/nanotune-3.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanotune-2.md",
         "source": "nanotune"
       }
     ],
-    "2026-11-03": [
+    "2026-11-10": [
       {
         "slot": "x-1",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/prompt-scrub-3.md",
+        "ref": "content/_x-daily/2026-08-31/posts/prompt-scrub-3.md",
         "source": "prompt-scrub"
       },
       {
         "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/sentinel-3.md",
+        "ref": "content/_x-daily/2026-08-31/posts/sentinel-3.md",
         "source": "sentinel"
       },
       {
         "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/collective-1.md",
+        "ref": "content/_x-daily/2026-08-17/posts/collective-1.md",
         "source": "collective"
       },
       {
         "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/get-md-1.md",
+        "ref": "content/_x-daily/2026-08-17/posts/get-md-1.md",
         "source": "get-md"
       },
       {
         "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/json-up-1.md",
+        "ref": "content/_x-daily/2026-08-17/posts/json-up-1.md",
         "source": "json-up"
       },
       {
         "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/nanocoder-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanocoder-3.md",
         "source": "nanocoder"
       }
     ],
-    "2026-11-04": [
+    "2026-11-11": [
       {
         "slot": "x-1",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/nanotune-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanotune-3.md",
         "source": "nanotune"
       },
       {
         "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/prompt-scrub-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/prompt-scrub-4.md",
         "source": "prompt-scrub"
       },
       {
         "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/sentinel-4.md",
+        "ref": "content/_x-daily/2026-08-31/posts/sentinel-4.md",
         "source": "sentinel"
       },
       {
         "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/collective-2.md",
+        "ref": "content/_x-daily/2026-08-17/posts/collective-2.md",
         "source": "collective"
       },
       {
         "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/get-md-2.md",
+        "ref": "content/_x-daily/2026-08-17/posts/get-md-2.md",
         "source": "get-md"
       },
       {
         "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/json-up-2.md",
+        "ref": "content/_x-daily/2026-08-17/posts/json-up-2.md",
         "source": "json-up"
       }
     ],
-    "2026-11-05": [
+    "2026-11-12": [
       {
         "slot": "x-1",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/nanocoder-5.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanocoder-4.md",
         "source": "nanocoder"
       },
       {
         "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-09-21/posts/nanotune-5.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanotune-4.md",
         "source": "nanotune"
       },
       {
         "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/prompt-scrub-1.md",
+        "ref": "content/_x-daily/2026-08-17/posts/prompt-scrub-1.md",
         "source": "prompt-scrub"
       },
       {
         "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/sentinel-1.md",
+        "ref": "content/_x-daily/2026-08-17/posts/sentinel-1.md",
         "source": "sentinel"
       },
       {
         "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/collective-3.md",
+        "ref": "content/_x-daily/2026-08-10/posts/collective-4.md",
         "source": "collective"
       },
       {
         "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/get-md-3.md",
+        "ref": "content/_x-daily/2026-08-10/posts/get-md-3.md",
         "source": "get-md"
       }
     ],
-    "2026-11-06": [
+    "2026-11-13": [
       {
         "slot": "x-1",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/json-up-3.md",
+        "ref": "content/_x-daily/2026-08-10/posts/json-up-3.md",
         "source": "json-up"
       },
       {
         "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/nanocoder-1.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanocoder-5.md",
         "source": "nanocoder"
       },
       {
         "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/nanotune-1.md",
+        "ref": "content/_x-daily/2026-08-31/posts/nanotune-5.md",
         "source": "nanotune"
       },
       {
         "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/prompt-scrub-2.md",
+        "ref": "content/_x-daily/2026-08-10/posts/prompt-scrub-2.md",
         "source": "prompt-scrub"
       },
       {
         "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-31/posts/sentinel-2.md",
+        "ref": "content/_x-daily/2026-08-10/posts/sentinel-1.md",
         "source": "sentinel"
       },
       {
         "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
-        "ref": "content/_x-daily/2026-08-10/posts/collective-3.md",
-        "source": "collective"
+        "ref": "content/_x-daily/2026-08-10/posts/get-md-4.md",
+        "source": "get-md"
       }
     ],
-    "2026-11-07": [],
-    "2026-11-08": []
+    "2026-11-14": [],
+    "2026-11-15": []
   }
 }
