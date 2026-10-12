@@ -6,6 +6,7 @@ title: "Re-baselining your nanotune project after v1.7.0"
 generated_at: "2026-08-30T18:34:36.252Z"
 model: "minimax-m3"
 char_count: 14074
+distributed_at: "2026-10-12T18:40:06.922Z"
 ---
 
 # Re-baselining your nanotune project after v1.7.0
