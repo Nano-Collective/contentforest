@@ -2308,5 +2308,215 @@
     "angle": "Type safety is end-to-end or it is not type safety",
     "archetype": "problem-relief",
     "preview": "A Zod schema that infers a wider TS type than it actually parses is the worst kind of bug. It compil"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanocoder",
+    "angle": "Scheduler is dead - cron moved into skill frontmatter",
+    "archetype": "origin",
+    "preview": "A schedule the daemon doesn't read is a job living in your head. nanocoder drops /schedule and sched"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanotune",
+    "angle": "Benchmark rejects malformed flags outright",
+    "archetype": "sharp-take",
+    "preview": "A typo in a CLI flag should be loud, not silent. nanotune benchmark rejects --temperature, --seed, a"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "roster",
+    "angle": "App private key never touches disk or the process table",
+    "archetype": "origin",
+    "preview": "A leaked App private key is a revoke-the-app day, not a rotate-the-secret day. `roster` (alpha) hold"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "sentinel",
+    "angle": "Aged and held suppression are not the same thing",
+    "archetype": "til",
+    "preview": "\"Did not look\" and \"looked and found nothing\" land in the same column on the issue list. Sentinel (a"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "get-md",
+    "angle": "Sitemap crawl has a 10000 URL cap by default",
+    "archetype": "origin",
+    "preview": "A misconfigured include glob shouldn't drain a week's LLM budget. get-md's sitemap walker caps at 10"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "json-up",
+    "angle": "ValidationError ships the Zod issues array",
+    "archetype": "til",
+    "preview": "Generic \"validation failed\" is useless. json-up's ValidationError ships the Zod issues array, so `er"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "prompt-scrub",
+    "angle": "Every finding carries a confidence and a method",
+    "archetype": "sharp-take",
+    "preview": "A detector that hides its misses can lose a secret. prompt-scrub scores every finding 0.0-1.0 and na"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "collective",
+    "angle": "Merge is not endorsement, on purpose",
+    "archetype": "problem-relief",
+    "preview": "\"Will this get built?\" was the question a merged whitepaper never answered. A merged draft read like"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanocoder",
+    "angle": "Semantic memory flags fake project conventions",
+    "archetype": "til",
+    "preview": "A project convention nobody decided is a turn that obeys it anyway. nanocoder's /memory propose flag"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanotune",
+    "angle": "The judge is a config, not a hack",
+    "archetype": "by-the-numbers",
+    "preview": "500 examples, one scoring change to test. nanotune keeps the judge in `.nanotune/judge.json`, schema"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "roster",
+    "angle": "Review gate is off unless you opt in",
+    "archetype": "til",
+    "preview": "The rule that blocks a staff App from merging its own PR is Roster (alpha)'s `review_gate`, and it s"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "sentinel",
+    "angle": "Dedup hash is the pack and the file, nothing model-written",
+    "archetype": "origin",
+    "preview": "Same file, three rule strings: sql/string-concat, sql/string-concatenation, sql/string-concat-user-i"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "get-md",
+    "angle": "Chunks carry the heading trail for RAG context",
+    "archetype": "problem-relief",
+    "preview": "A chunk that reads only \"Run npm install\" is a chunk that's lost at retrieval. get-md's chunkMarkdow"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "json-up",
+    "angle": "VersionError means your config is wrong",
+    "archetype": "one-tip",
+    "preview": "A failed `migrate()` looks like a runtime bug. Often it is the config: empty array, unsorted, duplic"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "prompt-scrub",
+    "angle": "Sessions are JSON on disk under XDG paths",
+    "archetype": "til",
+    "preview": "A privacy tool that writes to disk by default sounds wrong. prompt-scrub does it anyway: each sessio"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "collective",
+    "angle": "Five stages, each with a clear output",
+    "archetype": "by-the-numbers",
+    "preview": "\"Will the project get built?\" There is no honest answer to that for 5 stages. The Nano Collective ru"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanocoder",
+    "angle": "Checkpoints are git byte-for-byte, not a diff",
+    "archetype": "contrarian",
+    "preview": "Most checkpointer hooks store a patch, not the file. So a font or compiled binary - gone on revert. "
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanotune",
+    "angle": "Regime selection is data-shape, not size",
+    "archetype": "origin",
+    "preview": "Model size doesn't pick your fine-tune regime: a 1.5B can land in LoRA, DoRA, or Full depending on t"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "roster",
+    "angle": "Framework holds zero credentials",
+    "archetype": "by-the-numbers",
+    "preview": "Zero. That's how many credentials the roster framework ever holds."
+  },
+  {
+    "date": "2026-10-12",
+    "source": "sentinel",
+    "angle": "Severity is four tiers with a reserved top",
+    "archetype": "problem-relief",
+    "preview": "A \"high\" on weak evidence reads like a false alarm and eats the day. Sentinel (alpha) keeps severity"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "get-md",
+    "angle": "parseSitemapXml handles both shapes of feed",
+    "archetype": "one-tip",
+    "preview": "You already have the XML in hand. Branch on <urlset> vs <sitemapindex>, or trust the parser? You do "
+  },
+  {
+    "date": "2026-10-12",
+    "source": "json-up",
+    "angle": "migrate is sync, migrateAsync is the escape hatch",
+    "archetype": "contrarian",
+    "preview": "Most libs slap Promise.resolve() on their sync function and call it async. json-up does the opposite"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "prompt-scrub",
+    "angle": "A filtered run never goes quiet",
+    "archetype": "problem-relief",
+    "preview": "A prompt with PII at 0.85 and one with nothing in it. With prompt-scrub scrub --min-confidence 0.9, "
+  },
+  {
+    "date": "2026-10-12",
+    "source": "collective",
+    "angle": "Terminal whitepaper statuses self-archive",
+    "archetype": "til",
+    "preview": "A whitepaper stops showing on the docs site once it's no longer in motion - shipped, paused, decline"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanocoder",
+    "angle": "Auto profile picks minimal or nano from model size",
+    "archetype": "by-the-numbers",
+    "preview": "Two thresholds, one config flag. nanocoder's auto profile reads the model id: under 4B params gets t"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "nanotune",
+    "angle": "Samples N reports variance, not just pass rate",
+    "archetype": "sharp-take",
+    "preview": "A pass rate from one draw hides the truth. nanotune `--samples 5` runs each test five times, records"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "roster",
+    "angle": "Loop guard keys on sender, not author",
+    "archetype": "problem-relief",
+    "preview": "Gate a `mention` caller on `author` and the agent's own edit to the pinned status issue wakes anothe"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "sentinel",
+    "angle": "Suppression is three layers, reach for the lightest",
+    "archetype": "one-tip",
+    "preview": "A finding your model won't stop flagging isn't worth debating one issue at a time. Sentinel (alpha) "
+  },
+  {
+    "date": "2026-10-12",
+    "source": "get-md",
+    "angle": "Glob exclude wins after include",
+    "archetype": "sharp-take",
+    "preview": "Sitemap crawls drift when the allow-list grows faster than your eye. Cast a wide net first, then car"
+  },
+  {
+    "date": "2026-10-12",
+    "source": "json-up",
+    "angle": "Zod is a peer so you audit what you ship",
+    "archetype": "by-the-numbers",
+    "preview": "Two Zods in one lockfile, and your migrations validate against a version your app has never seen. js"
   }
 ]
