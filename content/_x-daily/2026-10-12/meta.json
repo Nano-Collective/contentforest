@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-10-12",
+  "generated_at": "2026-10-12T06:01:24.884Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Scheduler is dead - cron moved into skill frontmatter",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Benchmark rejects malformed flags outright",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "roster-1.md",
+      "source": "roster",
+      "angle": "App private key never touches disk or the process table",
+      "archetype": "origin"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "Aged and held suppression are not the same thing",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Sitemap crawl has a 10000 URL cap by default",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "ValidationError ships the Zod issues array",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Every finding carries a confidence and a method",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "Merge is not endorsement, on purpose",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Semantic memory flags fake project conventions",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "The judge is a config, not a hack",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "roster-2.md",
+      "source": "roster",
+      "angle": "Review gate is off unless you opt in",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "Dedup hash is the pack and the file, nothing model-written",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Chunks carry the heading trail for RAG context",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "VersionError means your config is wrong",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Sessions are JSON on disk under XDG paths",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Five stages, each with a clear output",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Checkpoints are git byte-for-byte, not a diff",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Regime selection is data-shape, not size",
+      "archetype": "origin"
+    },
+    {
+      "file": "roster-3.md",
+      "source": "roster",
+      "angle": "Framework holds zero credentials",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Severity is four tiers with a reserved top",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "parseSitemapXml handles both shapes of feed",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "migrate is sync, migrateAsync is the escape hatch",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "A filtered run never goes quiet",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Terminal whitepaper statuses self-archive",
+      "archetype": "til"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Auto profile picks minimal or nano from model size",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Samples N reports variance, not just pass rate",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "roster-4.md",
+      "source": "roster",
+      "angle": "Loop guard keys on sender, not author",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Suppression is three layers, reach for the lightest",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Glob exclude wins after include",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Zod is a peer so you audit what you ship",
+      "archetype": "by-the-numbers"
+    }
+  ],
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}
