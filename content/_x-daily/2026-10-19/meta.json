@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-10-19",
+  "generated_at": "2026-10-19T04:43:25.939Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "image-attachments-path-handling",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "seed-re-split-needs-cleanup",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "roster-1.md",
+      "source": "roster",
+      "angle": "boot-context-shrinks-5x",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "incomplete-run-exits-non-zero",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "buffer-routed-by-magic-bytes",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "unversioned-data-treated-as-v0",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "filtered-output-still-reports-suppression",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "scope-before-money-moves",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "nano-profile-strips-subagent-and-agents-md",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "two-seeds-do-different-things",
+      "archetype": "til"
+    },
+    {
+      "file": "roster-2.md",
+      "source": "roster",
+      "angle": "failure-notice-falls-off-the-app-token",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "pr-triggers-deferred-on-purpose",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "stdin-detection-rules",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "create-helpers-for-dynamic-chains",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "duplicate-values-reuse-the-placeholder",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "bounty-scope-goes-into-the-issue-first",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "tool-profiles-are-an-opinionated-split",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "bad-flags-die-at-the-cli",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "roster-3.md",
+      "source": "roster",
+      "angle": "the-charter-is-the-one-file-not-generated",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "calibrate-with-one-pack-first",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "react-native-cuts-what-is-not-portable",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "schema-lives-next-to-up",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "confidence-table-sets-the-floor",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "publish-the-ledger-over-promising-from-it",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "auto-compact-by-token-count",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "three-fine-tune-types-for-three-failures",
+      "archetype": "origin"
+    },
+    {
+      "file": "roster-4.md",
+      "source": "roster",
+      "angle": "over-grant-is-the-real-app-risk",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "runtime-is-fixed-plus-size-tracked",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "useLLM-defaults-to-local-reader-lm",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "migrate-returns-a-new-shape",
+      "archetype": "contrarian"
+    }
+  ],
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}
