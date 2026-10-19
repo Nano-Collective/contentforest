@@ -6,6 +6,7 @@ title: "One year of the Nano Collective: notes from the founder"
 generated_at: "2026-08-29T21:06:21.932Z"
 model: "minimax-m3"
 char_count: 9824
+distributed_at: "2026-10-19T16:14:50.129Z"
 ---
 
 A year ago today I started the Nano Collective as a side project around a coding agent I was writing called Nanocoder. I had no plan beyond "scratch my own itch and see if anyone else finds it useful". A year later, that side project is a small team shipping open-source AI tooling across several projects, with a public ledger, a charter, and a community. This post is the founder's-eye-view of what happened in the past year, what I'm proud of, what I got wrong, and what I want to be honest about going into year two.
