@@ -6,6 +6,7 @@ title: "The encrypted session envelope, annotated"
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 14620
+distributed_at: "2026-10-26T15:53:50.700Z"
 ---
 
 # The encrypted session envelope, annotated
