@@ -2518,5 +2518,215 @@
     "angle": "Zod is a peer so you audit what you ship",
     "archetype": "by-the-numbers",
     "preview": "Two Zods in one lockfile, and your migrations validate against a version your app has never seen. js"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanocoder",
+    "angle": "Writing a file costs you no tokens",
+    "archetype": "til",
+    "preview": "Write a 2,000-line file and you get one line back, not 2,000. nanocoder's write_file returns lines, "
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanotune",
+    "angle": "Two seeds that do different jobs",
+    "archetype": "til",
+    "preview": "A seed flag that does nothing is worse than no flag. nanotune --seed only creates the train/validati"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "roster",
+    "angle": "Deleting memory is the maintenance",
+    "archetype": "origin",
+    "preview": "Memory rots when every correction adds a line. Roster (alpha) keeps staff memory as Markdown and mak"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "sentinel",
+    "angle": "Price the audit before you run it",
+    "archetype": "by-the-numbers",
+    "preview": "Twenty repos with four packs each is eighty model calls a day. Sentinel (alpha) estimate prices that"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "get-md",
+    "angle": "Chunks carry their heading trail",
+    "archetype": "problem-relief",
+    "preview": "A RAG answer that misses the point gets blamed on the model. Often the chunk lost its context. `get-"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "json-up",
+    "angle": "The version lives in the data",
+    "archetype": "problem-relief",
+    "preview": "The hardest bug to find is the file on disk that is three versions behind the code reading it. json-"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "prompt-scrub",
+    "angle": "Stable bytes beat a faster prompt",
+    "archetype": "sharp-take",
+    "preview": "A scrubber that reshuffles on every call defeats prompt caching. prompt-scrub treats that as the bug"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "collective",
+    "angle": "Merging is not a yes",
+    "archetype": "sharp-take",
+    "preview": "Merging a whitepaper is not a yes. In the Nano Collective it means the thinking is good enough to pu"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanocoder",
+    "angle": "Two ways to review the same agent",
+    "archetype": "problem-relief",
+    "preview": "Approving every tool call is tiring. Approving a whole turn you haven't seen yet is worse."
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanotune",
+    "angle": "Export fuses before it converts",
+    "archetype": "one-tip",
+    "preview": "Do not fuse an adapter twice. nanotune export runs fuse, convert, quantize in that order, so --skip-"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "roster",
+    "angle": "A bill with honest gaps in it",
+    "archetype": "sharp-take",
+    "preview": "A cost report that rounds an unknown down to zero is worse than no cost report. Roster (alpha) recor"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "sentinel",
+    "angle": "A dry run cannot narrow a later audit",
+    "archetype": "sharp-take",
+    "preview": "A preview that reads the cache is a preview of a smaller story. Sentinel (alpha) dry-runs neither re"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "get-md",
+    "angle": "A thousand pages, one line each",
+    "archetype": "by-the-numbers",
+    "preview": "1000 pages does not mean 1000 files in memory."
+  },
+  {
+    "date": "2026-10-26",
+    "source": "json-up",
+    "angle": "Async is opt-in, not a trapdoor",
+    "archetype": "sharp-take",
+    "preview": "A Promise nobody awaits is a cost every caller pays for. json-up keeps the sync path first: createMi"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "prompt-scrub",
+    "angle": "stdout stays clean for piping",
+    "archetype": "one-tip",
+    "preview": "A \"Scrubbed: 2 entities\" line in stdout breaks whatever you piped it into. prompt-scrub puts the scr"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "collective",
+    "angle": "No investors, two destinations",
+    "archetype": "origin",
+    "preview": "There is no third place for money. The Nano Collective has no investors, no equity, no return to dra"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanocoder",
+    "angle": "Compaction you can undo",
+    "archetype": "problem-relief",
+    "preview": "Watching the context fill up and the model lose track of what you discussed is a real panic. nanocod"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanotune",
+    "angle": "Pick your match mode, not your threshold",
+    "archetype": "one-tip",
+    "preview": "If every test uses one match mode, the pass rate tells you about the matcher, not the model. Set mat"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "roster",
+    "angle": "Your fix lives in the wrong file",
+    "archetype": "contrarian",
+    "preview": "A fix in the tenant's compose.mjs works right up until the framework touches that file. Then it is a"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "sentinel",
+    "angle": "Severity weighting is not advisory",
+    "archetype": "til",
+    "preview": "A pack that says \"critical\" is not asking nicely. In Sentinel (alpha), a key under `severity_weighti"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "get-md",
+    "angle": "A 1.12GB model, no API key",
+    "archetype": "til",
+    "preview": "AI mode in a converter usually means a billing tab."
+  },
+  {
+    "date": "2026-10-26",
+    "source": "json-up",
+    "angle": "The builder types your data",
+    "archetype": "til",
+    "preview": "A migration chain usually types the end and casts the middle. json-up's builder types every step: ea"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "prompt-scrub",
+    "angle": "Reclaim the secrets map",
+    "archetype": "one-tip",
+    "preview": "The file holding your original secrets is the session map. prompt-scrub scrubs the prompt but keeps "
+  },
+  {
+    "date": "2026-10-26",
+    "source": "collective",
+    "angle": "A thirty-day window",
+    "archetype": "origin",
+    "preview": "A window that restarts on every tweak never ends. So the Nano Collective keeps the 30-day clock runn"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanocoder",
+    "angle": "One daemon per project, not per machine",
+    "archetype": "sharp-take",
+    "preview": "Scheduled agents don't need a central server. They need a daemon per project, not per machine: cron "
+  },
+  {
+    "date": "2026-10-26",
+    "source": "nanotune",
+    "angle": "The judge passes on a threshold",
+    "archetype": "til",
+    "preview": "Same answer, opposite verdicts. nanotune's llm-judge grades named criteria 0-10 (helpful, accurate, "
+  },
+  {
+    "date": "2026-10-26",
+    "source": "roster",
+    "angle": "Install the App on exactly what it needs",
+    "archetype": "contrarian",
+    "preview": "Installing a GitHub App across the whole organisation is the easy default. Roster (alpha) pre-select"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "sentinel",
+    "angle": "The fallback is explicit, never hidden",
+    "archetype": "origin",
+    "preview": "An audit whose fallback fires silently is not an audit you control. Sentinel (alpha) keeps audited c"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "get-md",
+    "angle": "Diagrams survive the conversion",
+    "archetype": "problem-relief",
+    "preview": "Convert a page to Markdown and the diagram is gone. Prose survives, architecture drawing becomes loo"
+  },
+  {
+    "date": "2026-10-26",
+    "source": "json-up",
+    "angle": "VersionError means your config",
+    "archetype": "problem-relief",
+    "preview": "A migration chain that never got as far as your data is almost never bad data. json-up throws Versio"
   }
 ]
