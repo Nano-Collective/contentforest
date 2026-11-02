@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 2735
+distributed_at: "2026-11-02T14:00:47.422Z"
 ---
 
 # What is actually inside a prompt-scrub v1.4.0 encrypted session file
