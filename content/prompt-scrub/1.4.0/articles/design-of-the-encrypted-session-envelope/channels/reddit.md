@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 9247
+distributed_at: "2026-11-02T14:03:17.623Z"
 ---
 
 # The encrypted session envelope in prompt-scrub v1.4.0: a behind-the-scenes tour
