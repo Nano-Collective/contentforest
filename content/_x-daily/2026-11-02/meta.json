@@ -1,0 +1,191 @@
+{
+  "kind": "x-daily",
+  "date": "2026-11-02",
+  "generated_at": "2026-11-02T06:08:04.111Z",
+  "model": "minimax-m3",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "Compression has a restore button",
+      "archetype": "til"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Fine-tuning on a laptop",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "roster-1.md",
+      "source": "roster",
+      "angle": "A staff member is a repo",
+      "archetype": "origin"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "A failed run goes red",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Mermaid recovered from rendered SVG",
+      "archetype": "til"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "Missing version means zero",
+      "archetype": "til"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Secrets win every overlap",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "The ledger is the report",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "A hook that costs nothing",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "A judge scores what you cannot",
+      "archetype": "til"
+    },
+    {
+      "file": "roster-2.md",
+      "source": "roster",
+      "angle": "The manifest refuses to guess",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "Only changed files, please",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Why the batch order lies",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Versions are not comparable",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Seven-day session expiry",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Sponsor buys nothing",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "Architect mode reverts by default",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Train on your own machine",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "roster-3.md",
+      "source": "roster",
+      "angle": "The framework is never a dependency",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Sentinel ships zero rule packs",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "Local reader model, no key",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Schema is the migration",
+      "archetype": "origin"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Style is not rewritten",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "Review before you build",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "A custom tool is one file",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "Judge the judge",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "roster-4.md",
+      "source": "roster",
+      "angle": "The portal redraws from reality",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "A dry run touches no cache",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Read documents by content",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "The chain types itself",
+      "archetype": "problem-relief"
+    }
+  ],
+  "attempts": 2,
+  "final_status": "passed",
+  "failures": []
+}

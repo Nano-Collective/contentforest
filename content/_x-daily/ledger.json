@@ -2937,4 +2937,214 @@
     "archetype": "problem-relief",
     "preview": "A dragged screenshot shouldn't dump `Screenshot\\ 2026-06-21\\ at\\ 10.04.32.png` into your prompt. Nan"
   },
+    {
+    "date": "2026-11-02",
+    "source": "nanocoder",
+    "angle": "Compression has a restore button",
+    "archetype": "til",
+    "preview": "Compaction is not a one-way door."
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanotune",
+    "angle": "Fine-tuning on a laptop",
+    "archetype": "by-the-numbers",
+    "preview": "0.5B is the size that lets you be wrong. A 1.5B model gives you the better answer. A 0.5B model give"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "roster",
+    "angle": "A staff member is a repo",
+    "archetype": "origin",
+    "preview": "A row in a database tells you what is true now, not how it got there. Roster (alpha) gives every sta"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "sentinel",
+    "angle": "A failed run goes red",
+    "archetype": "sharp-take",
+    "preview": "A security tool that could not check should not look like one that found nothing. Sentinel (alpha) e"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "get-md",
+    "angle": "Mermaid recovered from rendered SVG",
+    "archetype": "til",
+    "preview": "A page shipping only rendered SVG doesn't have to lose the diagram. get-md reads the source from the"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "json-up",
+    "angle": "Missing version means zero",
+    "archetype": "til",
+    "preview": "Drop the _version field and nothing complains. json-up reads the file as version 0 and replays your "
+  },
+  {
+    "date": "2026-11-02",
+    "source": "prompt-scrub",
+    "angle": "Secrets win every overlap",
+    "archetype": "sharp-take",
+    "preview": "Over-redact by default. A too-redacted span is recoverable; a missed secret is not. prompt-scrub bak"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "collective",
+    "angle": "The ledger is the report",
+    "archetype": "problem-relief",
+    "preview": "You gave a project $50. Two months on, you still do not know what it paid for. Servers? A maintainer"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanocoder",
+    "angle": "A hook that costs nothing",
+    "archetype": "one-tip",
+    "preview": "Asking the model not to touch .env is a suggestion. A pre-tool-use hook that exits non-zero is a rul"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanotune",
+    "angle": "A judge scores what you cannot",
+    "archetype": "til",
+    "preview": "String matching tells you pass or fail. It never tells you why."
+  },
+  {
+    "date": "2026-11-02",
+    "source": "roster",
+    "angle": "The manifest refuses to guess",
+    "archetype": "sharp-take",
+    "preview": "A config format that guesses fails silently, on someone else's machine. Roster (alpha) reads org.yam"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "sentinel",
+    "angle": "Only changed files, please",
+    "archetype": "by-the-numbers",
+    "preview": "80 model calls a day: 20 repos, 4 packs each, run daily. That is the cost of a Sentinel (alpha) audi"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "get-md",
+    "angle": "Why the batch order lies",
+    "archetype": "origin",
+    "preview": "A thousand URLs shouldn't mean a thousand results in memory."
+  },
+  {
+    "date": "2026-11-02",
+    "source": "json-up",
+    "angle": "Versions are not comparable",
+    "archetype": "sharp-take",
+    "preview": "A migration version is an identifier, not a counter. Nothing meaningful sits between 1 and 2, so jso"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "prompt-scrub",
+    "angle": "Seven-day session expiry",
+    "archetype": "by-the-numbers",
+    "preview": "7 days is the shelf life of a prompt-scrub session map, and the map is the file holding your real va"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "collective",
+    "angle": "Sponsor buys nothing",
+    "archetype": "sharp-take",
+    "preview": "Money should not buy a seat at the table. The Nano Collective writes that down as hard rules: no roa"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanocoder",
+    "angle": "Architect mode reverts by default",
+    "archetype": "problem-relief",
+    "preview": "Twelve files, twelve approvals, and by the fourth you hit Y."
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanotune",
+    "angle": "Train on your own machine",
+    "archetype": "contrarian",
+    "preview": "Renting a GPU to fine-tune means shipping your training data to someone else's hardware. Nanotune ru"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "roster",
+    "angle": "The framework is never a dependency",
+    "archetype": "contrarian",
+    "preview": "Most teams call into one hosted framework. GitHub won't allow it: a reusable workflow in a private r"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "sentinel",
+    "angle": "Sentinel ships zero rule packs",
+    "archetype": "origin",
+    "preview": "A fresh install finds nothing. That is deliberate."
+  },
+  {
+    "date": "2026-11-02",
+    "source": "get-md",
+    "angle": "Local reader model, no key",
+    "archetype": "contrarian",
+    "preview": "Every AI tool treats the API key as the price of admission. get-md inverts it: `useLLM: true` with n"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "json-up",
+    "angle": "Schema is the migration",
+    "archetype": "origin",
+    "preview": "Most migration tools make you cast: the step returns `any` and you hope the shape holds. In json-up "
+  },
+  {
+    "date": "2026-11-02",
+    "source": "prompt-scrub",
+    "angle": "Style is not rewritten",
+    "archetype": "origin",
+    "preview": "Redacting an email is a fact. Rewriting your sentences is a guess about who you are, and a wrong gue"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "collective",
+    "angle": "Review before you build",
+    "archetype": "contrarian",
+    "preview": "The usual order is code first, rationale after. The Nano Collective runs it the other way: a whitepa"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanocoder",
+    "angle": "A custom tool is one file",
+    "archetype": "origin",
+    "preview": "Wrapping `gh` in an MCP server means a process. Nanocoder draws the line lower: a custom tool is one"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "nanotune",
+    "angle": "Judge the judge",
+    "archetype": "one-tip",
+    "preview": "A judge that scores everything 9/10 is not a judge. Run `nanotune judge test` right after configurin"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "roster",
+    "angle": "The portal redraws from reality",
+    "archetype": "til",
+    "preview": "A setup screen that remembers which step you are on will lie to you. Setup takes days, not minutes. "
+  },
+  {
+    "date": "2026-11-02",
+    "source": "sentinel",
+    "angle": "A dry run touches no cache",
+    "archetype": "contrarian",
+    "preview": "A preview should not warm the cache for the run after it. Sentinel (alpha) dry runs neither read nor"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "get-md",
+    "angle": "Read documents by content",
+    "archetype": "problem-relief",
+    "preview": "The extension says .pdf. The Content-Type says text/html. One of them is lying, and your converter h"
+  },
+  {
+    "date": "2026-11-02",
+    "source": "json-up",
+    "angle": "The chain types itself",
+    "archetype": "problem-relief",
+    "preview": "Migration steps drift out of sync with the schema above them, and nothing complains until a saved fi"
+  },
 ]
