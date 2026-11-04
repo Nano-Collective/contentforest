@@ -6,6 +6,7 @@ title: "Architect mode in v1.31: review the turn, not the edit"
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 12060
+distributed_at: "2026-11-02T19:13:49.079Z"
 ---
 
 Per-tool approval is a holdover from when the model wrote one file at a time. A refactor that touches twelve files now needs twelve approval prompts, each with a diff the operator is being asked to read in order, each blocking the next one until you press a key. The whole prompt cadence is wrong for the work agents actually do, and it pushes an operator into one of two states: rubber-stamp every card and ruin the gate's purpose, or read every diff and ruin their own afternoon. Nanocoder v1.31 adds a third option. Architect mode runs the whole turn uninterrupted, takes one checkpoint at the first file mutation, and asks for a single yes/no at the end with a one-keypress revert that puts files back exactly as they were.
