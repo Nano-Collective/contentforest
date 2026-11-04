@@ -50,7 +50,7 @@
 		"gray-matter": "^4.0.3",
 		"lucide-react": "^0.545.0",
 		"marked": "^17.0.0",
-		"next": "^15.5.7",
+		"next": "^15.5.28",
 		"postprocessing": "^6.39.1",
 		"react": "19.1.0",
 		"react-dom": "19.1.0",
