@@ -1,0 +1,7 @@
+{
+  "slug": "agent-evaluation-harness",
+  "title": "Measuring an agent: the eval harness that scores a released tag, not your tree",
+  "focus": "An explainer of the new benchmarks/agent harness - it shells out to nanocoder --plain --json run so a published tag and the working tree can be compared with the same fixture set, it scores pass/fail, steps, tokens and cost per task, and its six vendored fixtures carry machine-checkable assertions plus distractor files so an agent working from degraded context fails the assertion instead of quietly finishing cheaper, with every result stamped with the fixture-set id and a content hash of the fixtures.",
+  "generated_at": "2026-11-04T16:52:24.846Z",
+  "model": "minimax-m3"
+}
