@@ -1,0 +1,7 @@
+{
+  "slug": "in-process-plugins",
+  "title": "Nanocoder plugins: JavaScript that can veto a tool call from inside the agent",
+  "focus": "A hands-on tour of the new .nanocoder/plugins/*.mjs extension point - the five hooks (tool.execute.before, tool.execute.after, session.compacting, tui.prompt.append, permission.asked), how a JS plugin differs from a shell hook (it can block a tool, annotate a result, deny a permission prompt outright, and append prompt context), and the safety contract that keeps it from becoming a footgun (loads only in a trusted directory, a throwing or 30-second-stuck plugin is logged and ignored rather than blocking the agent, and it cannot approve a tool or add new ones).",
+  "generated_at": "2026-11-04T16:52:24.846Z",
+  "model": "minimax-m3"
+}

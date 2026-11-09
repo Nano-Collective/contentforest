@@ -1,0 +1,7 @@
+{
+  "slug": "failure-capsules-test-failure-debugging",
+  "title": "How Nanocoder reads a 3000-line test log and hands the model only the failures",
+  "focus": "A behind-the-scenes look at the failure capsule: why a head-and-tail cut of a failing Jest/Vitest/Mocha/AVA or tsc run used to drop the assertion detail printed in the middle of the log, how the capsule keeps each failing test's title, location and expected/received diff, how the original command is safely narrowed to a single test and re-run once to tell a real failure from a flaky or order-dependent one, and the deliberate limits that stop the re-run from repeating pre/post package hooks or running arbitrary shell constructs.",
+  "generated_at": "2026-11-04T16:52:24.846Z",
+  "model": "minimax-m3"
+}
