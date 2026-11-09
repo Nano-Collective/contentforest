@@ -6,6 +6,7 @@ title: "Nanocoder v1.32.0 - ACP matures, a CI gate, browser and voice"
 generated_at: "2026-11-04T16:52:24.846Z"
 model: "minimax-m3"
 char_count: 17857
+distributed_at: "2026-11-09T13:06:16.001Z"
 ---
 
 Nanocoder v1.32.0 is out. This is a large release, and most of it goes into the parts of the agent that editors talk to: the ACP protocol surface, session isolation, and the agentic CI gate.
