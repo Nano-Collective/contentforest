@@ -6,6 +6,7 @@ title: "Lifecycle hooks in v1.31: rules that fire every time, for free"
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 13360
+distributed_at: "2026-11-09T13:04:57.965Z"
 ---
 
 Nanocoder's agent loop has six predictable points where a rule should fire: when a session starts, when it ends, when you submit a prompt, before a tool runs, after it returns, and just before context compaction. v1.31 promotes those points from implicit behaviours into a real configuration surface. You can wire a shell command to any of them. It runs every time, it costs no model tokens, and on two of the six points it can refuse to let the action happen.
