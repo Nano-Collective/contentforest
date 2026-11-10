@@ -1,0 +1,7 @@
+{
+  "slug": "over-redact-never-leak",
+  "title": "Over-redact, never leak: how collision resolution actually works",
+  "focus": "Show that prompt-scrub v1.5.0's collision resolver narrows a losing finding to the part the winner does not cover rather than dropping it, so an over-broad detector degrades into over-redaction instead of leaking what it over-matched, explain why a narrowed fragment is scored at 0.8 times the original confidence, and cover the O(n log n) rewrite that took a 10,000-finding document from about 1.7 seconds to under 100 milliseconds with byte-identical output.",
+  "generated_at": "2026-11-10T13:52:51.686Z",
+  "model": "minimax-m3"
+}

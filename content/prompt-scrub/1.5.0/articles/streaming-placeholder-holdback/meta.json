@@ -1,0 +1,7 @@
+{
+  "slug": "streaming-placeholder-holdback",
+  "title": "Why a scrubber has to hold back half a placeholder",
+  "focus": "Explain the mechanics of streamed rehydration in prompt-scrub v1.5.0: why vendors emit roughly one token per SSE event so a placeholder like «Email_1» genuinely arrives as «Email_ then 1», how the proxy holds a trailing partial placeholder back and joins it to the next fragment, how CRLF/CR/LF event boundaries are detected, and how the held fragment is released on finish_reason or [DONE] so a client that stops reading never loses bytes.",
+  "generated_at": "2026-11-10T13:52:51.686Z",
+  "model": "minimax-m3"
+}
