@@ -352,7 +352,7 @@ async function main() {
 	}
 
 	const generatedAt = new Date().toISOString();
-	const model = 'minimax-m3';
+	const model = 'MiniMax-M3.1-Flash';
 
 	console.log(
 		`change-request: ${product.slug} v${job.version} (scope=${job.scope}) — issue #${job.issueNumber} from @${job.requester} (max-attempts=${args.maxAttempts})`,
