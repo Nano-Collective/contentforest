@@ -6,6 +6,7 @@ title: "Nanocoder v1.32.0 - ACP sessions, a CI gate, browser and voice"
 generated_at: "2026-11-04T16:52:24.846Z"
 model: "minimax-m3"
 char_count: 4840
+distributed_at: "2026-11-11T11:46:10.257Z"
 ---
 
 We shipped Nanocoder v1.32.0. It's a big one, and most of it is in the editor-integration layer, so here's the shape of it.
