@@ -6,6 +6,7 @@ title: "prompt-scrub v1.5.0: stricter proxy, more detectors, safer sessions"
 generated_at: "2026-11-10T13:52:51.686Z"
 model: "minimax-m3"
 char_count: 11345
+distributed_at: "2026-11-11T10:33:31.728Z"
 ---
 
 `prompt-scrub` v1.5.0 is out. This release is mostly about the proxy, the detectors, and the session store, and it includes a set of behaviour changes worth reading before you upgrade.
