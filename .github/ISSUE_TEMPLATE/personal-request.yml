@@ -33,6 +33,7 @@ body:
       description: |
         Pick the existing pack to ground the personal-pack in. List is auto-generated from `content/` on `main`, sorted newest-first. `<product>/<version>` for release packs; `_collective/<slug>` for collective packs.
       options:
+        - prompt-scrub/1.5.0
         - nanocoder/1.32.0
         - nanocoder/1.31.0
         - prompt-scrub/1.4.0
