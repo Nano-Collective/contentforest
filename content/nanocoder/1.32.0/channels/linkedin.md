@@ -6,6 +6,7 @@ title: "Nanocoder v1.32.0"
 generated_at: "2026-11-04T16:52:24.846Z"
 model: "minimax-m3"
 char_count: 1698
+distributed_at: "2026-11-11T11:39:45.683Z"
 ---
 
 Nanocoder v1.32.0 is out. Most of this release goes into the parts of the agent that editors talk to.
