@@ -1,6 +1,6 @@
 {
   "week_of": "2026-11-09",
-  "generated_at": "2026-11-11T10:29:37.310Z",
+  "generated_at": "2026-11-11T10:41:05.126Z",
   "days": {
     "2026-11-09": [
       {
@@ -27,74 +27,70 @@
         "release_set": "prompt-scrub@1.5.0"
       },
       {
-        "slot": "hacker-news-1",
-        "channel": "hacker-news",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.5.0/channels/hacker-news.md",
-        "release_set": "prompt-scrub@1.5.0"
-      },
-      {
-        "slot": "linkedin-1",
-        "channel": "linkedin",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.5.0/channels/linkedin.md",
-        "release_set": "prompt-scrub@1.5.0"
-      },
-      {
-        "slot": "reddit-1",
-        "channel": "reddit",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.5.0/channels/reddit.md",
-        "release_set": "prompt-scrub@1.5.0"
-      },
-      {
         "slot": "x-1",
-        "channel": "x",
-        "type": "release",
-        "ref": "content/prompt-scrub/1.5.0/channels/x.md",
-        "release_set": "prompt-scrub@1.5.0"
-      },
-      {
-        "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-31/posts/nanotune-3.md",
         "source": "nanotune"
       },
       {
-        "slot": "x-3",
+        "slot": "x-2",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-31/posts/prompt-scrub-4.md",
         "source": "prompt-scrub"
       },
       {
-        "slot": "x-4",
+        "slot": "x-3",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-31/posts/sentinel-4.md",
         "source": "sentinel"
       },
       {
-        "slot": "x-5",
+        "slot": "x-4",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-17/posts/collective-2.md",
         "source": "collective"
       },
       {
-        "slot": "x-6",
+        "slot": "x-5",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-17/posts/get-md-2.md",
         "source": "get-md"
       },
       {
-        "slot": "x-7",
+        "slot": "x-6",
         "channel": "x",
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-17/posts/json-up-2.md",
         "source": "json-up"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/hacker-news.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/x.md"
       }
     ],
     "2026-11-12": [
@@ -139,6 +135,30 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-10/posts/get-md-3.md",
         "source": "get-md"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.32.0/channels/hacker-news.md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.32.0/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.32.0/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.32.0/channels/x.md"
       }
     ],
     "2026-11-13": [
@@ -183,6 +203,24 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-08-10/posts/get-md-4.md",
         "source": "get-md"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/x.md"
       }
     ],
     "2026-11-14": [],
