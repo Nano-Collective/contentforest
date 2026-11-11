@@ -1,6 +1,6 @@
 {
   "week_of": "2026-11-16",
-  "generated_at": "2026-11-11T10:29:37.310Z",
+  "generated_at": "2026-11-11T10:41:05.126Z",
   "days": {
     "2026-11-16": [
       {
@@ -61,6 +61,24 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-10-05/posts/nanotune-1.md",
         "source": "nanotune"
+      },
+      {
+        "slot": "linkedin-2",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-2",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/architect-mode/channels/x.md"
       }
     ],
     "2026-11-17": [
@@ -105,6 +123,12 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-10-05/posts/json-up-2.md",
         "source": "json-up"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.4.0/articles/design-of-the-encrypted-session-envelope/channels/x.md"
       }
     ],
     "2026-11-18": [
@@ -149,6 +173,24 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-10-05/posts/collective-3.md",
         "source": "collective"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/_collective/one-year-old/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/_collective/one-year-old/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/_collective/one-year-old/channels/x.md"
       }
     ],
     "2026-11-19": [
@@ -193,6 +235,24 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-10-05/posts/roster-3.md",
         "source": "roster"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/nanotune/1.7.0/articles/reproducible-benchmarks-workflow/channels/x.md"
       }
     ],
     "2026-11-20": [
@@ -237,6 +297,12 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-10-05/posts/nanotune-4.md",
         "source": "nanotune"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/get-md/1.7.0/articles/pdf-vision-diagram-reconstruction-limits/channels/x.md"
       }
     ],
     "2026-11-21": [],
