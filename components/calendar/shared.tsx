@@ -29,6 +29,11 @@ export const TYPE_META: Record<
 		dot: 'bg-emerald-500',
 		chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
 	},
+	'follow-up': {
+		label: 'Follow-up',
+		dot: 'bg-amber-500',
+		chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+	},
 	'evergreen-x': {
 		label: 'Evergreen',
 		dot: 'bg-muted-foreground',

@@ -6,6 +6,7 @@ import {
 	addWeeks,
 	buildWeek,
 	type EvergreenItem,
+	type FollowUp,
 	gatherPools,
 	interleaveBySource,
 	mondayOf,
@@ -65,6 +66,7 @@ function poolsFrom(parts: {
 	releaseSets?: ReleaseSet[];
 	backlogArticles?: Pools['backlogArticles'];
 	evergreenX?: EvergreenItem[];
+	followUps?: FollowUp[];
 	statusOverrides?: Record<string, RefStatus>;
 	announcedSetIds?: Iterable<string>;
 }): Pools {
@@ -78,6 +80,7 @@ function poolsFrom(parts: {
 		for (const s of a.siblings) reg(s.ref);
 	}
 	for (const e of parts.evergreenX ?? []) reg(e.ref);
+	for (const f of parts.followUps ?? []) for (const it of f.items) reg(it.ref);
 	// Any override for a ref we didn't otherwise register.
 	for (const [ref, st] of Object.entries(parts.statusOverrides ?? {}))
 		if (!refStatus.has(ref)) refStatus.set(ref, st);
@@ -85,6 +88,7 @@ function poolsFrom(parts: {
 		releaseSets: parts.releaseSets ?? [],
 		backlogArticles: parts.backlogArticles ?? [],
 		evergreenX: parts.evergreenX ?? [],
+		followUps: parts.followUps ?? [],
 		refStatus,
 		announcedSetIds: new Set(parts.announcedSetIds ?? []),
 	};
@@ -790,4 +794,215 @@ test('gatherPools: a part-announced release is done — leftover posts go to bac
 		process.chdir(cwd);
 		rmSync(tmp, {recursive: true});
 	}
+});
+
+// ── R6: follow-ups ───────────────────────────────────────────────────────────
+
+test('gatherPools: a posted discussion leaves its unused siblings as a follow-up', t => {
+	const cwd = process.cwd();
+	const tmp = mkdtempSync(join(tmpdir(), 'cf-cal-'));
+	const content = join(tmp, 'content');
+	process.chdir(tmp);
+	try {
+		const art = 'alpha/1.0.0/articles/foo/channels';
+		writeMd(join(content, `${art}/github-discussion.md`), {
+			channel: 'github-discussion',
+			generated_at: '2026-07-01T00:00:00Z',
+			distributed_at: '2026-07-03T13:00:00Z',
+		});
+		writeMd(join(content, `${art}/linkedin.md`), {channel: 'linkedin'});
+		writeMd(join(content, `${art}/reddit.md`), {channel: 'reddit'});
+		writeMd(join(content, `${art}/x.md`), {
+			channel: 'x',
+			wont_use_at: '2026-07-03T14:00:00Z',
+		});
+		// The latest version's announcement, posted more recently.
+		writeMd(join(content, 'alpha/2.0.0/channels/github-discussion.md'), {
+			channel: 'github-discussion',
+			generated_at: '2026-07-05T00:00:00Z',
+			distributed_at: '2026-07-06T13:00:00Z',
+		});
+		writeMd(join(content, 'alpha/2.0.0/channels/reddit.md'), {
+			channel: 'reddit',
+		});
+		// A superseded announcement: stale, so no follow-up.
+		writeMd(join(content, 'alpha/1.0.0/channels/github-discussion.md'), {
+			channel: 'github-discussion',
+			distributed_at: '2026-07-01T13:00:00Z',
+		});
+		writeMd(join(content, 'alpha/1.0.0/channels/linkedin.md'), {
+			channel: 'linkedin',
+		});
+
+		const pools = gatherPools(content);
+		t.deepEqual(
+			pools.followUps.map(f => f.key.slice(f.key.indexOf('content/'))),
+			['content/alpha/2.0.0/channels', `content/${art}`],
+			'newest-posted first; superseded announcement left out',
+		);
+		t.deepEqual(
+			pools.followUps[1].items.map(i => i.channel).sort(),
+			['linkedin', 'reddit'],
+			"only unused siblings — not the posted discussion or the won't-use x",
+		);
+		t.true(pools.followUps[0].announcement);
+		t.false(pools.followUps[1].announcement);
+		t.is(pools.backlogArticles.length, 0);
+	} finally {
+		process.chdir(cwd);
+		rmSync(tmp, {recursive: true});
+	}
+});
+
+test('gatherPools: an unused discussion keeps its dir out of follow-ups', t => {
+	const cwd = process.cwd();
+	const tmp = mkdtempSync(join(tmpdir(), 'cf-cal-'));
+	const content = join(tmp, 'content');
+	process.chdir(tmp);
+	try {
+		// linkedin went out first; the discussion is still the backlog anchor,
+		// which schedules the remaining siblings itself.
+		const art = 'alpha/1.0.0/articles/foo/channels';
+		writeMd(join(content, `${art}/github-discussion.md`), {
+			channel: 'github-discussion',
+		});
+		writeMd(join(content, `${art}/linkedin.md`), {
+			channel: 'linkedin',
+			distributed_at: '2026-07-03T13:00:00Z',
+		});
+		writeMd(join(content, `${art}/reddit.md`), {channel: 'reddit'});
+		const pools = gatherPools(content);
+		t.is(pools.followUps.length, 0);
+		t.is(pools.backlogArticles.length, 1);
+	} finally {
+		process.chdir(cwd);
+		rmSync(tmp, {recursive: true});
+	}
+});
+
+function followUp(
+	key: string,
+	postedAt: string,
+	announcement = false,
+): FollowUp {
+	return {
+		key,
+		postedAt,
+		announcement,
+		items: [
+			{ref: `${key}/linkedin.md`, channel: 'linkedin'},
+			{ref: `${key}/reddit.md`, channel: 'reddit'},
+		],
+	};
+}
+
+test('R6: follow-ups land one group per weekday, earliest first, in pool order', t => {
+	const week = run({
+		today: '2026-07-07',
+		pools: poolsFrom({
+			followUps: [
+				followUp('content/a/channels', '2026-07-06T13:00:00Z'),
+				followUp('content/b/channels', '2026-07-03T13:00:00Z'),
+			],
+		}),
+	});
+	const fu = (d: string) =>
+		week.days[d].filter(i => i.type === 'follow-up').map(i => i.ref);
+	t.deepEqual(fu('2026-07-06'), [], 'never placed on a past day');
+	t.deepEqual(fu('2026-07-07'), [
+		'content/a/channels/linkedin.md',
+		'content/a/channels/reddit.md',
+	]);
+	t.deepEqual(fu('2026-07-08'), [
+		'content/b/channels/linkedin.md',
+		'content/b/channels/reddit.md',
+	]);
+});
+
+test("R6: a follow-up does not count as the week's backlog article", t => {
+	const backlog = {
+		anchorRef: 'content/z/channels/github-discussion.md',
+		generatedAt: '2026-07-01T00:00:00Z',
+		siblings: [],
+	};
+	const week = run({
+		pools: poolsFrom({
+			backlogArticles: [backlog],
+			followUps: [followUp('content/a/channels', '2026-07-03T13:00:00Z')],
+		}),
+	});
+	const all = Object.values(week.days).flat();
+	t.true(all.some(i => i.ref === backlog.anchorRef));
+	t.is(all.filter(i => i.type === 'follow-up').length, 2);
+});
+
+test('R6: siblings left unposted when their day passes reflow forward as a follow-up', t => {
+	// Monday carried an article; the discussion was auto-posted, linkedin and
+	// reddit weren't. This is the case that used to drop them off the calendar:
+	// past unused items are pruned, and the posted discussion meant no pool
+	// could bring them back.
+	const dir = 'content/alpha/1.0.0/articles/foo/channels';
+	const existing: WeekSchedule = {
+		week_of: WEEK,
+		generated_at: '2026-07-06T00:00:00Z',
+		days: {
+			'2026-07-06': [
+				{
+					slot: 'github-discussion-1',
+					channel: 'github-discussion',
+					type: 'backlog-article',
+					ref: `${dir}/github-discussion.md`,
+				},
+				{
+					slot: 'linkedin-1',
+					channel: 'linkedin',
+					type: 'backlog-article',
+					ref: `${dir}/linkedin.md`,
+				},
+				{
+					slot: 'reddit-1',
+					channel: 'reddit',
+					type: 'backlog-article',
+					ref: `${dir}/reddit.md`,
+				},
+			],
+		},
+	};
+	const week = run({
+		today: '2026-07-07',
+		existing,
+		pools: poolsFrom({
+			followUps: [followUp(dir, '2026-07-06T13:00:00Z')],
+			statusOverrides: {[`${dir}/github-discussion.md`]: 'distributed'},
+		}),
+	});
+	t.deepEqual(
+		week.days['2026-07-06'].map(i => i.ref),
+		[`${dir}/github-discussion.md`],
+		'Monday keeps only the posted discussion',
+	);
+	t.deepEqual(
+		week.days['2026-07-07'].map(i => `${i.type}:${i.channel}`),
+		['follow-up:linkedin', 'follow-up:reddit'],
+	);
+});
+
+test('R6: an announcement stops following up two weeks after it was posted', t => {
+	const week = run({
+		today: '2026-07-07',
+		pools: poolsFrom({
+			followUps: [
+				followUp('content/fresh/channels', '2026-06-24T13:00:00Z', true),
+				followUp('content/stale/channels', '2026-06-22T13:00:00Z', true),
+				followUp('content/article/channels', '2026-01-01T13:00:00Z'),
+			],
+		}),
+	});
+	const placed = new Set(
+		Object.values(week.days)
+			.flat()
+			.filter(i => i.type === 'follow-up')
+			.map(i => i.ref.split('/')[1]),
+	);
+	t.deepEqual([...placed].sort(), ['article', 'fresh']);
 });

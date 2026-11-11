@@ -17,6 +17,10 @@
  *   R4  ≤1 release *set* per day — two products releasing spread over ≥2 days.
  *   R5  A release day carries no backlog article — release and evergreen article
  *       content never share a day.
+ *   R6  Follow-ups: once part of a release or article has been posted (usually
+ *       the github-discussion, which publish-discussions posts automatically
+ *       on the day), its still-unused siblings carry forward to the next
+ *       weekday. Otherwise they belong to no pool and drop off the calendar.
  *
  * buildWeek is deterministic and idempotent: given the same content, the same
  * prior ledger and the same `today`, it returns the same schedule. It "reflows"
@@ -49,8 +53,16 @@ const X_DAILY_DIR = '_x-daily';
 const COLLECTIVE_DIR = '_collective';
 
 export const X_PER_DAY = 6;
+/** R6: at most this many follow-up groups share a day. */
+const FOLLOW_UPS_PER_DAY = 1;
+/** R6: an announcement's leftovers are stale this long after it was posted. */
+const ANNOUNCEMENT_FOLLOW_UP_DAYS = 14;
 
-export type SlotType = 'release' | 'backlog-article' | 'evergreen-x';
+export type SlotType =
+	| 'release'
+	| 'backlog-article'
+	| 'evergreen-x'
+	| 'follow-up';
 
 export type RefStatus = 'unused' | 'distributed' | 'wont_use';
 
@@ -90,10 +102,24 @@ export type BacklogArticle = {
 
 export type EvergreenItem = {ref: string; source: string; generatedAt: string};
 
+/**
+ * R6: a part-posted release or article's still-unused siblings. Keyed by the
+ * channels directory they share; `postedAt` is its newest distributed_at, so
+ * the most recently posted group follows up first. An announcement's
+ * leftovers expire after ANNOUNCEMENT_FOLLOW_UP_DAYS; an article's never do.
+ */
+export type FollowUp = {
+	key: string;
+	postedAt: string;
+	announcement: boolean;
+	items: {ref: string; channel: string}[];
+};
+
 export type Pools = {
 	releaseSets: ReleaseSet[];
 	backlogArticles: BacklogArticle[];
 	evergreenX: EvergreenItem[];
+	followUps: FollowUp[];
 	/** Per-ref status, so buildWeek can prune/pin without touching the fs. */
 	refStatus: Map<string, RefStatus>;
 	/**
@@ -224,6 +250,7 @@ type RawFile = {
 	dir: string; // directory of the file, for sibling grouping
 	status: RefStatus;
 	generatedAt: string;
+	distributedAt: string;
 };
 
 /** Read one product-version pack's channel + article files (skips personal). */
@@ -264,6 +291,8 @@ function collectChannelDir(
 			dir: channelsDir,
 			status: statusOf(fm),
 			generatedAt: generatedAtOf(fm),
+			distributedAt:
+				typeof fm.distributed_at === 'string' ? fm.distributed_at : '',
 		});
 	}
 }
@@ -284,6 +313,7 @@ function safeReaddir(path: string): string[] {
  *     release set (older product versions + collective packs), each with its
  *     unused sibling channels.
  *   - evergreenX: unused X posts from the _x-daily batch buckets.
+ *   - followUps: unused siblings of a part-posted release or article (R6).
  * refStatus indexes every ref seen so buildWeek can prune/pin.
  */
 export function gatherPools(
@@ -294,6 +324,16 @@ export function gatherPools(
 	const releaseSets: ReleaseSet[] = [];
 	const announcedSetIds = new Set<string>();
 	const backlogByDir = new Map<string, RawFile[]>();
+	// Every file (any status) per channels dir that can follow up (R6). A
+	// superseded version's announcement is left out: "v1.6.0 is out" is stale
+	// once v1.7.0 has shipped.
+	const followUpDirs = new Map<string, RawFile[]>();
+	const noteFollowUpDir = (f: RawFile) => {
+		const list = followUpDirs.get(f.dir) ?? [];
+		list.push(f);
+		followUpDirs.set(f.dir, list);
+	};
+	const announcementDirs = new Set<string>();
 
 	const noteBacklog = (f: RawFile) => {
 		const list = backlogByDir.get(f.dir) ?? [];
@@ -323,6 +363,8 @@ export function gatherPools(
 			let newestAt = '';
 			for (const f of files) {
 				refStatus.set(f.ref, f.status);
+				if (!f.isArticle) announcementDirs.add(f.dir);
+				if (f.isArticle || version === latest) noteFollowUpDir(f);
 				if (f.status !== 'unused') continue;
 				// A release set is ONLY the version's top-level announcement (the
 				// timely "new version" posts, R3). Deep-dive articles are evergreen
@@ -361,6 +403,7 @@ export function gatherPools(
 		collectChannelDir(channelsDir, false, files);
 		for (const f of files) {
 			refStatus.set(f.ref, f.status);
+			noteFollowUpDir(f);
 			if (f.status === 'unused') noteBacklog(f);
 		}
 	}
@@ -380,6 +423,36 @@ export function gatherPools(
 		});
 	}
 	backlogArticles.sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+
+	// R6: a dir with something posted, unused siblings, and no unused
+	// github-discussion. (An unused discussion means the dir is still a pending
+	// release or a backlog article above, which schedules the siblings itself.)
+	const followUps: FollowUp[] = [];
+	for (const [dir, files] of followUpDirs) {
+		if (
+			files.some(
+				f => f.channel === 'github-discussion' && f.status === 'unused',
+			)
+		) {
+			continue;
+		}
+		const posted = files.filter(f => f.status === 'distributed');
+		const unused = files.filter(f => f.status === 'unused');
+		if (posted.length === 0 || unused.length === 0) continue;
+		followUps.push({
+			key: files[0].ref.slice(0, files[0].ref.lastIndexOf('/')),
+			postedAt: posted.reduce(
+				(max, f) => (f.distributedAt > max ? f.distributedAt : max),
+				'',
+			),
+			announcement: announcementDirs.has(dir),
+			items: unused.map(f => ({ref: f.ref, channel: f.channel})),
+		});
+	}
+	followUps.sort(
+		(a, b) =>
+			b.postedAt.localeCompare(a.postedAt) || a.key.localeCompare(b.key),
+	);
 
 	// Evergreen X: every unused post under _x-daily/*/posts/*.md.
 	const evergreenX: EvergreenItem[] = [];
@@ -412,7 +485,14 @@ export function gatherPools(
 			compareVersionsDesc(a.version, b.version),
 	);
 
-	return {releaseSets, backlogArticles, evergreenX, refStatus, announcedSetIds};
+	return {
+		releaseSets,
+		backlogArticles,
+		evergreenX,
+		followUps,
+		refStatus,
+		announcedSetIds,
+	};
 }
 
 // ── Week building ────────────────────────────────────────────────────────────
@@ -665,7 +745,45 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		}
 	}
 
-	// 5. R1: fill each future day up to xPerDay X posts from the evergreen pool,
+	// 5. R6: carry a part-posted group's unused siblings forward onto the
+	//    earliest weekday with room, most recently posted first. Seeding already
+	//    kept any follow-up still on a future day; a missed one was dropped from
+	//    its past day and comes back through the pool here.
+	const followUpGroupsOn = (date: string): number =>
+		new Set(
+			days[date]
+				.filter(i => i.type === 'follow-up')
+				.map(i => i.ref.slice(0, i.ref.lastIndexOf('/'))),
+		).size;
+	const announcementCutoff = new Date(`${input.today}T00:00:00Z`);
+	announcementCutoff.setUTCDate(
+		announcementCutoff.getUTCDate() - ANNOUNCEMENT_FOLLOW_UP_DAYS,
+	);
+	for (const group of input.pools.followUps) {
+		if (
+			group.announcement &&
+			group.postedAt < announcementCutoff.toISOString()
+		) {
+			continue;
+		}
+		const items = group.items.filter(
+			it => !input.consumedRefs.has(it.ref) && status(it.ref) === 'unused',
+		);
+		if (items.length === 0) continue;
+		const day = future.find(d => followUpGroupsOn(d) < FOLLOW_UPS_PER_DAY);
+		if (!day) break;
+		for (const it of items) {
+			days[day].push({
+				slot: '',
+				channel: it.channel,
+				type: 'follow-up',
+				ref: it.ref,
+			});
+			input.consumedRefs.add(it.ref);
+		}
+	}
+
+	// 6. R1: fill each future day up to xPerDay X posts from the evergreen pool,
 	//    avoiding repeating a source on the same day where possible.
 	const queue = interleaveBySource(
 		input.pools.evergreenX.filter(
@@ -695,7 +813,7 @@ export function buildWeek(input: BuildInput): WeekSchedule {
 		}
 	}
 
-	// 6. Assign human-readable slot labels: one running counter per channel per
+	// 7. Assign human-readable slot labels: one running counter per channel per
 	//    day (x-1..x-6, github-discussion-1, ...). Purely cosmetic / for the UI.
 	for (const date of dates) {
 		const counters = new Map<string, number>();

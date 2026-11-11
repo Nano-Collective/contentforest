@@ -227,6 +227,7 @@ const CALENDAR_SLOT_TYPES = new Set([
 	'release',
 	'backlog-article',
 	'evergreen-x',
+	'follow-up',
 ]);
 
 type PackKind = 'release' | 'article';

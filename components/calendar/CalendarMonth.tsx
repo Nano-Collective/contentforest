@@ -63,6 +63,9 @@ function sectionsOf(dayItems: ResolvedItem[]): Section[] {
 		} else if (it.type === 'backlog-article' && it.articleKey) {
 			key = `art:${it.articleKey}`;
 			label = `Article · ${it.articleTitle ?? 'Untitled'}`;
+		} else if (it.type === 'follow-up') {
+			key = `fu:${it.articleKey ?? it.sourceLabel}`;
+			label = `Follow-up · ${it.articleTitle ?? it.sourceLabel}`;
 		} else {
 			key = 'evergreen';
 			label = null;
@@ -91,6 +94,7 @@ function CellTags({items}: {items: ResolvedItem[]}) {
 	const x = xCountOf(items);
 	const hasRelease = items.some(i => i.type === 'release');
 	const hasArticle = items.some(i => i.type === 'backlog-article');
+	const hasFollowUp = items.some(i => i.type === 'follow-up');
 	if (items.length === 0) return null;
 	return (
 		<div className="mt-auto flex flex-wrap items-center gap-1">
@@ -117,6 +121,16 @@ function CellTags({items}: {items: ResolvedItem[]}) {
 					)}
 				>
 					ART
+				</span>
+			) : null}
+			{hasFollowUp ? (
+				<span
+					className={cn(
+						'rounded px-1 text-[10px] leading-4',
+						TYPE_META['follow-up'].chip,
+					)}
+				>
+					FU
 				</span>
 			) : null}
 			<span className="ml-auto text-[10px] leading-4 text-muted-foreground">

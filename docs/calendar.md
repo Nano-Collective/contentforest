@@ -30,6 +30,7 @@ calendar days. The calendar page renders the result.
 | R3 | **New-version announcements land promptly** — a release's top-level channel posts are slotted into the current week as soon as they're detected. |
 | R4 | **≤1 release *set* per day.** If two products release, their announcements spread across separate days. |
 | R5 | **A release day carries no article.** Release content and evergreen articles never share a day. |
+| R6 | **Follow-ups.** Once part of a release or article has been posted, its still-unused siblings carry forward as `follow-up` items, one group per weekday, most recently posted first. |
 
 A **release set is only the announcement** (a version's top-level
 `channels/*.md`). A release's deep-dive **articles are backlog**, not part of the
@@ -44,6 +45,15 @@ leave the collision in place (and raise a validator *warning*, not a failure):
 an article that already has a distributed post is pinned where it was posted,
 and a week with a release on every weekday has nowhere clean to move one.
 
+R6 exists because `publish-discussions` posts the `github-discussion` itself on
+the scheduled day, while LinkedIn/Reddit/X/HN are posted by hand. If those
+aren't marked by the end of the day, they come back the next weekday as a
+follow-up. Articles follow up until they're posted or marked won't-use. An
+announcement's leftovers are dropped once a newer version of the product exists
+or two weeks after the announcement went out (`ANNOUNCEMENT_FOLLOW_UP_DAYS`),
+because by then "vX is out" is stale. A follow-up's X post counts towards R1's
+six.
+
 ### Reflow (what happens if you don't post something)
 
 The planner is deterministic and idempotent — re-running it with the same
@@ -51,7 +61,8 @@ content and the same "today" produces the same schedule. Across days it
 **reflows**:
 
 - **Un-actioned (still unused) past posts** are dropped from the past day and
-  slid forward onto the next weekday — the queue slides rather than stranding a
+  slid forward onto the next weekday (as a follow-up, R6, when the rest of
+  their release or article has already been posted) — the queue slides rather than stranding a
   miss. A missed Monday post shows up Tuesday, and keeps riding at the front
   until you post it or mark it won't-use.
 - **Actioned past posts** (distributed / won't-use) stay put as the historical
@@ -86,7 +97,7 @@ distribution status always lives in that file's own frontmatter
 }
 ```
 
-- `type` is one of `release`, `backlog-article`, `evergreen-x`.
+- `type` is one of `release`, `backlog-article`, `follow-up`, `evergreen-x`.
 - `ref` resolves to a content `.md`; its status is read live when the page renders.
 - Weekend days render in the grid but are always empty.
 
