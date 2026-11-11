@@ -20,6 +20,10 @@ body:
       description: |
         Pick what to edit. `<product>/<version>` targets the release pack itself (channels, meta, or a single file under it). `<product>/<version>/articles/<slug>` targets one article inside a pack. List is auto-generated from `content/` on `main`, sorted newest-first.
       options:
+        - prompt-scrub/1.5.0
+        - prompt-scrub/1.5.0/articles/over-redact-never-leak
+        - prompt-scrub/1.5.0/articles/streaming-placeholder-holdback
+        - prompt-scrub/1.5.0/articles/tool-schema-is-the-contract
         - nanocoder/1.32.0
         - nanocoder/1.32.0/articles/agent-evaluation-harness
         - nanocoder/1.32.0/articles/failure-capsules-test-failure-debugging
@@ -66,10 +70,6 @@ body:
         - get-md/1.5.0
         - get-md/1.5.0/articles/batch-sitemap-large-site-crawl
         - get-md/1.5.0/articles/chunk-markdown-rag-pipeline
-        - nanocoder/1.26.0
-        - nanocoder/1.26.0/articles/json-tool-fallback
-        - nanocoder/1.26.0/articles/nano-mode
-        - nanocoder/1.26.0/articles/reasoning-traces
     validations:
       required: true
   # END AUTO-TARGETS
