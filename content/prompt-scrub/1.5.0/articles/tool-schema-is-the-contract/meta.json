@@ -1,0 +1,7 @@
+{
+  "slug": "tool-schema-is-the-contract",
+  "title": "Writing tool schemas that survive a scrubber",
+  "focus": "Give practitioners a concrete rule of thumb from prompt-scrub v1.5.0: the proxy scrubs free text everywhere but deliberately leaves tool names, tool-call ids, JSON-schema property keys and enum values alone because the model must echo them verbatim for the caller's dispatch to work, and show how the credential-key rule decides what to redact inside tool arguments, treating access_tokens as a secret while leaving max_tokens and generic names like key or auth alone.",
+  "generated_at": "2026-11-10T13:52:51.686Z",
+  "model": "minimax-m3"
+}
