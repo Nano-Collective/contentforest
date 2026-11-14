@@ -1,6 +1,6 @@
 {
   "week_of": "2026-11-23",
-  "generated_at": "2026-11-11T10:41:05.126Z",
+  "generated_at": "2026-11-14T06:59:53.039Z",
   "days": {
     "2026-11-23": [
       {
@@ -297,6 +297,18 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-10-12/posts/nanotune-4.md",
         "source": "nanotune"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.32.0/channels/hacker-news.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.32.0/channels/x.md"
       }
     ],
     "2026-11-28": [],

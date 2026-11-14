@@ -1,6 +1,6 @@
 {
   "week_of": "2026-11-30",
-  "generated_at": "2026-11-11T10:41:05.126Z",
+  "generated_at": "2026-11-14T06:59:53.039Z",
   "days": {
     "2026-11-30": [
       {
@@ -61,6 +61,30 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-09-21/posts/nanotune-1.md",
         "source": "nanotune"
+      },
+      {
+        "slot": "hacker-news-1",
+        "channel": "hacker-news",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/hacker-news.md"
+      },
+      {
+        "slot": "linkedin-2",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-2",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/prompt-scrub/1.5.0/channels/x.md"
       }
     ],
     "2026-12-01": [
@@ -105,6 +129,24 @@
         "type": "evergreen-x",
         "ref": "content/_x-daily/2026-09-21/posts/json-up-2.md",
         "source": "json-up"
+      },
+      {
+        "slot": "linkedin-1",
+        "channel": "linkedin",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/linkedin.md"
+      },
+      {
+        "slot": "reddit-1",
+        "channel": "reddit",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/reddit.md"
+      },
+      {
+        "slot": "x-7",
+        "channel": "x",
+        "type": "follow-up",
+        "ref": "content/nanocoder/1.31.0/articles/lifecycle-hooks/channels/x.md"
       }
     ],
     "2026-12-02": [
