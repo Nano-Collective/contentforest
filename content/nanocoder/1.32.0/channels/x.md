@@ -6,6 +6,7 @@ title: "Nanocoder v1.32.0"
 generated_at: "2026-11-04T16:52:24.846Z"
 model: "minimax-m3"
 char_count: 200
+distributed_at: "2026-11-16T18:42:28.706Z"
 ---
 
 Nanocoder v1.32.0: editor-supplied MCP servers per session, per-session models, a headless PR review and CI gate, a built-in browser tool, and voice mode.
