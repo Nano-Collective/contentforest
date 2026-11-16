@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-11-10T13:52:51.686Z"
 model: "minimax-m3"
 char_count: 2157
+distributed_at: "2026-11-16T18:39:38.571Z"
 ---
 
 `prompt-scrub` v1.5.0 is out. It is a local-first tool that replaces identifying content in prompts with stable placeholders, and rehydrates the model's response locally afterwards.
