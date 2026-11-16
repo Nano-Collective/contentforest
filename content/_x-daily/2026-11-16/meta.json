@@ -1,0 +1,348 @@
+{
+  "kind": "x-daily",
+  "date": "2026-11-16",
+  "generated_at": "2026-11-16T06:33:11.697Z",
+  "model": "MiniMax-M3.1-Flash",
+  "posts": [
+    {
+      "file": "nanocoder-1.md",
+      "source": "nanocoder",
+      "angle": "The log that eats the error",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "nanotune-1.md",
+      "source": "nanotune",
+      "angle": "Delete only what is provably safe",
+      "archetype": "til"
+    },
+    {
+      "file": "roster-1.md",
+      "source": "roster",
+      "angle": "The budget warns, it never caps",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "sentinel-1.md",
+      "source": "sentinel",
+      "angle": "The manifest outranks the model",
+      "archetype": "origin"
+    },
+    {
+      "file": "get-md-1.md",
+      "source": "get-md",
+      "angle": "Ten megabytes, then it stops",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "json-up-1.md",
+      "source": "json-up",
+      "angle": "The version lives in the payload",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "prompt-scrub-1.md",
+      "source": "prompt-scrub",
+      "angle": "Your version number is an IP address",
+      "archetype": "til"
+    },
+    {
+      "file": "collective-1.md",
+      "source": "collective",
+      "angle": "One gate, automated",
+      "archetype": "origin"
+    },
+    {
+      "file": "nanocoder-2.md",
+      "source": "nanocoder",
+      "angle": "Whose audio, whose machine",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "nanotune-2.md",
+      "source": "nanotune",
+      "angle": "A typo should not cost a GPU hour",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "roster-2.md",
+      "source": "roster",
+      "angle": "Three versions, one merge",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-2.md",
+      "source": "sentinel",
+      "angle": "The token never crosses over",
+      "archetype": "til"
+    },
+    {
+      "file": "get-md-2.md",
+      "source": "get-md",
+      "angle": "Markdown in, Markdown out",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "json-up-2.md",
+      "source": "json-up",
+      "angle": "Your config is the bug",
+      "archetype": "sharp-take"
+    },
+    {
+      "file": "prompt-scrub-2.md",
+      "source": "prompt-scrub",
+      "angle": "Detectors stay pure",
+      "archetype": "origin"
+    },
+    {
+      "file": "collective-2.md",
+      "source": "collective",
+      "angle": "Twenty lines to the same bar",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanocoder-3.md",
+      "source": "nanocoder",
+      "angle": "One page, one session",
+      "archetype": "by-the-numbers"
+    },
+    {
+      "file": "nanotune-3.md",
+      "source": "nanotune",
+      "angle": "Loss goes up, stop",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "roster-3.md",
+      "source": "roster",
+      "angle": "Local only, on purpose",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "sentinel-3.md",
+      "source": "sentinel",
+      "angle": "Nothing is thrown away",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "get-md-3.md",
+      "source": "get-md",
+      "angle": "A bad image is not a bad page",
+      "archetype": "problem-relief"
+    },
+    {
+      "file": "json-up-3.md",
+      "source": "json-up",
+      "angle": "Sync today, async when it pays",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "prompt-scrub-3.md",
+      "source": "prompt-scrub",
+      "angle": "Nothing disappears quietly",
+      "archetype": "contrarian"
+    },
+    {
+      "file": "collective-3.md",
+      "source": "collective",
+      "angle": "The gate is a machine, not a person",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanocoder-4.md",
+      "source": "nanocoder",
+      "angle": "Look before you delete",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "nanotune-4.md",
+      "source": "nanotune",
+      "angle": "You write the chat prompt",
+      "archetype": "origin"
+    },
+    {
+      "file": "roster-4.md",
+      "source": "roster",
+      "angle": "The stub counts as present",
+      "archetype": "til"
+    },
+    {
+      "file": "sentinel-4.md",
+      "source": "sentinel",
+      "angle": "Your findings, your call",
+      "archetype": "one-tip"
+    },
+    {
+      "file": "get-md-4.md",
+      "source": "get-md",
+      "angle": "Your LLM fallback is Turndown",
+      "archetype": "origin"
+    },
+    {
+      "file": "json-up-4.md",
+      "source": "json-up",
+      "angle": "Zod is a peer, on purpose",
+      "archetype": "sharp-take"
+    }
+  ],
+  "attempts": 3,
+  "final_status": "failed-validation",
+  "failures": [
+    {
+      "file": "content/_x-daily/2026-11-16/posts/get-md-1.md",
+      "rule": "file-exists",
+      "expected": "get-md-1.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/json-up-1.md",
+      "rule": "file-exists",
+      "expected": "json-up-1.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/prompt-scrub-1.md",
+      "rule": "file-exists",
+      "expected": "prompt-scrub-1.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/collective-1.md",
+      "rule": "file-exists",
+      "expected": "collective-1.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/nanocoder-2.md",
+      "rule": "file-exists",
+      "expected": "nanocoder-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/nanotune-2.md",
+      "rule": "file-exists",
+      "expected": "nanotune-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/roster-2.md",
+      "rule": "file-exists",
+      "expected": "roster-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/sentinel-2.md",
+      "rule": "file-exists",
+      "expected": "sentinel-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/get-md-2.md",
+      "rule": "file-exists",
+      "expected": "get-md-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/json-up-2.md",
+      "rule": "file-exists",
+      "expected": "json-up-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/prompt-scrub-2.md",
+      "rule": "file-exists",
+      "expected": "prompt-scrub-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/collective-2.md",
+      "rule": "file-exists",
+      "expected": "collective-2.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/nanocoder-3.md",
+      "rule": "file-exists",
+      "expected": "nanocoder-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/nanotune-3.md",
+      "rule": "file-exists",
+      "expected": "nanotune-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/roster-3.md",
+      "rule": "file-exists",
+      "expected": "roster-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/sentinel-3.md",
+      "rule": "file-exists",
+      "expected": "sentinel-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/get-md-3.md",
+      "rule": "file-exists",
+      "expected": "get-md-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/json-up-3.md",
+      "rule": "file-exists",
+      "expected": "json-up-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/prompt-scrub-3.md",
+      "rule": "file-exists",
+      "expected": "prompt-scrub-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/collective-3.md",
+      "rule": "file-exists",
+      "expected": "collective-3.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/nanocoder-4.md",
+      "rule": "file-exists",
+      "expected": "nanocoder-4.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/nanotune-4.md",
+      "rule": "file-exists",
+      "expected": "nanotune-4.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/roster-4.md",
+      "rule": "file-exists",
+      "expected": "roster-4.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/sentinel-4.md",
+      "rule": "file-exists",
+      "expected": "sentinel-4.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/get-md-4.md",
+      "rule": "file-exists",
+      "expected": "get-md-4.md",
+      "actual": "missing"
+    },
+    {
+      "file": "content/_x-daily/2026-11-16/posts/json-up-4.md",
+      "rule": "file-exists",
+      "expected": "json-up-4.md",
+      "actual": "missing"
+    }
+  ]
+}
