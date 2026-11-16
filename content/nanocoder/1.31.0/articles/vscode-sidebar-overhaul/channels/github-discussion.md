@@ -6,6 +6,7 @@ title: "The Nanocoder VS Code extension, rebuilt as a native sidebar chat"
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 16710
+distributed_at: "2026-11-16T19:19:06.011Z"
 ---
 
 Before v1.31, the Nanocoder VS Code extension was a thin layer on top of a terminal session. You started Nanocoder in your shell, ran `nanocoder --vscode`, and the extension connected over a local WebSocket to display your file edits as diffs and pipe diagnostics into the CLI. It was useful, and it is still there as an opt-in companion for people who prefer the TUI, but it never could be a real editor surface: the agent lived in another window, the chat transcript lived there too, and every editor interaction had to cross the WebSocket boundary. v1.31 rebuilds the extension as a native sidebar chat that runs the agent itself, in your editor, over the Agent Client Protocol. This article is the angle piece: what the sidebar actually is, what the move from WebSocket to ACP made possible, and what changed in v1.31 on top of that move.
