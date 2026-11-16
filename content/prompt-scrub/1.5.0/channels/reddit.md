@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-11-10T13:52:51.686Z"
 model: "minimax-m3"
 char_count: 5517
+distributed_at: "2026-11-16T18:42:15.977Z"
 ---
 
 We just released `prompt-scrub` v1.5.0. If you have not met the tool yet: it is a local-first utility that replaces identifying content in prompts and messages with stable placeholders before they reach a cloud LLM, then rehydrates the model's response locally so your code still gets the real values back.
