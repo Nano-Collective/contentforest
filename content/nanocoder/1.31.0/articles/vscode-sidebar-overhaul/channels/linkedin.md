@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 2942
+distributed_at: "2026-11-18T14:13:55.927Z"
 ---
 
 The Nanocoder VS Code extension used to be a WebSocket mirror of a terminal session. v1.31 rebuilds it as a native sidebar chat that runs the agent itself.
