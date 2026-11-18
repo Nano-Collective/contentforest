@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 8916
+distributed_at: "2026-11-18T14:20:10.355Z"
 ---
 
 We rewrote the Nanocoder VS Code extension in v1.31 and I want to walk through what changed and why, because the before-state had been bugging us for a while.
