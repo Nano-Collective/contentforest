@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-08-29T21:06:21.932Z"
 model: "minimax-m3"
 char_count: 2046
+distributed_at: "2026-11-20T15:14:01.815Z"
 ---
 
 One year ago I started the Nano Collective as a side project around a coding agent called Nanocoder. I was writing it on evenings and weekends, with no plan for what it might turn into.
