@@ -5,6 +5,7 @@ channel: linkedin
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 2685
+distributed_at: "2026-11-20T15:23:21.284Z"
 ---
 
 Nanocoder v1.31 introduces Architect mode, a fifth development mode that reviews a whole turn's changes as a unit, with a one-keypress undo, instead of approving edits one at a time.
