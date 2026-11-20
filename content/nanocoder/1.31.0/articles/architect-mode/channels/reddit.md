@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-09-27T14:25:17.704Z"
 model: "minimax-m3"
 char_count: 5743
+distributed_at: "2026-11-20T15:26:45.029Z"
 ---
 
 We added a new development mode to Nanocoder in v1.31 and we want to walk through why, because the rationale matters more than the feature.
