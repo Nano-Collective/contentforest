@@ -5,6 +5,7 @@ channel: reddit
 generated_at: "2026-08-29T21:06:21.932Z"
 model: "minimax-m3"
 char_count: 7001
+distributed_at: "2026-11-20T15:14:04.612Z"
 ---
 
 I'm Will, the founder of the Nano Collective. A year ago today I started this as a side project around a coding agent I was writing called Nanocoder. I had no plan beyond "scratch my own itch and see if anyone else finds it useful". A year later, the side project is a small team shipping open-source AI tooling across multiple projects, with a public ledger, a charter, and a community. Sharing the story here because the people who care about open-source, local-first AI tooling are exactly the people who made this work.
