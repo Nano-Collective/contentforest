@@ -6,6 +6,7 @@ title: "Migrating plaintext sessions without locking yourself out"
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 18840
+distributed_at: "2026-11-23T20:54:35.659Z"
 ---
 
 # Migrating plaintext sessions without locking yourself out
