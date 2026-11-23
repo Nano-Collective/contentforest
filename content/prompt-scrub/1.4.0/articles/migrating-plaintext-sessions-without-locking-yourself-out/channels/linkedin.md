@@ -6,6 +6,7 @@ title: ""
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 2989
+distributed_at: "2026-11-23T11:52:21.677Z"
 ---
 
 `prompt-scrub` v1.4.0 ships opt-in session encryption, and the migration story is the part worth slowing down on. The new `prompt-scrub sessions encrypt [id]` command is the path from "we left plaintext on disk for a while" to "every session file on this machine is wrapped in an AES-256-GCM envelope," and the rules around it are what keep that path reversible.
