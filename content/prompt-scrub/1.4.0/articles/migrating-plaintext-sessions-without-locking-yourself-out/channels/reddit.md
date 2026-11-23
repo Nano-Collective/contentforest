@@ -6,7 +6,7 @@ title: ""
 generated_at: "2026-09-15T19:13:26.875Z"
 model: "minimax-m3"
 char_count: 6880
-distributed_at: "2026-11-23T11:55:31.181Z"
+distributed_at: "2026-11-23T11:55:56.930Z"
 ---
 
 We shipped opt-in session encryption in `prompt-scrub` v1.4.0, and a few people have asked about the migration path: what actually happens if you turn the flag on with a stack of plaintext sessions already on disk, and what the failure modes look like when something goes wrong. This post walks through the `prompt-scrub sessions encrypt [id]` command the way it actually runs in the operator's shell, not the way the README compresses it into a paragraph.
